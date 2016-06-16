@@ -16,8 +16,8 @@ if [[ ! -f .env ]]; then
   exit 1
 fi
 
-rversion=2.15.1
-build_no=${2:-`date +%Y%m%d-%H%M`}
+rversion=3.2.5
+build_no=${3:-`date +%Y%m%d-%H%M`}
 
 rm -rf .git &> /dev/null
 git init
