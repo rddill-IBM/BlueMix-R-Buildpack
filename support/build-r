@@ -9,7 +9,7 @@
 set -e
 
 # debug
-# set -x
+ set -x
 
 ## HELPERS
 
