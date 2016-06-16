@@ -95,6 +95,7 @@ rm r_binaries.tar.gz
 
 echo "Directory created, R pulled, unpacked" | indent
 ls $VENDOR_DIR
+ls app/vendor/
 # need to copy the binaries to /app/vendor so that R works
 cp -R $VENDOR_DIR/gcc-$GCC_VERSION /app/vendor/gcc-$GCC_VERSION
 cp -R $VENDOR_DIR/glibc-$GLIBC_VERSION /app/vendor/glibc-$GLIBC_VERSION
