@@ -98,7 +98,7 @@ echo "installing g++" | indent
 echo "Directory created, R pulled, unpacked" | indent
 ls $VENDOR_DIR
 ls app/vendor/
-
+ls /home
 # need to copy the binaries to /app/vendor so that R works
 cp -R ~/usr/bin/gcc-4.8 /app/vendor/gcc-$GCC_VERSION
 cp -R ~/lib/x86_64-linux-gnu/libc-2.19.so /app/vendor/glibc-$GLIBC_VERSION
