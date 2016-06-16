@@ -1,0 +1,142 @@
+#!/usr/bin/env bash
+# bin/compile <build-dir> <cache-dir>
+
+# fail fast
+set -e
+
+# debug
+set -x
+
+
+
+function error() {
+  echo " !     $*" >&2
+  exit 1
+}
+
+function indent() {
+  c='s/^/       /'
+  case $(uname) in
+    Darwin) sed -l "$c";;
+    *)      sed -u "$c";;
+  esac
+}
+
+shopt -s extglob
+
+# clean up leaking environment
+unset GIT_DIR
+if [ -z "$BUILDPACK_CACHE" ]; then BUILDPACK_CACHE="/tmp"; fi
+LP_DIR=`cd $(dirname $0); cd ..; pwd`
+
+# parse and derive params
+BUILD_DIR=$1
+CACHE_DIR="$2/vendor"
+BUILDPACK_DIR="$(dirname $(dirname $0))"
+
+echo "$BUILD_DIR" | indent #/tmp/staged/app
+echo "$CACHE_DIR" | indent #/tmp/cache/vendor
+echo "$HOME" | indent #/home/vcap
+
+# config
+BUILD_PACK_VERSION="20130729"
+
+GCC_VERSION="4.3"
+GLIBC_VERSION="2.7"
+R_VERSION="2.15.1"
+
+S3_BUCKET="heroku-buildpack-r"
+R_BINARIES="http://${S3_BUCKET}.s3.amazonaws.com/R-${R_VERSION}-binaries-${BUILD_PACK_VERSION}.tar.gz"
+FILE_NAME="R-${R_VERSION}-binaries-${BUILD_PACK_VERSION}.tar.gz"
+
+VENDOR_DIR="$BUILD_DIR/vendor" #/tmp/staged/app/vendor
+R_HOME="$VENDOR_DIR/R"         #/tmp/staged/app/vendor/R
+CRAN_MIRROR="http://cran.revolutionanalytics.com"
+
+mkdir -p $CACHE_DIR
+
+# vendor R into the slug
+echo "Vendoring R $R_VERSION" | indent
+
+# download and unpack binaries
+echo "Downloading and unpacking R binaries" | indent
+mkdir -p $VENDOR_DIR
+
+curl $R_BINARIES -s -o $CACHE_DIR/$FILE_NAME
+tar xzf $CACHE_DIR/$FILE_NAME -C $VENDOR_DIR
+
+echo "R pulled and unpacked" | indent
+
+mkdir -p "$BUILD_DIR/app/vendor"
+
+# need to copy the binaries to $BUILD_DIR/app/vendor so that R works
+cp -R $VENDOR_DIR/gcc-$GCC_VERSION $BUILD_DIR/app/vendor/gcc-$GCC_VERSION
+cp -R $VENDOR_DIR/glibc-$GLIBC_VERSION $BUILD_DIR/app/vendor/glibc-$GLIBC_VERSION
+cp -R $VENDOR_DIR/R $BUILD_DIR/app/vendor/R
+
+# R needs to know where gfortran and glibc header files are
+export PATH=$BUILD_DIR/app/vendor/R/bin:$BUILD_DIR/app/vendor/gcc-$GCC_VERSION/bin:$PATH
+export LDFLAGS="-L$BUILD_DIR/app/vendor/gcc-$GCC_VERSION/lib64/"
+export CPPFLAGS="-I$BUILD_DIR/app/vendor/glibc-$GLIBC_VERSION/string/ -I$BUILD_DIR/app/vendor/glibc-$GLIBC_VERSION/time"
+export R_HOME=$BUILD_DIR/app/vendor/R
+export R_INCLUDE=$R_HOME/lib64/R/include
+
+echo "variables set" | indent
+
+echo "$PATH" | indent
+echo "$LDFLAGS" | indent
+echo "$CPPFLAGS" | indent
+echo "$R_HOME" | indent
+echo "$R_INCLUDE" | indent
+
+# copy over environment
+mkdir -p $BUILD_DIR/.profile.d
+cp "$BUILDPACK_DIR/bin/r_environment.sh" $BUILD_DIR/.profile.d/r_environment.sh
+
+echo "environment copied" | indent
+
+# prevent warnings
+mkdir -p $BUILD_DIR/app/vendor/R/lib64/R/doc/html
+touch $BUILD_DIR/app/vendor/R/lib64/R/doc/html/R.css
+
+# install dependencies from CRAN
+echo "Executing init.r script" | indent
+
+ls $BUILD_DIR
+
+set +e
+
+$BUILD_DIR/app/vendor/R/bin/R -s <<RPROG > output1
+  Sys.setenv(BUILD_DIR="$BUILD_DIR")
+  setwd("$BUILD_DIR")
+  1+1
+RPROG
+
+ls $BUILD_DIR
+cat output1
+
+# set the CRAN mirror and run the init.r program
+$BUILD_DIR/app/vendor/R/bin/R -s <<RPROG > indent
+  Sys.setenv(BUILD_DIR="$BUILD_DIR")
+  setwd("$BUILD_DIR")
+  r <- getOption("repos");
+  r["CRAN"] <- "$CRAN_MIRROR";
+  options(repos=r);
+  `cat $BUILD_DIR/init.r`
+RPROG
+set -e
+
+echo "R $R_VERSION successfully installed" | indent
+
+# need to copy binaries back so that any installed packages are included in the slug
+rm -rf $VENDOR_DIR && mkdir -p $VENDOR_DIR
+cp -R $BUILD_DIR/app/vendor/gcc-$GCC_VERSION $VENDOR_DIR/gcc-$GCC_VERSION
+cp -R $BUILD_DIR/app/vendor/glibc-$GLIBC_VERSION $VENDOR_DIR/glibc-$GLIBC_VERSION
+cp -R $BUILD_DIR/app/vendor/R $VENDOR_DIR/R
+
+# HACK
+cp $VENDOR_DIR/gcc-$GCC_VERSION/lib64/* $VENDOR_DIR/R/lib64/R/lib
+
+# remove unneeded files to make slug smaller
+# pushd $VENDOR_DIR/gcc-$GCC_VERSION > /dev/null && rm -rf !(lib64) && popd > /dev/null
+# pushd $VENDOR_DIR/glibc-$GLIBC_VERSION > /dev/null && rm -rf !(string|time) && popd > /dev/null

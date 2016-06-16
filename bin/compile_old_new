@@ -1,0 +1,238 @@
+#!/usr/bin/env bash
+# bin/compile <build-dir> <cache-dir>
+
+# fail fast
+set -e
+
+# debug
+set -x
+
+shopt -s extglob
+
+# clean up leaking environment
+unset GIT_DIR
+if [ -z "$BUILDPACK_CACHE" ]; then BUILDPACK_CACHE="/tmp"; fi
+LP_DIR=`cd $(dirname $0); cd ..; pwd`
+
+# parse and derive params
+BUILD_DIR=$1
+CACHE_DIR=$2
+BUILDPACK_DIR="$(dirname $(dirname $0))"
+
+VENDOR_DIR="$BUILD_DIR/vendor" #/tmp/staged/app/vendor
+R_HOME="$VENDOR_DIR/R"         #/tmp/staged/app/vendor/R
+CRAN_MIRROR="http://cran.revolutionanalytics.com"
+
+mkdir -p $CACHE_DIR
+
+
+function error() {
+  echo " !     $*" >&2
+  exit 1
+}
+
+function indent() {
+  c='s/^/       /'
+  case $(uname) in
+    Darwin) sed -l "$c";;
+    *)      sed -u "$c";;
+  esac
+}
+
+function download() {
+  if [ ! -f "$2" ]; then
+    echo Downloading $2...
+    curl $1 -o $2 -s -S
+  else
+    echo Got $2...
+  fi
+}
+
+function build() {
+  echo ----------------------------------------------------------------------
+  echo Building $@...
+  echo ----------------------------------------------------------------------
+  echo
+  pushd $1
+    ./configure --prefix=$VENDOR_DIR/$2 ${@:3} > /dev/null 2>&1
+    make > /dev/null 2>&1
+    make install > /dev/null 2>&1
+    make clean > /dev/null 2>&1
+  popd > /dev/null
+  echo
+  echo
+
+  # add to libraries and pkg-config
+  export LD_LIBRARY_PATH="$VENDOR_DIR/$2:$LD_LIBRARY_PATH"
+  export PKG_CONFIG_PATH="$VENDOR_DIR/$2/lib/pkgconfig:$PKG_CONFIG_PATH"
+
+}
+
+r_version=3.0.2
+r_version_major=${r_version:0:1} # extracts first char
+
+freetype_version=2.5.1
+
+directfb_version=1.7.1
+directfb_ver_major=${directfb_version:0:3} # extracts first three chars
+
+libpng_version=1.2.50
+
+pixman_version=0.32.4
+
+fontconfig_version=2.11.0
+
+cairo_version=1.12.16
+
+echo ======================================================================
+echo Downloading and unpacking dependencies...
+echo ======================================================================
+
+# http://www.freetype.org/freetype2/
+#curl "http://www.mirrorservice.org/sites/download.savannah.gnu.org/releases/freetype/freetype-$freetype_version.tar.gz" -o $CACHE_DIR/freetype-$freetype_version.tar.gz -s -S
+download "http://www.mirrorservice.org/sites/download.savannah.gnu.org/releases/freetype/freetype-$freetype_version.tar.gz" $CACHE_DIR/freetype-$freetype_version.tar.gz
+tar xzf $CACHE_DIR/freetype-$freetype_version.tar.gz -C $BUILD_DIR
+
+# http://directfb.org/
+download "http://directfb.org/downloads/Core/DirectFB-$directfb_ver_major/DirectFB-$directfb_version.tar.gz" $CACHE_DIR/DirectFB-$directfb_version.tar.gz
+tar xzf $CACHE_DIR/DirectFB-$directfb_version.tar.gz -C $BUILD_DIR
+
+# http://www.libpng.org/pub/png/libpng.html
+download "ftp://ftp.simplesystems.org/pub/libpng/png/src/libpng12/libpng-$libpng_version.tar.gz" $CACHE_DIR/libpng-$libpng_version.tar.gz
+tar xzf $CACHE_DIR/libpng-$libpng_version.tar.gz -C $BUILD_DIR
+
+# http://www.cairographics.org
+download "http://www.cairographics.org/releases/pixman-$pixman_version.tar.gz" $CACHE_DIR/pixman-$pixman_version.tar.gz
+tar xzf $CACHE_DIR/pixman-$pixman_version.tar.gz -C $BUILD_DIR
+
+# http://www.freedesktop.org/software/fontconfig
+download "http://www.freedesktop.org/software/fontconfig/release/fontconfig-$fontconfig_version.tar.gz" $CACHE_DIR/fontconfig-$fontconfig_version.tar.gz
+tar xzf $CACHE_DIR/fontconfig-$fontconfig_version.tar.gz -C $BUILD_DIR
+
+# http://www.cairographics.org
+download "http://www.cairographics.org/releases/cairo-$cairo_version.tar.xz" $CACHE_DIR/cairo-$cairo_version.tar.xz
+tar xJf $CACHE_DIR/cairo-$cairo_version.tar.xz -C $BUILD_DIR
+
+# R
+download "http://cran.r-project.org/src/base/R-$r_version_major/R-$r_version.tar.gz" $CACHE_DIR/R-$r_version.tar.gz
+tar xzf $CACHE_DIR/R-$r_version.tar.gz -C $BUILD_DIR
+
+
+echo ============================================================
+echo Building dependencies...
+echo ======================================================================
+
+build "$BUILD_DIR/freetype-$freetype_version" freetype
+build "$BUILD_DIR/DirectFB-$directfb_version" DirectFB
+build "$BUILD_DIR/libpng-$libpng_version" libpng
+build "$BUILD_DIR/pixman-$pixman_version" pixman
+build "$BUILD_DIR/fontconfig-$fontconfig_version" fontconfig
+build "$BUILD_DIR/cairo-$cairo_version" cairo
+build "$BUILD_DIR/R-$r-version" R --with-x --with-libpng --with-cairo --enable-R-shlib
+
+
+
+echo "$BUILD_DIR" | indent #/tmp/staged/app
+echo "$CACHE_DIR" | indent #/tmp/cache
+echo "$HOME" | indent #/home/vcap
+
+
+
+# config
+# BUILD_PACK_VERSION="20130729"
+
+# GCC_VERSION="4.3"
+# GLIBC_VERSION="2.7"
+# R_VERSION="2.15.1"
+
+# S3_BUCKET="heroku-buildpack-r"
+# R_BINARIES="http://${S3_BUCKET}.s3.amazonaws.com/R-${R_VERSION}-binaries-${BUILD_PACK_VERSION}.tar.gz"
+# FILE_NAME="R-${R_VERSION}-binaries-${BUILD_PACK_VERSION}.tar.gz"
+
+# vendor R into the slug
+# echo "Vendoring R $R_VERSION" | indent
+
+# # download and unpack binaries
+# echo "Downloading and unpacking R binaries" | indent
+# mkdir -p $VENDOR_DIR
+
+# curl $R_BINARIES -s -o $CACHE_DIR/$FILE_NAME
+# tar xzf $CACHE_DIR/$FILE_NAME -C $VENDOR_DIR
+
+# echo "Binaries pulled and unpacked" | indent
+
+# mkdir -p "$BUILD_DIR/app/vendor"
+
+# # need to copy the binaries to $BUILD_DIR/app/vendor so that R works
+# cp -R $VENDOR_DIR/gcc-$GCC_VERSION $BUILD_DIR/app/vendor/gcc-$GCC_VERSION
+# cp -R $VENDOR_DIR/glibc-$GLIBC_VERSION $BUILD_DIR/app/vendor/glibc-$GLIBC_VERSION
+# cp -R $VENDOR_DIR/R $BUILD_DIR/app/vendor/R
+
+# R needs to know where gfortran and glibc header files are
+export PATH=$BUILD_DIR/R/bin:$PATH
+#export LDFLAGS="-L$BUILD_DIR/app/vendor/gcc-$GCC_VERSION/lib64/"
+#export CPPFLAGS="-I$BUILD_DIR/app/vendor/glibc-$GLIBC_VERSION/string/ -I$BUILD_DIR/app/vendor/glibc-$GLIBC_VERSION/time"
+export R_HOME=$BUILD_DIR/R
+export R_INCLUDE=$R_HOME/lib64/R/include
+
+echo "$PATH" | indent
+echo "$LDFLAGS" | indent
+echo "$CPPFLAGS" | indent
+echo "$R_HOME" | indent
+echo "$R_INCLUDE" | indent
+
+# copy over environment
+mkdir -p $BUILD_DIR/.profile.d
+cp "$BUILDPACK_DIR/bin/r_environment.sh" $BUILD_DIR/.profile.d/r_environment.sh
+
+echo "environment copied" | indent
+
+# prevent warnings
+#mkdir -p $BUILD_DIR/R/lib64/R/doc/html
+#touch $BUILD_DIR/R/lib64/R/doc/html/R.css
+
+# install dependencies from CRAN
+echo "Executing init.r script" | indent
+
+ls $BUILD_DIR
+
+set +e
+
+uname -a
+
+R --version 2>&1
+
+# $BUILD_DIR/app/vendor/R/bin/R -s <<RPROG > output1
+#   Sys.setenv(BUILD_DIR="$BUILD_DIR")
+#   setwd("$BUILD_DIR")
+#   1+1
+# RPROG
+
+# ls $BUILD_DIR
+# cat output1
+
+# # set the CRAN mirror and run the init.r program
+# $BUILD_DIR/app/vendor/R/bin/R -s <<RPROG > indent
+#   Sys.setenv(BUILD_DIR="$BUILD_DIR")
+#   setwd("$BUILD_DIR")
+#   r <- getOption("repos");
+#   r["CRAN"] <- "$CRAN_MIRROR";
+#   options(repos=r);
+#   `cat $BUILD_DIR/init.r`
+# RPROG
+set -e
+
+echo "R $R_VERSION successfully installed" | indent
+
+# need to copy binaries back so that any installed packages are included in the slug
+#rm -rf $VENDOR_DIR && mkdir -p $VENDOR_DIR
+#cp -R $BUILD_DIR/app/vendor/gcc-$GCC_VERSION $VENDOR_DIR/gcc-$GCC_VERSION
+#cp -R $BUILD_DIR/app/vendor/glibc-$GLIBC_VERSION $VENDOR_DIR/glibc-$GLIBC_VERSION
+#cp -R $BUILD_DIR/app/vendor/R $VENDOR_DIR/R
+
+# HACK
+#cp $VENDOR_DIR/gcc-$GCC_VERSION/lib64/* $VENDOR_DIR/R/lib64/R/lib
+
+# remove unneeded files to make slug smaller
+# pushd $VENDOR_DIR/gcc-$GCC_VERSION > /dev/null && rm -rf !(lib64) && popd > /dev/null
+# pushd $VENDOR_DIR/glibc-$GLIBC_VERSION > /dev/null && rm -rf !(string|time) && popd > /dev/null

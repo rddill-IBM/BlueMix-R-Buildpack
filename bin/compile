@@ -1,0 +1,177 @@
+#!/usr/bin/env bash
+# bin/compile <build-dir> <cache-dir>
+
+# fail fast
+set -e
+
+# debug
+# set -x
+
+shopt -s extglob
+
+function error() {
+  echo " !     $*" >&2
+  exit 1
+}
+
+function indent() {
+  c='s/^/       /'
+  case $(uname) in
+    Darwin) sed -l "$c";;
+    *)      sed -u "$c";;
+  esac
+}
+
+function build() {
+  echo ----------------------------------------------------------------------
+  echo Building $@...
+  echo ----------------------------------------------------------------------
+  echo
+  pushd $1
+    ./configure --prefix=$VENDOR_DIR/$2 ${@:3} > /dev/null 2>&1
+    echo "configure finished"
+    make
+    echo "make finished"
+    make install > /dev/null 2>&1
+    echo "install finished"
+    make clean > /dev/null 2>&1
+    echo "clean finished"
+  popd > /dev/null
+  echo
+  echo
+
+  # add to libraries and pkg-config
+  export LD_LIBRARY_PATH="$VENDOR_DIR/$2/lib:$LD_LIBRARY_PATH"
+  export PKG_CONFIG_PATH="$VENDOR_DIR/$2/lib/pkgconfig:$PKG_CONFIG_PATH"
+
+}
+
+function download() {
+  if [ ! -f "$2" ]; then
+    echo Downloading $2...
+    curl $1 -o $2 -s -S
+  else
+    echo Got $2...
+  fi
+}
+
+# clean up leaking environment
+unset GIT_DIR
+
+# parse and derive params
+BUILD_DIR=$1
+CACHE_DIR="$2/vendor"
+LP_DIR=`cd $(dirname $0); cd ..; pwd`
+BUILDPACK_DIR="$(dirname $(dirname $0))"
+
+# config
+BUILD_PACK_VERSION="20130729"
+
+GCC_VERSION="4.3"
+GLIBC_VERSION="2.7"
+#R_VERSION="2.15.1"
+R_VERSION="3.1.0"
+
+S3_BUCKET="heroku-buildpack-r"
+#R_BINARIES="http://${S3_BUCKET}.s3.amazonaws.com/R-${R_VERSION}-binaries-${BUILD_PACK_VERSION}.tar.gz"
+R_BINARIES="https://s3.amazonaws.com/r-buildpack/R-3.1.0-binaries-20140629-2201.tar.gz"
+
+VENDOR_DIR="$BUILD_DIR/vendor"
+R_HOME="$VENDOR_DIR/R"
+CRAN_MIRROR="http://cran.revolutionanalytics.com"
+
+mkdir -p $CACHE_DIR
+
+# vendor R into the slug
+echo "Vendoring R $R_VERSION" | indent
+
+# download and unpack binaries
+echo "Downloading and unpacking R binaries" | indent
+mkdir -p $VENDOR_DIR && mkdir -p /app/vendor
+curl $R_BINARIES -s -o r_binaries.tar.gz
+tar xzf r_binaries.tar.gz -C $VENDOR_DIR
+rm r_binaries.tar.gz
+
+echo "Directory created, R pulled, unpacked" | indent
+
+# need to copy the binaries to /app/vendor so that R works
+cp -R $VENDOR_DIR/gcc-$GCC_VERSION /app/vendor/gcc-$GCC_VERSION
+cp -R $VENDOR_DIR/glibc-$GLIBC_VERSION /app/vendor/glibc-$GLIBC_VERSION
+#cp -R $VENDOR_DIR/readline /app/vendor/readline
+cp -R $VENDOR_DIR/R /app/vendor/R
+
+echo "Stuff copied" | indent
+
+
+# R needs to know where gfortran and glibc header files are
+export PATH=/app/vendor/R/bin:/app/vendor/gcc-$GCC_VERSION/bin:$PATH
+export LDFLAGS="-L/app/vendor/gcc-$GCC_VERSION/lib64/"
+export CPPFLAGS="-I/app/vendor/glibc-$GLIBC_VERSION/string/ -I/app/vendor/glibc-$GLIBC_VERSION/time -I/usr/include/x86_64-linux-gnu/sys -I/usr/include/x86_64-linux-gnu/gnu"
+export R_HOME=/app/vendor/R
+export R_INCLUDE=$R_HOME/lib64/R/include
+export LD_LIBRARY_PATH="/lib:/usr/lib:/usr/lib/x86_64-linux-gnu:$R_HOME/lib64:$LD_LIBRARY_PATH"
+export LIBRARY_PATH="/lib:/usr/lib:/usr/lib/x86_64-linux-gnu:$R_HOME/lib64:$LD_LIBRARY_PATH"
+
+#ln -s /usr/lib/libreadline.so $R_HOME/lib64/libreadline.so.5 2>&1
+ln -s /usr/lib/x86_64-linux-gnu/libreadline.so $R_HOME/lib64/libreadline.so.5 2>&1
+ln -s /usr/lib/x86_64-linux-gnu/libmpfr.so.4.1.2 $R_HOME/lib64/libmpfr.so.1 2>&1
+ln -s /usr/lib/x86_64-linux-gnu/libgmp.so.10.1.3 $R_HOME/lib64/libgmp.so.3 2>&1
+ln -s /usr/lib/x86_64-linux-gnu/crti.o $R_HOME/lib64/crti.o 2>&1
+
+#mkdir $R_INCLUDE/sys
+#mkdir $R_INCLUDE/gnu
+#mkdir $R_INCLUDE/bits
+#mkdir $R_INCLUDE/asm
+
+#cp -R /usr/include/x86_64-linux-gnu/sys/* $R_INCLUDE/sys
+#cp -R /usr/include/x86_64-linux-gnu/gnu/* $R_INCLUDE/gnu
+#cp -R /usr/include/x86_64-linux-gnu/bits/* $R_INCLUDE/bits
+#cp -R /usr/include/x86_64-linux-gnu/asm/* $R_INCLUDE/asm
+cp -Rv /usr/include/x86_64-linux-gnu/* $R_INCLUDE
+cp -Rv /usr/include/* $R_INCLUDE
+
+export CPATH=/usr/lib/x86_64-linux-gnu:$R_INCLUDE
+
+
+echo "variables set" | indent
+
+# copy over environment
+mkdir -p $BUILD_DIR/.profile.d
+cp "$BUILDPACK_DIR/bin/r_environment.sh" $BUILD_DIR/.profile.d/r_environment.sh
+
+echo "environment copied" | indent
+
+# prevent warnings
+mkdir -p /app/vendor/R/lib64/R/doc/html
+touch /app/vendor/R/lib64/R/doc/html/R.css
+
+# install dependencies from CRAN
+echo "Executing init.r script" | indent
+
+# set the CRAN mirror and run the init.r program
+R -s <<RPROG
+  Sys.setenv(BUILD_DIR="$BUILD_DIR")
+  setwd("$BUILD_DIR")
+  r <- getOption("repos");
+  print(r)
+  r["CRAN"] <- "$CRAN_MIRROR";
+  options(repos=r);
+  `cat $BUILD_DIR/init.r`
+RPROG
+
+#cat indent
+
+echo "R $R_VERSION successfully installed" | indent
+
+# need to copy binaries back so that any installed packages are included in the slug
+rm -rf $VENDOR_DIR && mkdir -p $VENDOR_DIR
+cp -R /app/vendor/gcc-$GCC_VERSION $VENDOR_DIR/gcc-$GCC_VERSION
+cp -R /app/vendor/glibc-$GLIBC_VERSION $VENDOR_DIR/glibc-$GLIBC_VERSION
+cp -R /app/vendor/R $VENDOR_DIR/R
+
+# HACK
+cp $VENDOR_DIR/gcc-$GCC_VERSION/lib64/* $VENDOR_DIR/R/lib64/R/lib
+
+# remove unneeded files to make slug smaller
+pushd $VENDOR_DIR/gcc-$GCC_VERSION > /dev/null && rm -rf !(lib64) && popd > /dev/null
+pushd $VENDOR_DIR/glibc-$GLIBC_VERSION > /dev/null && rm -rf !(string|time) && popd > /dev/null
