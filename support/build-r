@@ -25,6 +25,7 @@ function download() {
 function build() {
   echo ----------------------------------------------------------------------
   echo Building $@...
+  echo Vendordir $vendordir/$2 ${@:3}
   echo ----------------------------------------------------------------------
   echo
   pushd $1
