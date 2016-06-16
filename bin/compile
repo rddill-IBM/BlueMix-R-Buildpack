@@ -95,17 +95,10 @@ rm r_binaries.tar.gz
 echo "Directory created, R pulled, unpacked" | indent
 echo "installing g++" | indent
 
-sudo apt-get install python-software-properties
-sudo add-apt-repository ppa:ubuntu-toolchain-r/test
-sudo apt-get update
-sudo apt-get install gcc-4.9
-sudo update-alternatives --install app/vendor/gcc gcc app/vendor/gcc-4.9 50
-sudo apt-get install g++-4.9
-sudo update-alternatives --install app/vendor/g++ g++ app/vendor/g++-4.9 50
-
 echo "Directory created, R pulled, unpacked" | indent
 ls $VENDOR_DIR
 ls app/vendor/
+ls usr/bin/
 # need to copy the binaries to /app/vendor so that R works
 cp -R $VENDOR_DIR/gcc-$GCC_VERSION /app/vendor/gcc-$GCC_VERSION
 cp -R $VENDOR_DIR/glibc-$GLIBC_VERSION /app/vendor/glibc-$GLIBC_VERSION
