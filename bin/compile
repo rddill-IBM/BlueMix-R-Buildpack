@@ -67,7 +67,7 @@ BUILDPACK_DIR="$(dirname $(dirname $0))"
 # config
 BUILD_PACK_VERSION="20130729"
 
-GCC_VERSION="4.8"
+GCC_VERSION="4.9"
 GLIBC_VERSION="2.23"
 #R_VERSION="2.15.1"
 R_VERSION="3.2.5"
@@ -92,6 +92,16 @@ mkdir -p $VENDOR_DIR && mkdir -p /app/vendor
 curl $R_BINARIES -s -o r_binaries.tar.gz
 tar xzf r_binaries.tar.gz -C $VENDOR_DIR
 rm r_binaries.tar.gz
+echo "Directory created, R pulled, unpacked" | indent
+echo "installing g++" | indent
+
+apt-get install python-software-properties
+add-apt-repository ppa:ubuntu-toolchain-r/test
+apt-get update
+apt-get install gcc-4.9
+update-alternatives --install app/vendor/gcc gcc app/vendor/gcc-4.9 50
+apt-get install g++-4.9
+update-alternatives --install app/vendor/g++ g++ app/vendor/g++-4.9 50
 
 echo "Directory created, R pulled, unpacked" | indent
 ls $VENDOR_DIR
