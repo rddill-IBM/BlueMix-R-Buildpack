@@ -67,19 +67,18 @@ BUILDPACK_DIR="$(dirname $(dirname $0))"
 # config
 BUILD_PACK_VERSION="20130729"
 
-GCC_VERSION="4.8"
+GCC_VERSION="4.9"
 GLIBC_VERSION="2.23"
 #R_VERSION="2.15.1"
 R_VERSION="3.2.5"
 
 S3_BUCKET="heroku-buildpack-r"
 #R_BINARIES="http://${S3_BUCKET}.s3.amazonaws.com/R-${R_VERSION}-binaries-${BUILD_PACK_VERSION}.tar.gz"
-# R_BINARIES="https://s3.amazonaws.com/r-buildpack/R-3.1.0-binaries-20140629-2201.tar.gz"
-R_BINARIES="https://cran.r-project.org/bin/linux/ubuntu/xenial/r-base_3.2.5.orig.tar.gz"
+R_BINARIES="http://www.kristendill.com/r-build/r_cf_build.tar.gz"
 
 VENDOR_DIR="$BUILD_DIR/vendor"
 R_HOME="$VENDOR_DIR/R"
-CRAN_MIRROR="http://cran.revolutionanalytics.com"
+CRAN_MIRROR="http://cran.cnr.berkeley.edu/"
 
 mkdir -p $CACHE_DIR
 
@@ -92,26 +91,22 @@ mkdir -p $VENDOR_DIR && mkdir -p /app/vendor
 curl $R_BINARIES -s -o r_binaries.tar.gz
 tar xzf r_binaries.tar.gz -C $VENDOR_DIR
 rm r_binaries.tar.gz
-echo "Directory created, R pulled, unpacked" | indent
-echo "installing g++" | indent
 
 echo "Directory created, R pulled, unpacked" | indent
-lsb_release -si
-ls app/vendor/
-ls -laRh ~/../
+
 # need to copy the binaries to /app/vendor so that R works
-# cp -R ~/usr/bin/gcc-4.8 /app/vendor/gcc-$GCC_VERSION
-# cp -R ~/lib/x86_64-linux-gnu/libc-2.19.so /app/vendor/glibc-$GLIBC_VERSION
+cp -R $VENDOR_DIR/gcc-$GCC_VERSION /app/vendor/gcc-$GCC_VERSION
+cp -R $VENDOR_DIR/glibc-$GLIBC_VERSION /app/vendor/glibc-$GLIBC_VERSION
 #cp -R $VENDOR_DIR/readline /app/vendor/readline
-# cp -R $VENDOR_DIR/R /app/vendor/R
+cp -R $VENDOR_DIR/R /app/vendor/R
 
 echo "Stuff copied" | indent
 
 
 # R needs to know where gfortran and glibc header files are
-export PATH=gcc/bin:$PATH
-#export LDFLAGS="-L/app/vendor/gcc-$GCC_VERSION/lib64/"
-#export CPPFLAGS="-I/app/vendor/glibc-$GLIBC_VERSION/string/ -I/app/vendor/glibc-$GLIBC_VERSION/time -I/usr/include/x86_64-linux-gnu/sys -I/usr/include/x86_64-linux-gnu/gnu"
+export PATH=/app/vendor/R/bin:/app/vendor/gcc-$GCC_VERSION/bin:$PATH
+export LDFLAGS="-L/app/vendor/gcc-$GCC_VERSION/lib64/"
+export CPPFLAGS="-I/app/vendor/glibc-$GLIBC_VERSION/string/ -I/app/vendor/glibc-$GLIBC_VERSION/time -I/usr/include/x86_64-linux-gnu/sys -I/usr/include/x86_64-linux-gnu/gnu"
 export R_HOME=/app/vendor/R
 export R_INCLUDE=$R_HOME/lib64/R/include
 export LD_LIBRARY_PATH="/lib:/usr/lib:/usr/lib/x86_64-linux-gnu:$R_HOME/lib64:$LD_LIBRARY_PATH"
