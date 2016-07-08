@@ -72,7 +72,7 @@ GLIBC_VERSION="2.23"
 #R_VERSION="2.15.1"
 R_VERSION="3.2.5"
 
-S3_BUCKET="heroku-buildpack-r"
+# S3_BUCKET="heroku-buildpack-r"
 #R_BINARIES="http://${S3_BUCKET}.s3.amazonaws.com/R-${R_VERSION}-binaries-${BUILD_PACK_VERSION}.tar.gz"
 R_BINARIES="http://www.kristendill.com/r-build/r_cf_build.tar.gz"
 
@@ -88,8 +88,11 @@ echo "Vendoring R $R_VERSION" | indent
 # download and unpack binaries
 echo "Downloading and unpacking R binaries" | indent
 mkdir -p $VENDOR_DIR && mkdir -p /app/vendor
+echo "mkdir $VENDOR_DIR complete"
 curl $R_BINARIES -s -o r_binaries.tar.gz
+echo "curl $R_BINARIES complete"
 tar xzf r_binaries.tar.gz -C $VENDOR_DIR
+echo "tar unpack complete"
 rm r_binaries.tar.gz
 
 echo "Directory created, R pulled, unpacked" | indent
