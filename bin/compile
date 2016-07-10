@@ -103,6 +103,7 @@ echo "tar unpack complete"| indent
 rm r_binaries.tar.gz
 
 echo "Directory created, R pulled, unpacked" | indent
+find ./  -type d -print0 | xargs -0 ls -ld
 
 # need to copy the binaries to /app/vendor so that R works
 cp -Rv $VENDOR_DIR/gcc-$GCC_VERSION /app/vendor/gcc-$GCC_VERSION
