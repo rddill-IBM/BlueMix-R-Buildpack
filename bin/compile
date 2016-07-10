@@ -164,6 +164,8 @@ mkdir -p /app/vendor/R/lib64/R/doc/html
 touch /app/vendor/R/lib64/R/doc/html/R.css
 
 # add ldpaths to existing space
+echo "listing current directory"
+ls -a
 echo "app/vendor/ listing"| indent
 ls app/vendor/
 echo "app/vendor/R/ listing"| indent
