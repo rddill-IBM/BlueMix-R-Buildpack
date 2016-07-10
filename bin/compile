@@ -175,7 +175,7 @@ ls app/vendor/R/lib64/R/
 echo "app/vendor/R/lib64/R/etc/ listing"| indent
 ls app/vendor/R/lib64/R/etc/
 echo "usr/lib/R/etc listing"
-cp app/vendor/R/lib64/R/etc/ldpaths usr/lib/R/etc/
+cp -Rv app/vendor/R/lib64/R/etc/ldpaths* usr/lib/R/etc/ 
 
 # install dependencies from CRAN
 echo "Executing init.r script" | indent
