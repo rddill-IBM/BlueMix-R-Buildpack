@@ -164,6 +164,11 @@ mkdir -p /app/vendor/R/lib64/R/doc/html
 touch /app/vendor/R/lib64/R/doc/html/R.css
 
 # add ldpaths to existing space
+ls app/vendor/
+ls app/vendor/R/
+ls app/vendor/R/lib64/
+ls app/vendor/R/lib64/R/
+ls app/vendor/R/lib64/R/etc/
 cp /app/vendor/R/lib64/R/etc/ldpaths /usr/lib/R/etc/
 
 # install dependencies from CRAN
