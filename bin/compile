@@ -174,8 +174,16 @@ echo "app/vendor/R/lib64/R/ listing"| indent
 ls app/vendor/R/lib64/R/
 echo "app/vendor/R/lib64/R/etc/ listing"| indent
 ls app/vendor/R/lib64/R/etc/
+echo "usr listing"
+ls usr/
+echo "usr/lib listing"
+ls usr/lib/
+echo "usr/lib/R listing"
+ls usr/lib/R
 echo "usr/lib/R/etc listing"
-cp -Rv app/vendor/R/lib64/R/etc/ldpaths* usr/lib/R/etc/ 
+ls usr/lib/R/etc/
+echo "attempting file copy"
+cp -Rv app/vendor/R/lib64/R/etc/ldpaths* usr/lib/R/etc/
 
 # install dependencies from CRAN
 echo "Executing init.r script" | indent
