@@ -63,22 +63,29 @@ BUILD_DIR=$1
 CACHE_DIR="$2/vendor"
 LP_DIR=`cd $(dirname $0); cd ..; pwd`
 BUILDPACK_DIR="$(dirname $(dirname $0))"
-
 # config
 BUILD_PACK_VERSION="20130729"
-
 GCC_VERSION="4.9"
 GLIBC_VERSION="2.23"
-#R_VERSION="2.15.1"
 R_VERSION="3.2.5"
-
-# S3_BUCKET="heroku-buildpack-r"
-#R_BINARIES="http://${S3_BUCKET}.s3.amazonaws.com/R-${R_VERSION}-binaries-${BUILD_PACK_VERSION}.tar.gz"
 R_BINARIES="https://content-na.drive.amazonaws.com/cdproxy/templink/ldWBfoe8y9z6PMxtj5oC3V-KCo3Kow6HVOVHHei9M_4E0Xnc3?download=true"
-
 VENDOR_DIR="$BUILD_DIR/vendor"
 R_HOME="$VENDOR_DIR/R"
 CRAN_MIRROR="http://cran.cnr.berkeley.edu/"
+echo "input variable 1 = $1"
+echo "input variable 2 = $2"
+echo "BUILD_DIR = $BUILD_DIR "
+echo "CACHE_DIR = $CACHE_DIR"
+echo "LP_DIR = $LP_DIR"
+echo "BUILDPACK_DIR = $BUILDPACK_DIR"
+echo "BUILD_PACK_VERSION = $BUILD_PACK_VERSION"
+echo "GCC_VERSION = $GCC_VERSION"
+echo "GLIBC_VERSION = $GLIBC_VERSION"
+echo "R_VERSION = $R_VERSION"
+echo "R_BINARIES = $R_BINARIES"
+echo "VENDOR_DIR = $VENDOR_DIR"
+echo "R_HOME = $R_HOME"
+echo "CRAN_MIRROR = $CRAN_MIRROR"
 
 mkdir -p $CACHE_DIR
 
@@ -114,6 +121,13 @@ export R_HOME=/app/vendor/R
 export R_INCLUDE=$R_HOME/lib64/R/include
 export LD_LIBRARY_PATH="/lib:/usr/lib:/usr/lib/x86_64-linux-gnu:$R_HOME/lib64:$LD_LIBRARY_PATH"
 export LIBRARY_PATH="/lib:/usr/lib:/usr/lib/x86_64-linux-gnu:$R_HOME/lib64:$LD_LIBRARY_PATH"
+echo "PATH =$PATH"
+echo "LDFLAGS =$LDFLAGS"
+echo "CPPFLAGS =$CPPFLAGS"
+echo "R_HOME =$R_HOME"
+echo "R_INCLUDE =$R_INCLUDE"
+echo "LD_LIBRARY_PATH =$LD_LIBRARY_PATH"
+echo "LIBRARY_PATH =$LIBRARY_PATH"
 
 #ln -s /usr/lib/libreadline.so $R_HOME/lib64/libreadline.so.5 2>&1
 ln -s /usr/lib/x86_64-linux-gnu/libreadline.so $R_HOME/lib64/libreadline.so.5 2>&1
@@ -135,6 +149,7 @@ cp -Rv /usr/include/* $R_INCLUDE
 
 export CPATH=/usr/lib/x86_64-linux-gnu:$R_INCLUDE
 
+echo "CPATH = $CPATH"
 
 echo "variables set" | indent
 
@@ -154,12 +169,18 @@ echo "Executing init.r script" | indent
 # set the CRAN mirror and run the init.r program
 R -s <<RPROG
   Sys.setenv(BUILD_DIR="$BUILD_DIR")
+  print("Sys.setenv complete")
   setwd("$BUILD_DIR")
+  print("setwd complete")
   r <- getOption("repos");
   print(r)
+  print("setting r complete")
   r["CRAN"] <- "$CRAN_MIRROR";
+  print("setting r[CRAN] complete")
   options(repos=r);
+  print("options(repos=r) complete")
   `cat $BUILD_DIR/init.r`
+  print("cat $BUILD_DIR/init.r complete")
 RPROG
 
 #cat indent
