@@ -163,6 +163,9 @@ echo "environment copied" | indent
 mkdir -p /app/vendor/R/lib64/R/doc/html
 touch /app/vendor/R/lib64/R/doc/html/R.css
 
+# add ldpaths to existing space
+cp $VENDOR_DIR/R/etc/ldpaths /usr/lib/R/etc/
+
 # install dependencies from CRAN
 echo "Executing init.r script" | indent
 
