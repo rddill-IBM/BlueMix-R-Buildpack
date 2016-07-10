@@ -29,13 +29,13 @@ function build() {
   echo
   pushd $1
     ./configure --prefix=$VENDOR_DIR/$2 ${@:3} > /dev/null 2>&1
-    echo "configure finished"
+    echo "configure finished" | indent
     make
-    echo "make finished"
+    echo "make finished" | indent
     make install > /dev/null 2>&1
-    echo "install finished"
+    echo "install finished" | indent
     make clean > /dev/null 2>&1
-    echo "clean finished"
+    echo "clean finished" | indent
   popd > /dev/null
   echo
   echo
@@ -72,20 +72,20 @@ R_BINARIES="https://content-na.drive.amazonaws.com/cdproxy/templink/ldWBfoe8y9z6
 VENDOR_DIR="$BUILD_DIR/vendor"
 R_HOME="$VENDOR_DIR/R"
 CRAN_MIRROR="http://cran.cnr.berkeley.edu/"
-echo "input variable 1 = $1"
-echo "input variable 2 = $2"
-echo "BUILD_DIR = $BUILD_DIR "
-echo "CACHE_DIR = $CACHE_DIR"
-echo "LP_DIR = $LP_DIR"
-echo "BUILDPACK_DIR = $BUILDPACK_DIR"
-echo "BUILD_PACK_VERSION = $BUILD_PACK_VERSION"
-echo "GCC_VERSION = $GCC_VERSION"
-echo "GLIBC_VERSION = $GLIBC_VERSION"
-echo "R_VERSION = $R_VERSION"
-echo "R_BINARIES = $R_BINARIES"
-echo "VENDOR_DIR = $VENDOR_DIR"
-echo "R_HOME = $R_HOME"
-echo "CRAN_MIRROR = $CRAN_MIRROR"
+echo "input variable 1 = $1"| indent
+echo "input variable 2 = $2"| indent
+echo "BUILD_DIR = $BUILD_DIR "| indent
+echo "CACHE_DIR = $CACHE_DIR"| indent
+echo "LP_DIR = $LP_DIR"| indent
+echo "BUILDPACK_DIR = $BUILDPACK_DIR"| indent
+echo "BUILD_PACK_VERSION = $BUILD_PACK_VERSION"| indent
+echo "GCC_VERSION = $GCC_VERSION"| indent
+echo "GLIBC_VERSION = $GLIBC_VERSION"| indent
+echo "R_VERSION = $R_VERSION"| indent
+echo "R_BINARIES = $R_BINARIES"| indent
+echo "VENDOR_DIR = $VENDOR_DIR"| indent
+echo "R_HOME = $R_HOME"| indent
+echo "CRAN_MIRROR = $CRAN_MIRROR"| indent
 
 mkdir -p $CACHE_DIR
 
@@ -95,11 +95,11 @@ echo "Vendoring R $R_VERSION" | indent
 # download and unpack binaries
 echo "Downloading and unpacking R binaries" | indent
 mkdir -p $VENDOR_DIR && mkdir -p /app/vendor
-echo "mkdir $VENDOR_DIR complete"
+echo "mkdir $VENDOR_DIR complete"| indent
 curl $R_BINARIES -s -o r_binaries.tar.gz
-echo "curl $R_BINARIES complete"
+echo "curl $R_BINARIES complete"| indent
 tar xzf r_binaries.tar.gz -C $VENDOR_DIR
-echo "tar unpack complete"
+echo "tar unpack complete"| indent
 rm r_binaries.tar.gz
 
 echo "Directory created, R pulled, unpacked" | indent
@@ -121,13 +121,13 @@ export R_HOME=/app/vendor/R
 export R_INCLUDE=$R_HOME/lib64/R/include
 export LD_LIBRARY_PATH="/lib:/usr/lib:/usr/lib/x86_64-linux-gnu:$R_HOME/lib64:$LD_LIBRARY_PATH"
 export LIBRARY_PATH="/lib:/usr/lib:/usr/lib/x86_64-linux-gnu:$R_HOME/lib64:$LD_LIBRARY_PATH"
-echo "PATH =$PATH"
-echo "LDFLAGS =$LDFLAGS"
-echo "CPPFLAGS =$CPPFLAGS"
-echo "R_HOME =$R_HOME"
-echo "R_INCLUDE =$R_INCLUDE"
-echo "LD_LIBRARY_PATH =$LD_LIBRARY_PATH"
-echo "LIBRARY_PATH =$LIBRARY_PATH"
+echo "PATH =$PATH"| indent
+echo "LDFLAGS =$LDFLAGS"| indent
+echo "CPPFLAGS =$CPPFLAGS"| indent
+echo "R_HOME =$R_HOME"| indent
+echo "R_INCLUDE =$R_INCLUDE"| indent
+echo "LD_LIBRARY_PATH =$LD_LIBRARY_PATH"| indent
+echo "LIBRARY_PATH =$LIBRARY_PATH"| indent
 
 #ln -s /usr/lib/libreadline.so $R_HOME/lib64/libreadline.so.5 2>&1
 ln -s /usr/lib/x86_64-linux-gnu/libreadline.so $R_HOME/lib64/libreadline.so.5 2>&1
@@ -149,7 +149,7 @@ cp -Rv /usr/include/* $R_INCLUDE
 
 export CPATH=/usr/lib/x86_64-linux-gnu:$R_INCLUDE
 
-echo "CPATH = $CPATH"
+echo "CPATH = $CPATH"| indent
 
 echo "variables set" | indent
 
@@ -164,17 +164,18 @@ mkdir -p /app/vendor/R/lib64/R/doc/html
 touch /app/vendor/R/lib64/R/doc/html/R.css
 
 # add ldpaths to existing space
-echo "app/vendor/ listing"
+echo "app/vendor/ listing"| indent
 ls app/vendor/
-echo "app/vendor/R/ listing"
+echo "app/vendor/R/ listing"| indent
 ls app/vendor/R/
-echo "app/vendor/R/lib64/ listing"
+echo "app/vendor/R/lib64/ listing"| indent
 ls app/vendor/R/lib64/
-echo "app/vendor/R/lib64/R/ listing"
+echo "app/vendor/R/lib64/R/ listing"| indent
 ls app/vendor/R/lib64/R/
-echo "app/vendor/R/lib64/R/etc/ listing"
+echo "app/vendor/R/lib64/R/etc/ listing"| indent
 ls app/vendor/R/lib64/R/etc/
-cp app/vendor/R/lib64/R/etc/ldpaths /usr/lib/R/etc/
+echo "usr/lib/R/etc listing"
+cp app/vendor/R/lib64/R/etc/ldpaths usr/lib/R/etc/
 
 # install dependencies from CRAN
 echo "Executing init.r script" | indent
