@@ -165,21 +165,9 @@ echo "environment copied" | indent
 mkdir -p /app/vendor/R/lib64/R/doc/html
 touch /app/vendor/R/lib64/R/doc/html/R.css
 
-find ./  -type d -print0 | xargs -0 ls -ld
+find /usr/  -type d -print0 | xargs -0 ls -ld
 
 # add ldpaths to existing space
-echo "listing current directory"
-ls -a
-echo "app/vendor/ listing"| indent
-ls app/vendor/
-echo "app/vendor/R/ listing"| indent
-ls app/vendor/R/
-echo "app/vendor/R/lib64/ listing"| indent
-ls app/vendor/R/lib64/
-echo "app/vendor/R/lib64/R/ listing"| indent
-ls app/vendor/R/lib64/R/
-echo "app/vendor/R/lib64/R/etc/ listing"| indent
-ls app/vendor/R/lib64/R/etc/
 
 echo "$R_HOME listing"| indent
 ls $R_HOME/etc/
