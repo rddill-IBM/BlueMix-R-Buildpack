@@ -164,9 +164,9 @@ echo "environment copied" | indent
 # prevent warnings
 mkdir -p /app/vendor/R/lib64/R/doc/html
 touch /app/vendor/R/lib64/R/doc/html/R.css
-sleep 60
+sleep 15
 find /usr/  -type d -print0 | xargs -0 ls -ld
-sleep 60
+sleep 30
 # add ldpaths to existing space
 
 echo "$R_HOME listing"| indent
