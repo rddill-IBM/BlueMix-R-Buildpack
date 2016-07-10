@@ -105,10 +105,10 @@ rm r_binaries.tar.gz
 echo "Directory created, R pulled, unpacked" | indent
 
 # need to copy the binaries to /app/vendor so that R works
-cp -R $VENDOR_DIR/gcc-$GCC_VERSION /app/vendor/gcc-$GCC_VERSION
-cp -R $VENDOR_DIR/glibc-$GLIBC_VERSION /app/vendor/glibc-$GLIBC_VERSION
+cp -Rv $VENDOR_DIR/gcc-$GCC_VERSION /app/vendor/gcc-$GCC_VERSION
+cp -Rv $VENDOR_DIR/glibc-$GLIBC_VERSION /app/vendor/glibc-$GLIBC_VERSION
 #cp -R $VENDOR_DIR/readline /app/vendor/readline
-cp -R $VENDOR_DIR/R /app/vendor/R
+cp -Rv $VENDOR_DIR/R /app/vendor/R
 
 echo "Stuff copied" | indent
 
@@ -174,15 +174,15 @@ echo "app/vendor/R/lib64/R/ listing"| indent
 ls app/vendor/R/lib64/R/
 echo "app/vendor/R/lib64/R/etc/ listing"| indent
 ls app/vendor/R/lib64/R/etc/
-echo "usr listing"
+echo "usr listing"| indent
 ls usr/
-echo "usr/lib listing"
+echo "usr/lib listing"| indent
 ls usr/lib/
-echo "usr/lib/R listing"
+echo "usr/lib/R listing"| indent
 ls usr/lib/R
-echo "usr/lib/R/etc listing"
+echo "usr/lib/R/etc listing"| indent
 ls usr/lib/R/etc/
-echo "attempting file copy"
+echo "attempting file copy"| indent
 cp -Rv app/vendor/R/lib64/R/etc/ldpaths* usr/lib/R/etc/
 
 # install dependencies from CRAN
