@@ -166,7 +166,7 @@ mkdir -p /app/vendor/R/lib64/R/doc/html
 touch /app/vendor/R/lib64/R/doc/html/R.css
 
 find /usr/  -type d -print0 | xargs -0 ls -ld
-
+sleep 60
 # add ldpaths to existing space
 
 echo "$R_HOME listing"| indent
