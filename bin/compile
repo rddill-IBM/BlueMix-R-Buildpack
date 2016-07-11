@@ -69,7 +69,7 @@ GCC_VERSION="4.9"
 GLIBC_VERSION="2.23"
 R_VERSION="3.2.5"
 
-R_BINARIES="https://content-na.drive.amazonaws.com/cdproxy/templink/lVS9N9ybNr70EZnuGsJb4NMn6xh3Kzk1utYL9MWcygEE0Xnc3?download=true"
+R_BINARIES="https://content-na.drive.amazonaws.com/cdproxy/templink/pTlGnLzNokHyDGaLIFoePtLiLjM7baiAthMZrww74gEE0Xnc3?download=true"
 VENDOR_DIR="$BUILD_DIR/vendor"
 R_HOME="$VENDOR_DIR/R"
 CRAN_MIRROR="http://cran.cnr.berkeley.edu/"
