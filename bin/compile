@@ -68,7 +68,8 @@ BUILD_PACK_VERSION="20130729"
 GCC_VERSION="4.9"
 GLIBC_VERSION="2.23"
 R_VERSION="3.2.5"
-R_BINARIES="https://content-na.drive.amazonaws.com/cdproxy/templink/ldWBfoe8y9z6PMxtj5oC3V-KCo3Kow6HVOVHHei9M_4E0Xnc3?download=true"
+
+R_BINARIES="https://www.amazon.com/clouddrive/share/2qwCyjRqynd07bRHXnT5lTP6xLWx6KiAxAfyqJDlzqF?download=true"
 VENDOR_DIR="$BUILD_DIR/vendor"
 R_HOME="$VENDOR_DIR/R"
 CRAN_MIRROR="http://cran.cnr.berkeley.edu/"
@@ -169,8 +170,6 @@ echo "R_HOME points to: $R_HOME"| indent
 
 echo "attempting file copy"| indent
 cp -Rv app/vendor/R/lib64/R/etc/ldpaths* $R_HOME/etc
-mkdir -p /usr/lib/R
-cp _Rv app/vendor/R* /usr/lib/R
 
 # install dependencies from CRAN
 echo "Executing init.r script" | indent
