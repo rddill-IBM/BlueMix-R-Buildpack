@@ -108,10 +108,10 @@ echo "Directory created, R pulled, unpacked" | indent
 # need to copy the binaries to /app/vendor so that R works
 cp -R $VENDOR_DIR/gcc-$GCC_VERSION /app/vendor/gcc-$GCC_VERSION
 cp -R $VENDOR_DIR/glibc-$GLIBC_VERSION /app/vendor/glibc-$GLIBC_VERSION
-cp -R $VENDOR_DIR/R /app/vendor/R
+cp -Rv $VENDOR_DIR/R /app/vendor/R
 
 echo "Stuff copied" | indent
-
+ find /app/vendor/R/ type -d -print0 | xargs -0 ls -ld
 
 # R needs to know where gfortran and glibc header files are
 export PATH=/app/vendor/R/bin:/app/vendor/gcc-$GCC_VERSION/bin:$PATH
