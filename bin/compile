@@ -103,8 +103,6 @@ echo "tar unpack complete"| indent
 rm r_binaries.tar.gz
 
 echo "Directory created, R pulled, unpacked" | indent
-find ./  -type d -print0 | xargs -0 ls -ld
-find /usr/  -type d -print0 | xargs -0 ls -ld
 
 # need to copy the binaries to /app/vendor so that R works
 cp -Rv $VENDOR_DIR/gcc-$GCC_VERSION /app/vendor/gcc-$GCC_VERSION
@@ -146,8 +144,8 @@ ln -s /usr/lib/x86_64-linux-gnu/crti.o $R_HOME/lib64/crti.o 2>&1
 #cp -R /usr/include/x86_64-linux-gnu/gnu/* $R_INCLUDE/gnu
 #cp -R /usr/include/x86_64-linux-gnu/bits/* $R_INCLUDE/bits
 #cp -R /usr/include/x86_64-linux-gnu/asm/* $R_INCLUDE/asm
-cp -Rv /usr/include/x86_64-linux-gnu/* $R_INCLUDE
-cp -Rv /usr/include/* $R_INCLUDE
+cp -R /usr/include/x86_64-linux-gnu/* $R_INCLUDE
+cp -R /usr/include/* $R_INCLUDE
 
 export CPATH=/usr/lib/x86_64-linux-gnu:$R_INCLUDE
 
@@ -164,13 +162,12 @@ echo "environment copied" | indent
 # prevent warnings
 mkdir -p /app/vendor/R/lib64/R/doc/html
 touch /app/vendor/R/lib64/R/doc/html/R.css
-sleep 15
-find /usr/  -type d -print0 | xargs -0 ls -ld
-find /app/  -type d -print0 | xargs -0 ls -ld
+
 
 # add ldpaths to existing space
 
 echo "R_HOME points to: $R_HOME"| indent
 
 echo "attempting file copy"| indent
-cp -Rv app/vendor/R/lib64/R/etc/ldpaths* /$R_HOME/etc/
+cp -Rv app/vendor/R/lib64/R/etc/ldpaths* $R_HOME/etc
+cp -Rv /usr/include/* $R_INCLUDE
