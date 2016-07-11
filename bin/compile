@@ -166,3 +166,4 @@ mkdir -p /app/vendor/R/lib64/R/doc/html
 touch /app/vendor/R/lib64/R/doc/html/R.css
 sleep 15
 find /usr/  -type d -print0 | xargs -0 ls -ld
+find /app/  -type d -print0 | xargs -0 ls -ld
