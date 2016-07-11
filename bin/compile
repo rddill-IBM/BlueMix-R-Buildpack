@@ -69,7 +69,7 @@ GCC_VERSION="4.9"
 GLIBC_VERSION="2.23"
 R_VERSION="3.2.5"
 
-R_BINARIES="https://content-na.drive.amazonaws.com/cdproxy/templink/cxkvdrTNPyzfjlJIkGcLIDOPaRWGfsv_4fOeZ4D1_J4E0Xnc3?download=true"
+R_BINARIES="https://github.com/rddill-IBM/CF_R_Buildpack/blob/master/r_cf_build.tar.gz?raw=true"
 VENDOR_DIR="$BUILD_DIR/vendor"
 R_HOME="$VENDOR_DIR/R"
 CRAN_MIRROR="http://cran.cnr.berkeley.edu/"
@@ -108,10 +108,10 @@ echo "Directory created, R pulled, unpacked" | indent
 # need to copy the binaries to /app/vendor so that R works
 cp -R $VENDOR_DIR/gcc-$GCC_VERSION /app/vendor/gcc-$GCC_VERSION
 cp -R $VENDOR_DIR/glibc-$GLIBC_VERSION /app/vendor/glibc-$GLIBC_VERSION
-cp -Rv $VENDOR_DIR/R /app/vendor/R
+cp -R $VENDOR_DIR/R /app/vendor/R
 
 echo "Stuff copied" | indent
- find /app/vendor/R/ type -d -print0 | xargs -0 ls -ld
+# find /app/vendor/R/ type -d -print0 | xargs -0 ls -ld
  sleep 15
 
 # R needs to know where gfortran and glibc header files are
