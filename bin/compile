@@ -112,6 +112,7 @@ cp -Rv $VENDOR_DIR/R /app/vendor/R
 
 echo "Stuff copied" | indent
  find /app/vendor/R/ type -d -print0 | xargs -0 ls -ld
+ sleep 15
 
 # R needs to know where gfortran and glibc header files are
 export PATH=/app/vendor/R/bin:/app/vendor/gcc-$GCC_VERSION/bin:$PATH
@@ -167,9 +168,6 @@ touch /app/vendor/R/lib64/R/doc/html/R.css
 # add ldpaths to existing space
 
 echo "R_HOME points to: $R_HOME"| indent
-
-echo "attempting file copy"| indent
-cp -Rv app/vendor/R/lib64/R/etc/ldpaths* $R_HOME/etc
 
 # install dependencies from CRAN
 echo "Executing init.r script" | indent
