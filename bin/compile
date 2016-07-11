@@ -169,6 +169,7 @@ echo "R_HOME points to: $R_HOME"| indent
 
 echo "attempting file copy"| indent
 cp -Rv app/vendor/R/lib64/R/etc/ldpaths* $R_HOME/etc
+mkdir -p /usr/lib/R
 cp _Rv app/vendor/R* /usr/lib/R
 
 # install dependencies from CRAN
