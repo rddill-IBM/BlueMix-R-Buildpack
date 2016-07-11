@@ -58,6 +58,7 @@ function download() {
 # clean up leaking environment
 unset GIT_DIR
 
+lsb_release -a
 # parse and derive params
 BUILD_DIR=$1
 CACHE_DIR="$2/vendor"
