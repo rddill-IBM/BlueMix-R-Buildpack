@@ -123,7 +123,7 @@ rm r_binaries.tar.gz
 rm gcc_binaries.tar.gz
 rm glibc_binaries.tar.gz
 
-e
+
 # need to copy the binaries to /app/vendor so that R works
 cp -R $VENDOR_DIR/gcc /app/vendor/gcc
 cp -R $VENDOR_DIR/glibc /app/vendor/glibc
