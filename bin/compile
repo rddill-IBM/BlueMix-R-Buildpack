@@ -128,6 +128,8 @@ rm glibc_binaries.tar.gz
 cp -R $VENDOR_DIR/gcc /app/vendor/gcc
 cp -R $VENDOR_DIR/glibc /app/vendor/glibc
 cp -R $VENDOR_DIR/R /app/vendor/R
+mkdir -P app/vendor/R/lib64/R
+cp -R $VENDOR_DIR/R/share app/vendor/R/lib64/R
 chmod +x /app/vendor/R/bin/R
 echo "Stuff copied" | indent
 # find /app/vendor/ type -d -print0 | xargs -0 ls -ld
@@ -219,6 +221,7 @@ rm -rf $VENDOR_DIR && mkdir -p $VENDOR_DIR
 cp -R /app/vendor/gcc $VENDOR_DIR/gcc
 cp -R /app/vendor/glibc $VENDOR_DIR/glibc
 cp -R /app/vendor/R $VENDOR_DIR/R
+
 
 # HACK
  cp $VENDOR_DIR/gcc/lib64/* $VENDOR_DIR/R/lib64/R/lib
