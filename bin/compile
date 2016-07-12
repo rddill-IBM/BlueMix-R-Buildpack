@@ -71,8 +71,12 @@ GLIBC_VERSION="2.23"
 R_VERSION="3.3.1"
 
 R_BINARIES="https://media.githubusercontent.com/media/rddill-IBM/CF_R_Buildpack/master/r_cf_build.tar.gz"
+GCC_BINARIES="https://media.githubusercontent.com/media/rddill-IBM/CF_R_Buildpack/master/r_cf_build_gcc.tar.gz"
+GLIBC_BINARIES="https://media.githubusercontent.com/media/rddill-IBM/CF_R_Buildpack/master/r_cf_build_glibc.tar.gz"
 VENDOR_DIR="$BUILD_DIR/vendor"
 R_HOME="$VENDOR_DIR/R"
+GCC_HOME="$VENDOR_DIR/gcc"
+GLIBC_HOME="$VENDOR_DIR/glibc"
 CRAN_MIRROR="http://cran.cnr.berkeley.edu/"
 echo "input variable 1 = $1"| indent
 echo "input variable 2 = $2"| indent
@@ -98,19 +102,31 @@ echo "Vendoring R $R_VERSION" | indent
 echo "Downloading and unpacking R binaries" | indent
 mkdir -p $VENDOR_DIR && mkdir -p /app/vendor
 mkdir -p $VENDOR_DIR/R
+mkdir -p $VENDOR_DIR/gcc
+mkdir -p $VENDOR_DIR/glibc
 echo "mkdir $VENDOR_DIR complete"| indent
 curl $R_BINARIES -s -o r_binaries.tar.gz
-ls
 echo "curl $R_BINARIES complete"| indent
+curl $GCC_BINARIES -s -o gcc_binaries.tar.gz
+echo "curl $GCC_BINARIES complete"| indent
+curl $GLIBC_BINARIES -s -o glibc_binaries.tar.gz
+echo "curl $GLIBC_BINARIES complete"| indent
+ls
+echo "unpacking"| indent
 tar xzf r_binaries.tar.gz -C $VENDOR_DIR/R
-echo "tar unpack complete"| indent
+echo "R tar unpack complete"| indent
+tar xzf gcc_binaries.tar.gz -C $VENDOR_DIR/gcc
+echo "gcc tar unpack complete"| indent
+tar xzf glibc_binaries.tar.gz -C $VENDOR_DIR/glibc
+echo "glibc tar unpack complete"| indent
 rm r_binaries.tar.gz
+rm gcc_binaries.tar.gz
+rm glibc_binaries.tar.gz
 
-echo "Directory created, R pulled, unpacked" | indent
-
+e
 # need to copy the binaries to /app/vendor so that R works
-#cp -R $VENDOR_DIR/gcc-$GCC_VERSION /app/vendor/gcc-$GCC_VERSION
-#cp -R $VENDOR_DIR/glibc-$GLIBC_VERSION /app/vendor/glibc-$GLIBC_VERSION
+cp -R $VENDOR_DIR/gcc /app/vendor/gcc
+cp -R $VENDOR_DIR/glibc /app/vendor/glibc
 cp -R $VENDOR_DIR/R /app/vendor/R
 chmod +x /app/vendor/R/bin/R
 echo "Stuff copied" | indent
@@ -119,9 +135,9 @@ echo "Stuff copied" | indent
 # sleep 15
 
 # R needs to know where gfortran and glibc header files are
-export PATH=/app/vendor/R/bin:/app/vendor/gcc-$GCC_VERSION/bin:$PATH
-# export LDFLAGS="-L/app/vendor/gcc-$GCC_VERSION/lib64/"
-# export CPPFLAGS="-I/app/vendor/glibc-$GLIBC_VERSION/string/ -I/app/vendor/glibc-$GLIBC_VERSION/time -I/usr/include/x86_64-linux-gnu/sys -I/usr/include/x86_64-linux-gnu/gnu"
+export PATH=/app/vendor/R/bin:/app/vendor/gcc/bin:$PATH
+ export LDFLAGS="-L/app/vendor/gcc/lib64/"
+ export CPPFLAGS="-I/app/vendor/glibc/string/ -I/app/vendor/glibc/time -I/usr/include/x86_64-linux-gnu/sys -I/usr/include/x86_64-linux-gnu/gnu"
 export R_HOME=/app/vendor/R
 export R_INCLUDE=$R_HOME/include
 export LD_LIBRARY_PATH="/lib:/usr/lib:/usr/lib/x86_64-linux-gnu:$R_HOME/lib:$LD_LIBRARY_PATH"
@@ -153,11 +169,11 @@ ln -s $R_HOME/lib/libgomp.so.1.0.0 $R_HOME/lib/libgomp.so.1
 # cp -R /usr/include/x86_64-linux-gnu/* $R_INCLUDE
 # cp -R /usr/include/* $R_INCLUDE
 
-# export CPATH=/usr/lib/x86_64-linux-gnu:$R_INCLUDE
+export CPATH=/usr/lib/x86_64-linux-gnu:$R_INCLUDE
 
-# echo "CPATH = $CPATH"| indent
+echo "CPATH = $CPATH"| indent
 
-# echo "variables set" | indent
+echo "variables set" | indent
 
 # copy over environment
  mkdir -p $BUILD_DIR/.profile.d
@@ -200,13 +216,13 @@ echo "R $R_VERSION successfully installed" | indent
 
 # need to copy binaries back so that any installed packages are included in the slug
 rm -rf $VENDOR_DIR && mkdir -p $VENDOR_DIR
-# cp -R /app/vendor/gcc-$GCC_VERSION $VENDOR_DIR/gcc-$GCC_VERSION
-# cp -R /app/vendor/glibc-$GLIBC_VERSION $VENDOR_DIR/glibc-$GLIBC_VERSION
+cp -R /app/vendor/gcc $VENDOR_DIR/gcc
+cp -R /app/vendor/glibc $VENDOR_DIR/glibc
 cp -R /app/vendor/R $VENDOR_DIR/R
 
 # HACK
-# cp $VENDOR_DIR/gcc-$GCC_VERSION/lib64/* $VENDOR_DIR/R/lib64/R/lib
+ cp $VENDOR_DIR/gcc/lib64/* $VENDOR_DIR/R/lib64/R/lib
 
 # remove unneeded files to make slug smaller
-# pushd $VENDOR_DIR/gcc-$GCC_VERSION > /dev/null && rm -rf !(lib64) && popd > /dev/null
-# pushd $VENDOR_DIR/glibc-$GLIBC_VERSION > /dev/null && rm -rf !(string|time) && popd > /dev/null
+ pushd $VENDOR_DIR/gcc > /dev/null && rm -rf !(lib64) && popd > /dev/null
+ pushd $VENDOR_DIR/glibc > /dev/null && rm -rf !(string|time) && popd > /dev/null
