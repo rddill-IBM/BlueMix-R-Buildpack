@@ -93,18 +93,6 @@ mkdir -p $CACHE_DIR
 
 # vendor R into the slug
 echo "Vendoring R $R_VERSION" |
-apt-get install g++
-apt-get install gfortran
-apt-get install libreadline6-dev
-apt-get install libx11-dev
-apt-get install libxt-dev
-apt-get install tk-dev
-apt-get install libpng12-dev
-apt-get install libjpeg-dev
-apt-get install libtiff4-dev
-apt-get install libcairo2-dev
-apt-get install curl
-apt-get install libcurl4-openssl-dev
 curl http://cran.fhcrc.org/src/base/R-3/R-3.3.1.tar.gz -s -o R-3.3.1.tar.gz
 mkdir -p $VENDOR_DIR && mkdir -p /app/vendor
 mkdir -p $VENDOR_DIR/R && mkdir -p /app/vendor/R
