@@ -127,7 +127,7 @@ ls
 # need to copy the binaries to /app/vendor so that R works
 cp -R $VENDOR_DIR/gcc /app/vendor/gcc
 cp -R $VENDOR_DIR/glibc /app/vendor/glibc
-cp -R $VENDOR_DIR/R /app/vendor/R
+cp -R $VENDOR_DIR/R /app/vendor
 
 echo "Stuff copied" | indent
 # find /app/vendor/ type -d -print0 | xargs -0 ls -ld
