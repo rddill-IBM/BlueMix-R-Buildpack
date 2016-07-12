@@ -149,8 +149,11 @@ echo "R_HOME =$R_HOME"| indent
 echo "R_INCLUDE =$R_INCLUDE"| indent
 echo "LD_LIBRARY_PATH =$LD_LIBRARY_PATH"| indent
 echo "LIBRARY_PATH =$LIBRARY_PATH"| indent
-ls app/vendor/R/*
+
 ln -sv app/vendor/R/lib/libgomp.so.1.0.0 app/vendor/R/lib/libgomp.so.1
+find /app/vendor/ type -d -print0 | xargs -0 ls -ld
+sleep 15
+
 # ln -s /usr/lib/libreadline.so $R_HOME/lib64/libreadline.so.5 2>&1
 # ln -s /usr/lib/x86_64-linux-gnu/libreadline.so $R_HOME/lib64/libreadline.so.5 2>&1
 # ln -s /usr/lib/x86_64-linux-gnu/libmpfr.so.4.1.2 $R_HOME/lib64/libmpfr.so.1 2>&1
