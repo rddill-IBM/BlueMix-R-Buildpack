@@ -10,15 +10,15 @@ set -e
 shopt -s extglob
 
 function error() {
-  echo " !     $*" >&2
+  echo " ! $*" >&2
   exit 1
 }
 
 function indent() {
-  c='s/^/       /'
+  c='s/^//'
   case $(uname) in
-    Darwin) sed -l "$c";;
-    *)      sed -u "$c";;
+Darwin) sed -l "$c";;
+*)  sed -u "$c";;
   esac
 }
 
@@ -28,14 +28,14 @@ function build() {
   echo ----------------------------------------------------------------------
   echo
   pushd $1
-    ./configure --prefix=$VENDOR_DIR/$2 ${@:3} > /dev/null 2>&1
-    echo "configure finished" | indent
-    make
-    echo "make finished" | indent
-    make install > /dev/null 2>&1
-    echo "install finished" | indent
-    make clean > /dev/null 2>&1
-    echo "clean finished" | indent
+./configure --prefix=$VENDOR_DIR/$2 ${@:3} > /dev/null 2>&1
+echo "configure finished" | indent
+make
+echo "make finished" | indent
+make install > /dev/null 2>&1
+echo "install finished" | indent
+make clean > /dev/null 2>&1
+echo "clean finished" | indent
   popd > /dev/null
   echo
   echo
@@ -48,10 +48,10 @@ function build() {
 
 function download() {
   if [ ! -f "$2" ]; then
-    echo Downloading $2...
-    curl $1 -o $2 -s -S
+echo Downloading $2...
+curl $1 -o $2 -s -S
   else
-    echo Got $2...
+echo Got $2...
   fi
 }
 
@@ -101,26 +101,26 @@ tar xzf R-3.3.1.tar.gz -C $VENDOR_DIR/R
 ls
 cd app/vendor/R/
 ls
-../../../$VENDOR_DIR/R/configure && make
+../../..$VENDOR_DIR/R/configure && make
 
 echo "Executing init.r script" | indent
 
 # set the CRAN mirror and run the init.r program
  R -s <<RPROG
-   Sys.setenv(BUILD_DIR="$BUILD_DIR")
-   print("Sys.setenv complete")
-   setwd("$BUILD_DIR")
-   print("setwd complete")
-   r <- getOption("repos");
-   print(r)
-   print("setting r complete")
-   r["CRAN"] <- "$CRAN_MIRROR";
-   print("setting r[CRAN] complete")
-   options(repos=r);
-   print("options(repos=r) complete")
-   `cat $BUILD_DIR/init.r`
-   print("cat $BUILD_DIR/init.r complete")
- RPROG
+  Sys.setenv(BUILD_DIR="$BUILD_DIR")
+  print("Sys.setenv complete")
+  setwd("$BUILD_DIR")
+  print("setwd complete")
+  r <- getOption("repos");
+  print(r)
+  print("setting r complete")
+  r["CRAN"] <- "$CRAN_MIRROR";
+  print("setting r[CRAN] complete")
+  options(repos=r);
+  print("options(repos=r) complete")
+  `cat $BUILD_DIR/init.r`
+  print("cat $BUILD_DIR/init.r complete")
+RPROG
 
 #cat indent
 
