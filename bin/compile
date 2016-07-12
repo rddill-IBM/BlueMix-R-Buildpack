@@ -99,6 +99,7 @@ echo "Downloading and unpacking R binaries" | indent
 mkdir -p $VENDOR_DIR && mkdir -p /app/vendor
 echo "mkdir $VENDOR_DIR complete"| indent
 curl $R_BINARIES -s -o r_binaries.tar.gz
+ls
 echo "curl $R_BINARIES complete"| indent
 tar xzf r_binaries.tar.gz -C $VENDOR_DIR/R
 echo "tar unpack complete"| indent
