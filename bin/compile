@@ -70,7 +70,7 @@ GCC_VERSION="4.9"
 GLIBC_VERSION="2.23"
 R_VERSION="3.2.5"
 
-R_BINARIES="https://raw.githubusercontent.com/rddill-IBM/CF_R_Buildpack/master/r_cf_build.tar.gz"
+R_BINARIES="https://media.githubusercontent.com/media/rddill-IBM/CF_R_Buildpack/master/r_cf_build.tar.gz"
 VENDOR_DIR="$BUILD_DIR/vendor"
 R_HOME="$VENDOR_DIR/R"
 CRAN_MIRROR="http://cran.cnr.berkeley.edu/"
