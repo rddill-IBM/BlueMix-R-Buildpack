@@ -128,11 +128,11 @@ rm glibc_binaries.tar.gz
 cp -R $VENDOR_DIR/gcc /app/vendor/gcc
 cp -R $VENDOR_DIR/glibc /app/vendor/glibc
 cp -R $VENDOR_DIR/R /app/vendor/R
-
-mkdir -p /app/vendor/R/lib64
+ls
+mkdir -pv /app/vendor/R/lib64
 ls app/vendor/R/
 echo "mkdir -p /app/vendor/R/lib64 complete"
-mkdir -p /app/vendor/R/lib64/R
+mkdir -pv /app/vendor/R/lib64/R
 ls app/vendor/R/lib64/
 echo "mkdir -p /app/vendor/R/lib64/R complete"
 cp -R $VENDOR_DIR/R/share app/vendor/R/lib64/R
