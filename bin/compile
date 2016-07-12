@@ -112,7 +112,7 @@ echo "Directory created, R pulled, unpacked" | indent
 #cp -R $VENDOR_DIR/gcc-$GCC_VERSION /app/vendor/gcc-$GCC_VERSION
 #cp -R $VENDOR_DIR/glibc-$GLIBC_VERSION /app/vendor/glibc-$GLIBC_VERSION
 cp -R $VENDOR_DIR/R /app/vendor/R
-
+find /app/vendor/ type -d -print0 | xargs -0 ls -ld
 echo "Stuff copied" | indent
 # find /app/vendor/R/ type -d -print0 | xargs -0 ls -ld
 # sleep 15
