@@ -128,7 +128,7 @@ rm glibc_binaries.tar.gz
 cp -R $VENDOR_DIR/gcc /app/vendor/gcc
 cp -R $VENDOR_DIR/glibc /app/vendor/glibc
 cp -R $VENDOR_DIR/R /app/vendor/R
-mkdir -P app/vendor/R/lib64/R
+mkdir -p app/vendor/R/lib64/R
 cp -R $VENDOR_DIR/R/share app/vendor/R/lib64/R
 chmod +x /app/vendor/R/bin/R
 echo "Stuff copied" | indent
