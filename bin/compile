@@ -176,21 +176,21 @@ echo "R_HOME points to: $R_HOME"| indent
 # echo "Executing init.r script" | indent
 
 # set the CRAN mirror and run the init.r program
-# R -s <<RPROG
-#   Sys.setenv(BUILD_DIR="$BUILD_DIR")
-#   print("Sys.setenv complete")
-#   setwd("$BUILD_DIR")
-#   print("setwd complete")
-#   r <- getOption("repos");
-#   print(r)
-#   print("setting r complete")
-#   r["CRAN"] <- "$CRAN_MIRROR";
-#   print("setting r[CRAN] complete")
-#   options(repos=r);
-#   print("options(repos=r) complete")
-#   `cat $BUILD_DIR/init.r`
-#   print("cat $BUILD_DIR/init.r complete")
-# RPROG
+ R -s <<RPROG
+   Sys.setenv(BUILD_DIR="$BUILD_DIR")
+   print("Sys.setenv complete")
+   setwd("$BUILD_DIR")
+   print("setwd complete")
+   r <- getOption("repos");
+   print(r)
+   print("setting r complete")
+   r["CRAN"] <- "$CRAN_MIRROR";
+   print("setting r[CRAN] complete")
+   options(repos=r);
+   print("options(repos=r) complete")
+   `cat $BUILD_DIR/init.r`
+   print("cat $BUILD_DIR/init.r complete")
+RPROG
 
 #cat indent
 
