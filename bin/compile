@@ -101,7 +101,7 @@ echo "Vendoring R $R_VERSION" | indent
 # download and unpack binaries
 echo "Downloading and unpacking R binaries" | indent
 mkdir -p $VENDOR_DIR && mkdir -p /app/vendor
-mkdir -p $VENDOR_DIR/R && mkdir -p /app/vendor/R && mkdir -p /app/vendor/R/lib64 && mkdir -p /app/vendor/R/lib64/R
+mkdir -p $VENDOR_DIR/R && mkdir -p /app/vendor/R
 mkdir -p $VENDOR_DIR/gcc
 mkdir -p $VENDOR_DIR/glibc
 echo "mkdir $VENDOR_DIR complete"| indent
@@ -129,17 +129,6 @@ cp -R $VENDOR_DIR/gcc /app/vendor/gcc
 cp -R $VENDOR_DIR/glibc /app/vendor/glibc
 cp -R $VENDOR_DIR/R /app/vendor/R
 
-echo "list root directory"
-ls
-echo "list app/vendor/R/ directory"
-ls app/vendor/R/
-echo "list app/vendor/R/lib64 directory"
-ls app/vendor/R/lib64/
-echo "mkdir -p /app/vendor/R/lib64/R complete"
-cp -Rv $VENDOR_DIR/R/share app/vendor/R/lib64/R
-find /app/vendor/R/ type -d -print0 | xargs -0 ls -ld
-sleep 15
-chmod +x /app/vendor/R/bin/R
 echo "Stuff copied" | indent
 # find /app/vendor/ type -d -print0 | xargs -0 ls -ld
 # find /app/vendor/R/ type -d -print0 | xargs -0 ls -ld
