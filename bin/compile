@@ -96,8 +96,11 @@ echo "Vendoring R $R_VERSION" |
 curl http://cran.fhcrc.org/src/base/R-3/R-3.3.1.tar.gz -s -o R-3.3.1.tar.gz
 mkdir -p $VENDOR_DIR && mkdir -p /app/vendor
 mkdir -p $VENDOR_DIR/R && mkdir -p /app/vendor/R
+ls
 tar xzf R-3.3.1.tar.gz $VENDOR_DIR/R
+ls
 cd app/vendor/R/
+ls
 ../../../$VENDOR_DIR/R/configure && make
 
 echo "Executing init.r script" | indent
