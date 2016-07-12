@@ -101,6 +101,8 @@ tar xzf R-3.3.1.tar.gz -C $VENDOR_DIR/R
 ls
 cd app/vendor/R/
 ls
+cd ../../..$VENDOR_DIR/R/
+ls
 ../../..$VENDOR_DIR/R/configure && make
 
 echo "Executing init.r script" | indent
