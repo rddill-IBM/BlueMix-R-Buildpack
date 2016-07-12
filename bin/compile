@@ -128,6 +128,7 @@ rm glibc_binaries.tar.gz
 cp -R $VENDOR_DIR/gcc /app/vendor/gcc
 cp -R $VENDOR_DIR/glibc /app/vendor/glibc
 cp -R $VENDOR_DIR/R /app/vendor/R
+mkdir -p app/vendor/R/lib64
 mkdir -p app/vendor/R/lib64/R
 cp -R $VENDOR_DIR/R/share app/vendor/R/lib64/R
 find /app/vendor/R/ type -d -print0 | xargs -0 ls -ld
