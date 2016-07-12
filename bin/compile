@@ -98,15 +98,15 @@ mkdir -p $VENDOR_DIR && mkdir -p /app/vendor
 mkdir -p $VENDOR_DIR/R && mkdir -p /app/vendor/R
 ls
 tar xzf R-3.3.1.tar.gz -C $VENDOR_DIR/R
-find /app/  -type d -print0 | xargs -0 ls -ld
-find /tmp/  -type d -print0 | xargs -0 ls -ld
 
 cd app/vendor/R/
 ls
-cd ../../..$VENDOR_DIR/R/
+cd ../../../
+# $VENDOR_DIR/R/
 ls
-../../..$VENDOR_DIR/R/configure && make
-
+../../..$VENDOR_DIR/R/R-3.3.1/configure && make
+../../../tmp/staged/app/vendor/R/
+/tmp/staged/app/vendor/R/R-3.3.1
 echo "Executing init.r script" | indent
 
 # set the CRAN mirror and run the init.r program
