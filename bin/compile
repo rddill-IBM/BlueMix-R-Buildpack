@@ -149,7 +149,7 @@ echo "R_HOME =$R_HOME"| indent
 echo "R_INCLUDE =$R_INCLUDE"| indent
 echo "LD_LIBRARY_PATH =$LD_LIBRARY_PATH"| indent
 echo "LIBRARY_PATH =$LIBRARY_PATH"| indent
-ls $R_HOME/lib/*
+ls $R_HOME/*
 ln -sv $R_HOME/lib/libgomp.so.1.0.0 $R_HOME/lib/libgomp.so.1
 # ln -s /usr/lib/libreadline.so $R_HOME/lib64/libreadline.so.5 2>&1
 # ln -s /usr/lib/x86_64-linux-gnu/libreadline.so $R_HOME/lib64/libreadline.so.5 2>&1
