@@ -140,7 +140,7 @@ export LDFLAGS="-L/app/vendor/gcc/lib64/"
 export CPPFLAGS="-I/app/vendor/glibc/string/ -I/app/vendor/glibc/time -I/usr/include/x86_64-linux-gnu/sys -I/usr/include/x86_64-linux-gnu/gnu"
 export R_HOME=/app/vendor/R
 export R_INCLUDE=$R_HOME/include
-export LD_LIBRARY_PATH="/lib:.$R_HOME/lib:/usr/lib:/usr/lib/x86_64-linux-gnu:$LD_LIBRARY_PATH"
+export LD_LIBRARY_PATH=".$R_HOME/lib:/lib:/usr/lib:/usr/lib/x86_64-linux-gnu:$LD_LIBRARY_PATH"
 export LIBRARY_PATH="/lib:$R_HOME/lib:/usr/lib:/usr/lib/x86_64-linux-gnu"
 echo "PATH =$PATH"| indent
 echo "LDFLAGS =$LDFLAGS"| indent
@@ -151,7 +151,7 @@ echo "LD_LIBRARY_PATH =$LD_LIBRARY_PATH"| indent
 echo "LIBRARY_PATH =$LIBRARY_PATH"| indent
 
 ln -sv app/vendor/R/lib/libgomp.so.1.0.0 app/vendor/R/lib/libgomp.so.1
-ln -sfv app/vendor/R/lib/libgomp.so.1.0.0 /usr/lib/x86_64-linux-gnu/libgomp.so.1
+ls app/vendor/R/lib
 # find /app/vendor/ type -d -print0 | xargs -0 ls -ld
 # sleep 15
 
