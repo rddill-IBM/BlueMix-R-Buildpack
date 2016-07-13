@@ -173,7 +173,7 @@ ls app/vendor/R/lib
 # cp -R /usr/include/x86_64-linux-gnu/* $R_INCLUDE
 # cp -R /usr/include/* $R_INCLUDE
 
-export CPATH=/usr/lib/x86_64-linux-gnu:$R_INCLUDE
+export CPATH=$R_INCLUDE:/usr/lib/x86_64-linux-gnu
 
 echo "CPATH = $CPATH"| indent
 
@@ -182,6 +182,7 @@ echo "variables set" | indent
 # copy over environment
  mkdir -p $BUILD_DIR/.profile.d
  cp "$BUILDPACK_DIR/bin/r_environment.sh" $BUILD_DIR/.profile.d/r_environment.sh
+ cat $BUILD_DIR/.profile.d/r_environment.sh
 
  echo "environment copied" | indent
 
@@ -195,7 +196,7 @@ echo "variables set" | indent
 echo "R_HOME points to: $R_HOME"| indent
 
 # install dependencies from CRAN
-# echo "Executing init.r script" | indent
+ echo "Executing init.r script" | indent
 
 # set the CRAN mirror and run the init.r program
  R -s <<RPROG
