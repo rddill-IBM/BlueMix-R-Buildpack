@@ -199,7 +199,7 @@ echo "R_HOME points to: $R_HOME"| indent
  echo "Executing init.r script" | indent
 
 # set the CRAN mirror and run the init.r program
- R -s <<RPROG
+ R -s --vanilla <<RPROG
    Sys.setenv(BUILD_DIR="$BUILD_DIR")
    print("Sys.setenv complete")
    setwd("$BUILD_DIR")
