@@ -80,7 +80,7 @@ GLIBC_HOME="$VENDOR_DIR/glibc"
 CRAN_MIRROR="http://cran.cnr.berkeley.edu/"
 echo "================" |indent
 echo " gcc compiler version" | indent
-echo gcc --version
+gcc --version
 echo "================" |indent
 echo "input variable 1 = $1"| indent
 echo "input variable 2 = $2"| indent
