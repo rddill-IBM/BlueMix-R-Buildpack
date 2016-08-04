@@ -158,6 +158,7 @@ cp f2c.h $BUILD_DIR/include
 cp libf2c.a $BUILD_DIR/lib
 cd ../
 ls
+sleep 5
 find /src/ type -d -print0 | xargs -0 ls -ld
 sleep 10
 cd src/
