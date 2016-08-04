@@ -128,7 +128,7 @@ echo "R tar unpack complete"| indent
 # echo "gcc tar unpack complete"| indent
 # tar xzf glibc_binaries.tar.gz -C $VENDOR_DIR/glibc
 # echo "glibc tar unpack complete"| indent
-rm r_binaries.tar.gz
+rm r_source.tar.gz
 # rm gcc_binaries.tar.gz
 # rm glibc_binaries.tar.gz
 ls
