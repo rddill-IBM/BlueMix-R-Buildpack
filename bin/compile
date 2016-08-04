@@ -162,6 +162,7 @@ sleep 5
 find /src/ type -d -print0 | xargs -0 ls -ld
 sleep 10
 cd src/
+ls
 cp makefile.u Makefile
 echo "================" |indent
 echo "redirected to src directory. Starting make" | indent
