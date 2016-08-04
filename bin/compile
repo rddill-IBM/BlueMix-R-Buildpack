@@ -169,7 +169,7 @@ echo "redirected to src directory. Starting make" | indent
 make  --print-directory
 echo "================" |indent
 echo "src make successfully completed. copying files" | indent
-cp f2c $BUILD_DIR/bin
+cp f2c $BUILD_DIR/bin/
 cd ../
 mkdir -p $BUILD_DIR/man/man1
 cp f2c.1t $BUILD_DIR/man/man1
