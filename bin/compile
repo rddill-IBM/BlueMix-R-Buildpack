@@ -151,12 +151,12 @@ mkdir -p libf2c
 mv libf2c.zip libf2c
 cd libf2c/
 unzip libf2c.zip
-cp makefile.u makefile.in
+cp makefile.u Makefile
 make
 cp f2c.h $BUILD_DIR/include
 cp lif2c.a $BUILD_DIR/lib
 cd ../src/
-cp makefile.u makefile.in
+cp makefile.u Makefile
 make
 cp f2c $BUILD_DIR/bin
 cd ../
