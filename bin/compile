@@ -82,7 +82,7 @@ CRAN_MIRROR="http://cran.cnr.berkeley.edu/"
 echo "================" |indent
 echo " gcc compiler version" | indent
 gcc --version
-sleep 10
+sleep 5
 echo "================" |indent
 echo "input variable 1 = $1"| indent
 echo "input variable 2 = $2"| indent
@@ -139,7 +139,7 @@ sleep 15
 # need to copy the binaries to /app/vendor so that R works
 # cp -R $VENDOR_DIR/gcc /app/vendor/gcc
 # cp -R $VENDOR_DIR/glibc /app/vendor/glibc
-cd app/vendor/R/R_3.3.1/
+cd $R_HOME/R-3.3.1/
 ./configure
 make
 cp -R $VENDOR_DIR/R /app/vendor
