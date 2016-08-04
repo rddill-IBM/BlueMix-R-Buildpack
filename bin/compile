@@ -161,6 +161,7 @@ echo "libf2c make completed copying results." | indent
 cp f2c.h $BUILD_DIR/include
 cp libf2c.a $BUILD_DIR/lib
 cd ../src/
+ls
 cp makefile.u Makefile
 echo "================" |indent
 echo "redirected to src directory. Starting make" | indent
