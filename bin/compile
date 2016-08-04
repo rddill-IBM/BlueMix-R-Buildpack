@@ -116,7 +116,7 @@ mkdir -p $VENDOR_DIR/F && mkdir -p /app/vendor/F
 echo "mkdir $VENDOR_DIR complete"| indent
 curl $R_SOURCE -s -o r_source.tar.gz
 echo "curl $R_SOURCE complete"| indent
-curl $F77_INSTALL -s -o f77_install.tar.gz
+curl $F77_INSTALL -s -o f77_install.tar
 echo "curl $F77_INSTALL complete"| indent
 # curl $R_BINARIES -s -o r_binaries.tar.gz
 # echo "curl $R_BINARIES complete"| indent
@@ -128,7 +128,7 @@ ls
 echo "unpacking"| indent
 tar xzf r_source.tar.gz -C $VENDOR_DIR/R
 echo "R tar unpack complete"| indent
-tar xzf f77_install.tar.gz -C $VENDOR_DIR/F
+tar xzf f77_install.tar -C $VENDOR_DIR/F
 echo "f77 tar unpack complete"| indent
 # tar xzf gcc_binaries.tar.gz -C $VENDOR_DIR/gcc
 # echo "gcc tar unpack complete"| indent
