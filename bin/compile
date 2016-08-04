@@ -71,6 +71,7 @@ BUILD_PACK_VERSION="20160802"
 R_VERSION="3.3.1"
 
 R_BINARIES="https://media.githubusercontent.com/media/rddill-IBM/CF_R_Buildpack/master/r_cf_build.tar.gz"
+R_SOURCE="http://ftp.osuosl.org/pub/cran/src/base/R-3/R-3.3.1.tar.gz"
 # GCC_BINARIES="https://raw.githubusercontent.com/rddill-IBM/CF_R_Buildpack/master/r_cf_build_gcc.tar.gz"
 # GLIBC_BINARIES="https://raw.githubusercontent.com/rddill-IBM/CF_R_Buildpack/master/r_cf_build_glibc.tar.gz"
 VENDOR_DIR="$BUILD_DIR/vendor"
@@ -94,6 +95,7 @@ echo "BUILD_PACK_VERSION = $BUILD_PACK_VERSION"| indent
 # echo "GLIBC_VERSION = $GLIBC_VERSION"| indent
 echo "R_VERSION = $R_VERSION"| indent
 echo "R_BINARIES = $R_BINARIES"| indent
+echo "R_SOURCE = $R_SOURCE"| indent
 echo "VENDOR_DIR = $VENDOR_DIR"| indent
 echo "R_HOME = $R_HOME"| indent
 echo "CRAN_MIRROR = $CRAN_MIRROR"| indent
@@ -110,15 +112,17 @@ mkdir -p $VENDOR_DIR/R && mkdir -p /app/vendor/R
 # mkdir -p $VENDOR_DIR/gcc
 # mkdir -p $VENDOR_DIR/glibc
 echo "mkdir $VENDOR_DIR complete"| indent
-curl $R_BINARIES -s -o r_binaries.tar.gz
-echo "curl $R_BINARIES complete"| indent
+curl $R_SOURCE -s -o r_source.tar.gz
+echo "curl $R_SOURCE complete"| indent
+# curl $R_BINARIES -s -o r_binaries.tar.gz
+# echo "curl $R_BINARIES complete"| indent
 # curl $GCC_BINARIES -s -o gcc_binaries.tar.gz
 # echo "curl $GCC_BINARIES complete"| indent
 # curl $GLIBC_BINARIES -s -o glibc_binaries.tar.gz
 # echo "curl $GLIBC_BINARIES complete"| indent
 ls
 echo "unpacking"| indent
-tar xzf r_binaries.tar.gz -C $VENDOR_DIR/R
+tar xzf r_source.tar.gz -C $VENDOR_DIR/R
 echo "R tar unpack complete"| indent
 # tar xzf gcc_binaries.tar.gz -C $VENDOR_DIR/gcc
 # echo "gcc tar unpack complete"| indent
@@ -132,6 +136,9 @@ ls
 # need to copy the binaries to /app/vendor so that R works
 # cp -R $VENDOR_DIR/gcc /app/vendor/gcc
 # cp -R $VENDOR_DIR/glibc /app/vendor/glibc
+cd $VENDOR_DIR/R/R_3.3.1/
+./configure
+make
 cp -R $VENDOR_DIR/R /app/vendor
 
 echo "Stuff copied" | indent
