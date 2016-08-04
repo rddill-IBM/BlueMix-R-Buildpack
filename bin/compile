@@ -151,21 +151,32 @@ mkdir -p libf2c
 mv libf2c.zip libf2c
 cd libf2c/
 unzip libf2c.zip
+echo "================" |indent
+echo "libf2c successfully unzipped. Starting make" | indent
 cp makefile.u Makefile
 make
+echo "================" |indent
+echo "libf2c make completed copying results." | indent
 cp f2c.h $BUILD_DIR/include
 cp lif2c.a $BUILD_DIR/lib
 cd ../src/
 cp makefile.u Makefile
+echo "================" |indent
+echo "redirected to src directory. Starting make" | indent
 make
+echo "================" |indent
+echo "src make successfully completed. copying files" | indent
 cp f2c $BUILD_DIR/bin
 cd ../
 mkdir -p $BUILD_DIR/man/man1
 cp f2c.1t $BUILD_DIR/man/man1
 cp fc $BUILD_DIR/bin/f77
 cd ../
+echo "================" |indent
+echo "f77 installation completed, searching for binaries" | indent
 find $BUILD_DIR/ -name '*f2c*' -mmin -5
 find $BUILD_DIR/ -name '*f77*' -mmin -5
+sleep 5
 cd ~
 ls
 cd $R_HOME/R-3.3.1/
