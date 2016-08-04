@@ -81,10 +81,6 @@ R_HOME="$VENDOR_DIR/R"
 # GLIBC_HOME="$VENDOR_DIR/glibc"
 CRAN_MIRROR="http://cran.cnr.berkeley.edu/"
 echo "================" |indent
-echo " gcc compiler version" | indent
-gcc --version
-sleep 5
-echo "================" |indent
 echo "input variable 1 = $1"| indent
 echo "input variable 2 = $2"| indent
 echo "BUILD_DIR = $BUILD_DIR "| indent
@@ -161,6 +157,7 @@ echo "libf2c make completed copying results." | indent
 cp f2c.h $BUILD_DIR/include
 cp libf2c.a $BUILD_DIR/lib
 cd ../
+ls
 find /src/ type -d -print0 | xargs -0 ls -ld
 sleep 10
 cd src/
