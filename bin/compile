@@ -164,7 +164,7 @@ find /src/ -d -print0 | xargs -0 ls -ld
 sleep 10
 cd src/
 find $BUILD_DIR/ -name '*xsum*' -mmin -5
-
+sleep 5
 ls
 cp makefile.u Makefile
 echo "================" |indent
