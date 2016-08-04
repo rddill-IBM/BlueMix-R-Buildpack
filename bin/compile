@@ -164,7 +164,7 @@ cd ../src/
 cp makefile.u Makefile
 echo "================" |indent
 echo "redirected to src directory. Starting make" | indent
-make
+make V=1
 echo "================" |indent
 echo "src make successfully completed. copying files" | indent
 cp f2c $BUILD_DIR/bin
