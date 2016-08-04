@@ -147,6 +147,7 @@ sleep 5
 # cp -R $VENDOR_DIR/gcc /app/vendor/gcc
 # cp -R $VENDOR_DIR/glibc /app/vendor/glibc
 cd $VENDOR_DIR/F/f2c/
+chmod a+x src/xsum
 mkdir -p libf2c
 mv libf2c.zip libf2c
 cd libf2c/
@@ -171,6 +172,7 @@ cd ../
 mkdir -p $BUILD_DIR/man/man1
 cp f2c.1t $BUILD_DIR/man/man1
 cp fc $BUILD_DIR/bin/f77
+chmod +x $BUILD_DIR/bin/f77
 cd ../
 echo "================" |indent
 echo "f77 installation completed, searching for binaries" | indent
