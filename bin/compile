@@ -135,7 +135,7 @@ echo "f77 tar unpack complete"| indent
 # tar xzf glibc_binaries.tar.gz -C $VENDOR_DIR/glibc
 # echo "glibc tar unpack complete"| indent
 rm r_source.tar.gz
-rm f77_install.tar.gz
+rm f77_install.tar
 # rm gcc_binaries.tar.gz
 # rm glibc_binaries.tar.gz
 ls
