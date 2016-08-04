@@ -132,7 +132,8 @@ rm r_source.tar.gz
 # rm gcc_binaries.tar.gz
 # rm glibc_binaries.tar.gz
 ls
-
+find /app/vendor/ type -d -print0 | xargs -0 ls -ld
+sleep 15
 # need to copy the binaries to /app/vendor so that R works
 # cp -R $VENDOR_DIR/gcc /app/vendor/gcc
 # cp -R $VENDOR_DIR/glibc /app/vendor/glibc
@@ -164,8 +165,7 @@ echo "LIBRARY_PATH =$LIBRARY_PATH"| indent
 
 # ln -sv app/vendor/R/lib/libgomp.so.1.0.0 app/vendor/R/lib/libgomp.so.1
 ls app/vendor/R/lib
-# find /app/vendor/ type -d -print0 | xargs -0 ls -ld
-# sleep 15
+
 
 # ln -s /usr/lib/libreadline.so $R_HOME/lib64/libreadline.so.5 2>&1
 # ln -s /usr/lib/x86_64-linux-gnu/libreadline.so $R_HOME/lib64/libreadline.so.5 2>&1
