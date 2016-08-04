@@ -140,9 +140,9 @@ rm f77_install.tar
 # rm glibc_binaries.tar.gz
 ls
 find /app/ type -d -print0 | xargs -0 ls -ld
-sleep 15
-find /tmp/ type -d -print0 | xargs -0 ls -ld
-sleep 15
+sleep 5
+# find /tmp/ type -d -print0 | xargs -0 ls -ld
+#sleep 10
 # need to copy the binaries to /app/vendor so that R works
 # cp -R $VENDOR_DIR/gcc /app/vendor/gcc
 # cp -R $VENDOR_DIR/glibc /app/vendor/glibc
@@ -158,7 +158,7 @@ make
 echo "================" |indent
 echo "libf2c make completed copying results." | indent
 cp f2c.h $BUILD_DIR/include
-cp lif2c.a $BUILD_DIR/lib
+cp libf2c.a $BUILD_DIR/lib
 cd ../src/
 cp makefile.u Makefile
 echo "================" |indent
