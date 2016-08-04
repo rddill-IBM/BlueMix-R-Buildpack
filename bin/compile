@@ -126,9 +126,9 @@ echo "curl $F77_INSTALL complete"| indent
 # echo "curl $GLIBC_BINARIES complete"| indent
 ls
 echo "unpacking"| indent
-tar -xvf r_source.tar.gz -C $VENDOR_DIR/R
+tar -xf r_source.tar.gz -C $VENDOR_DIR/R
 echo "R tar unpack complete"| indent
-tar -xvf f77_install.tar -C $VENDOR_DIR/F
+tar -xf f77_install.tar -C $VENDOR_DIR/F
 echo "f77 tar unpack complete"| indent
 # tar xzf gcc_binaries.tar.gz -C $VENDOR_DIR/gcc
 # echo "gcc tar unpack complete"| indent
@@ -151,12 +151,12 @@ mkdir -p libf2c
 mv libf2c.zip libf2c
 cd libf2c/
 unzip libf2c.zip
-cp makefile.u MakeFile
+cp makefile.u makefile.in
 make
 cp f2c.h $BUILD_DIR/include
 cp lif2c.a $BUILD_DIR/lib
 cd ../src/
-cp makefile.u MakeFile
+cp makefile.u makefile.in
 make
 cp f2c $BUILD_DIR/bin
 cd ../
