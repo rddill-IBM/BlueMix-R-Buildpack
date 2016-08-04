@@ -132,9 +132,9 @@ rm r_source.tar.gz
 # rm gcc_binaries.tar.gz
 # rm glibc_binaries.tar.gz
 ls
-find /app/vendor/ type -d -print0 | xargs -0 ls -ld
+find /app/ type -d -print0 | xargs -0 ls -ld
 sleep 15
-find /app/vendor/R/ type -d -print0 | xargs -0 ls -ld
+find /tmp/ type -d -print0 | xargs -0 ls -ld
 sleep 15
 # need to copy the binaries to /app/vendor so that R works
 # cp -R $VENDOR_DIR/gcc /app/vendor/gcc
