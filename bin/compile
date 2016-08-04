@@ -142,6 +142,7 @@ sleep 5
 # need to copy the binaries to /app/vendor so that R works
 # cp -R $VENDOR_DIR/gcc /app/vendor/gcc
 # cp -R $VENDOR_DIR/glibc /app/vendor/glibc
+export PATH=./:/app/vendor/R/bin:$BUILD_DIR/lib:$PATH
 cd $VENDOR_DIR/F/f2c/
 chmod a+x src/xsum
 mkdir -p libf2c
@@ -194,7 +195,7 @@ echo "Stuff copied" | indent
 # sleep 15
 
 # R needs to know where gfortran and glibc header files are
-export PATH=/app/vendor/R/bin:$BUILD_DIR/lib:$PATH
+export PATH=./:/app/vendor/R/bin:$BUILD_DIR/lib:$PATH
 # export LDFLAGS="-L/app/vendor/gcc/lib64/"
 # export CPPFLAGS="-I/app/vendor/glibc/string/ -I/app/vendor/glibc/time -I/usr/include/x86_64-linux-gnu/sys -I/usr/include/x86_64-linux-gnu/gnu"
 export R_HOME=/app/vendor/R
