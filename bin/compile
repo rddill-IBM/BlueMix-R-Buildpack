@@ -184,6 +184,7 @@ find $BUILD_DIR/ -name '*f77*' -mmin -5
 sleep 5
 cd ~
 ls
+export PATH=$BUILD_DIR/lib:$BUILD_DIR/bin:$PATH
 cd $R_HOME/R-3.3.1/
 ./configure
 make
@@ -195,13 +196,13 @@ echo "Stuff copied" | indent
 # sleep 15
 
 # R needs to know where gfortran and glibc header files are
-export PATH=./:/app/vendor/R/bin:$BUILD_DIR/lib:$PATH
 # export LDFLAGS="-L/app/vendor/gcc/lib64/"
 # export CPPFLAGS="-I/app/vendor/glibc/string/ -I/app/vendor/glibc/time -I/usr/include/x86_64-linux-gnu/sys -I/usr/include/x86_64-linux-gnu/gnu"
 export R_HOME=/app/vendor/R
 export R_INCLUDE="$R_HOME/include:$BUILD_DIR/include:"
 export LD_LIBRARY_PATH=".$R_HOME/lib:$BUILD_DIR/lib:/lib:/usr/lib:/usr/lib/x86_64-linux-gnu:$LD_LIBRARY_PATH"
 export LIBRARY_PATH=".$R_HOME/lib:$BUILD_DIR/lib:/lib:/usr/lib:/usr/lib/x86_64-linux-gnu"
+export PATH=/app/vendor/R/bin:$PATH
 echo "PATH =$PATH"| indent
 # echo "LDFLAGS =$LDFLAGS"| indent
 # echo "CPPFLAGS =$CPPFLAGS"| indent
