@@ -136,7 +136,7 @@ ls
 # need to copy the binaries to /app/vendor so that R works
 # cp -R $VENDOR_DIR/gcc /app/vendor/gcc
 # cp -R $VENDOR_DIR/glibc /app/vendor/glibc
-cd $VENDOR_DIR/R/R_3.3.1/
+cd vendor/R/R_3.3.1/
 ./configure
 make
 cp -R $VENDOR_DIR/R /app/vendor
