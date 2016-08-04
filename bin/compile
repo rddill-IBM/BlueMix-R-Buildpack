@@ -72,6 +72,7 @@ R_VERSION="3.3.1"
 
 R_BINARIES="https://media.githubusercontent.com/media/rddill-IBM/CF_R_Buildpack/master/r_cf_build.tar.gz"
 R_SOURCE="http://ftp.osuosl.org/pub/cran/src/base/R-3/R-3.3.1.tar.gz"
+F77_INSTALL ="http://netlib.sandia.gov/cgi-bin/netlib/netlibfiles.tar?filename=netlib/f2c"
 # GCC_BINARIES="https://raw.githubusercontent.com/rddill-IBM/CF_R_Buildpack/master/r_cf_build_gcc.tar.gz"
 # GLIBC_BINARIES="https://raw.githubusercontent.com/rddill-IBM/CF_R_Buildpack/master/r_cf_build_glibc.tar.gz"
 VENDOR_DIR="$BUILD_DIR/vendor"
@@ -109,11 +110,14 @@ echo "Vendoring R $R_VERSION" | indent
 echo "Downloading and unpacking R binaries" | indent
 mkdir -p $VENDOR_DIR && mkdir -p /app/vendor
 mkdir -p $VENDOR_DIR/R && mkdir -p /app/vendor/R
+mkdir -p $VENDOR_DIR/F && mkdir -p /app/vendor/F
 # mkdir -p $VENDOR_DIR/gcc
 # mkdir -p $VENDOR_DIR/glibc
 echo "mkdir $VENDOR_DIR complete"| indent
 curl $R_SOURCE -s -o r_source.tar.gz
 echo "curl $R_SOURCE complete"| indent
+curl $F77_INSTALL -s -o f77_install.tar.gz
+echo "curl $F77_INSTALL complete"| indent
 # curl $R_BINARIES -s -o r_binaries.tar.gz
 # echo "curl $R_BINARIES complete"| indent
 # curl $GCC_BINARIES -s -o gcc_binaries.tar.gz
@@ -124,11 +128,14 @@ ls
 echo "unpacking"| indent
 tar xzf r_source.tar.gz -C $VENDOR_DIR/R
 echo "R tar unpack complete"| indent
+tar xzf f77_install.tar.gz -C $VENDOR_DIR/F
+echo "f77 tar unpack complete"| indent
 # tar xzf gcc_binaries.tar.gz -C $VENDOR_DIR/gcc
 # echo "gcc tar unpack complete"| indent
 # tar xzf glibc_binaries.tar.gz -C $VENDOR_DIR/glibc
 # echo "glibc tar unpack complete"| indent
 rm r_source.tar.gz
+rm f77_install.tar.gz
 # rm gcc_binaries.tar.gz
 # rm glibc_binaries.tar.gz
 ls
@@ -139,6 +146,28 @@ sleep 15
 # need to copy the binaries to /app/vendor so that R works
 # cp -R $VENDOR_DIR/gcc /app/vendor/gcc
 # cp -R $VENDOR_DIR/glibc /app/vendor/glibc
+cd $VENDOR_DIR/F/f2c/
+mkdir -p libf2c
+mv libf2c.zip libf2c
+cd libf2c/
+unzip libf2c.zip
+cd makefile.u MakeFile
+make
+cp f2c.h $BUILD_DIR/include
+cp lif2c.a $BUILD_DIR/lib
+cd ../src/
+cp makefile.u MakeFile
+make
+cp f2c $BUILD_DIR/bin
+cd ../
+mkdir -p $BUILD_DIR/man/man1
+cp f2c.1t $BUILD_DIR/man/man1
+cp fc $BUILD_DIR/bin/f77
+cd ../
+find $BUILD_DIR/ -name '*f2c*' -mmin -5
+find $BUILD_DIR/ -name '*f77*' -mmin -5
+cd ~
+ls
 cd $R_HOME/R-3.3.1/
 ./configure
 make
@@ -150,13 +179,13 @@ echo "Stuff copied" | indent
 # sleep 15
 
 # R needs to know where gfortran and glibc header files are
-export PATH=/app/vendor/R/bin:$PATH
+export PATH=/app/vendor/R/bin:$BUILD_DIR/lib:$PATH
 # export LDFLAGS="-L/app/vendor/gcc/lib64/"
 # export CPPFLAGS="-I/app/vendor/glibc/string/ -I/app/vendor/glibc/time -I/usr/include/x86_64-linux-gnu/sys -I/usr/include/x86_64-linux-gnu/gnu"
 export R_HOME=/app/vendor/R
-export R_INCLUDE=$R_HOME/include
-# export LD_LIBRARY_PATH=".$R_HOME/lib:/lib:/usr/lib:/usr/lib/x86_64-linux-gnu:$LD_LIBRARY_PATH"
-export LIBRARY_PATH=".$R_HOME/lib:/lib:/usr/lib:/usr/lib/x86_64-linux-gnu"
+export R_INCLUDE="$R_HOME/include:$BUILD_DIR/include:"
+export LD_LIBRARY_PATH=".$R_HOME/lib:$BUILD_DIR/lib:/lib:/usr/lib:/usr/lib/x86_64-linux-gnu:$LD_LIBRARY_PATH"
+export LIBRARY_PATH=".$R_HOME/lib:$BUILD_DIR/lib:/lib:/usr/lib:/usr/lib/x86_64-linux-gnu"
 echo "PATH =$PATH"| indent
 # echo "LDFLAGS =$LDFLAGS"| indent
 # echo "CPPFLAGS =$CPPFLAGS"| indent
