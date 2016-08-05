@@ -182,10 +182,10 @@ echo "f77 installation completed, searching for binaries" | indent
 find $BUILD_DIR/ -name '*f2c*' -mmin -5
 find $BUILD_DIR/ -name '*f77*' -mmin -5
 sleep 5
-cp $BUILD_DIR/man $VENDOR_DIR/man
-cp $BUILD_DIR/bin $VENDOR_DIR/bin
-cp $BUILD_DIR/lib $VENDOR_DIR/lib
-cp $BUILD_DIR/include $VENDOR_DIR/include
+cp -avr $BUILD_DIR/man $VENDOR_DIR/man
+cp -avr $BUILD_DIR/bin $VENDOR_DIR/bin
+cp -avr $BUILD_DIR/lib $VENDOR_DIR/lib
+cp -avr $BUILD_DIR/include $VENDOR_DIR/include
 
 echo "================" |indent
 echo "f77 installation completed, searching for binaries" | indent
