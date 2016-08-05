@@ -195,10 +195,12 @@ echo "maxxxxxxxxxxxxx"
 ls
 echo "maaaaaaxxxx"
 #GSC-20160805
+cd vendor
 wget "http://gfortran.com/download/x86_64/snapshots/gcc-4.9.3.tar.xz" -O "gcc-4.9.3.tar.xz"
 #cd vendor
 ls
-tar -Jxvf gcc-4.9.3.tar.xz -C ./:/app/vendor
+tar xzf gcc-4.9.3.tar.xz
+cd ..
 
 # patch gcc features.h file
 # see http://permalink.gmane.org/gmane.comp.gcc.help/40166
