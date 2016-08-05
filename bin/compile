@@ -111,15 +111,17 @@ mkdir -p $VENDOR_DIR/F && mkdir -p /app/vendor/F
 # mkdir -p $VENDOR_DIR/glibc
 echo "mkdir $VENDOR_DIR complete"| indent
 curl $R_SOURCE -s -o r_source.tar.gz
-echo "curl $R_SOURCE complete"| indent
+echo "curl $R_SOURCE download complete"| indent
 curl $F77_INSTALL -s -o f77_install.tar
-echo "curl $F77_INSTALL complete"| indent
+echo "curl $F77_INSTALL download complete"| indent
 # curl $R_BINARIES -s -o r_binaries.tar.gz
 # echo "curl $R_BINARIES complete"| indent
 # curl $GCC_BINARIES -s -o gcc_binaries.tar.gz
 # echo "curl $GCC_BINARIES complete"| indent
 # curl $GLIBC_BINARIES -s -o glibc_binaries.tar.gz
 # echo "curl $GLIBC_BINARIES complete"| indent
+echo "================"
+echo "listing current directory" |indent
 ls
 echo "unpacking"| indent
 tar -xf r_source.tar.gz -C $VENDOR_DIR/R
@@ -130,10 +132,14 @@ echo "f77 tar unpack complete"| indent
 # echo "gcc tar unpack complete"| indent
 # tar xzf glibc_binaries.tar.gz -C $VENDOR_DIR/glibc
 # echo "glibc tar unpack complete"| indent
+echo "================"
+echo "Removing tar files" |indent
 rm r_source.tar.gz
 rm f77_install.tar
 # rm gcc_binaries.tar.gz
 # rm glibc_binaries.tar.gz
+echo "================"
+echo "Listing current directory" |indent
 ls
 # find /app/ -d -print0 | xargs -0 ls -ld
 sleep 2
@@ -142,39 +148,53 @@ sleep 2
 # need to copy the binaries to /app/vendor so that R works
 # cp -R $VENDOR_DIR/gcc /app/vendor/gcc
 # cp -R $VENDOR_DIR/glibc /app/vendor/glibc
-export PATH=./:/app/vendor/R/bin:$BUILD_DIR/lib:$PATH
+echo "================"
+echo "creating f77 folders" |indent
 cd $VENDOR_DIR/F/f2c/
-chmod a+x src/xsum
 mkdir -p libf2c
+mkdir -p $BUILD_DIR/include
+mkdir -p $BUILD_DIR/lib
+mkdir -p $BUILD_DIR/bin
+mkdir -p $BUILD_DIR/man/man1
+echo "================"
+echo "Extending Path" |indent
+export PATH=./:/app/vendor/R/bin:$BUILD_DIR/lib:$PATH
+echo "================"
+echo "New PATH = $PATH" |indent
 mv libf2c.zip libf2c
 cd libf2c/
 unzip libf2c.zip
 echo "================" |indent
-echo "libf2c successfully unzipped. Starting make" | indent
+echo "libf2c successfully unzipped. " | indent
+echo "================"
+echo "removing old xsum" |indent
+cd ../src/
+rm xsum
+echo "================"
+echo "making new xsum" |indent
+cc -O xsum.c -o xsum
+chmod +x xsum
+echo "================" |indent
+echo " Starting make" | indent
+cd ../libf2c/
 cp makefile.u Makefile
 make
 echo "================" |indent
 echo "libf2c make completed copying results." | indent
 cp f2c.h $BUILD_DIR/include
 cp libf2c.a $BUILD_DIR/lib
-cd ../src/
-ls
-sleep 2
-rm xsum
-cc -O xsum.c -o xsum
-chmod +x xsum
-cp makefile.u Makefile
 echo "================" |indent
 echo "redirected to src directory. Starting make" | indent
+cd ../src/
+cp makefile.u Makefile
 make  --print-directory
 echo "================" |indent
 echo "src make successfully completed. copying files" | indent
-mkdir -p $BUILD_DIR/bin
 cp f2c $BUILD_DIR/bin
 cd ../
-mkdir -p $BUILD_DIR/man/man1
 cp f2c.1t $BUILD_DIR/man/man1
-cp fc $BUILD_DIR/bin/f77
+cp fc $BUILD_DIR/bin/
+mv $BUILD_DIR/bin/fc $BUILD_DIR/bin/f77
 chmod +x $BUILD_DIR/bin/f77
 cd ../
 echo "================" |indent
@@ -196,7 +216,7 @@ sleep 5
 cd ~
 echo "================" |indent
 echo "listing which gfortran is available" | indent
-which gfortran
+which f77
 echo "================" |indent
 echo "listing home directory" | indent
 export PATH="$VENDOR_DIR/lib:$VENDOR_DIR/bin:$PATH"
