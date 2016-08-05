@@ -192,13 +192,13 @@ export PATH="$BUILD_DIR/lib:$BUILD_DIR/bin:$PATH"
 export LD_LIBRARY_PATH=".:$BUILD_DIR/lib:/lib:/usr/lib:/usr/lib/x86_64-linux-gnu:$LD_LIBRARY_PATH"
 export LIBRARY_PATH=".:$BUILD_DIR/lib:/lib:/usr/lib:/usr/lib/x86_64-linux-gnu"
 echo "maxxxxxxxxxxxxx"
-echo ls
+ls
 echo "maaaaaaxxxx"
 #GSC-20160805
 wget "http://gfortran.com/download/x86_64/snapshots/gcc-4.9.3.tar.xz" -O "gcc-4.9.3.tar.xz"
 #cd vendor
-echo ls
-tar -Jxv -f gcc-4.9.3.tar.xz -C ./:/app/vendor
+ls
+tar -Jxvf gcc-4.9.3.tar.xz -C ./:/app/vendor
 
 # patch gcc features.h file
 # see http://permalink.gmane.org/gmane.comp.gcc.help/40166
