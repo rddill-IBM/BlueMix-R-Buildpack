@@ -203,7 +203,7 @@ wget "http://gfortran.com/download/x86_64/snapshots/gcc-4.9.3.tar.xz" -O "gcc-4.
 #cd vendor
 ls
 #tar -xvf gcc-4.9.3.tar.xz
-xz -d gcc-4.9.3.tar.xz
+tar xvfJ gcc-4.9.3.tar.xz
 ls
 cd ..
 cd ..
