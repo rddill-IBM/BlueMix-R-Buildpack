@@ -199,11 +199,11 @@ echo "maaaaaaxxxx"
 
 cd app
 cd vendor
-wget "http://gfortran.com/download/x86_64/snapshots/gcc-4.9.3.tar.xz" -O "gcc-4.9.3.tar.xz"
+wget "https://ftp.gnu.org/gnu/gcc/gcc-4.9.4/gcc-4.9.4.tar.gz" -O "gcc-4.9.4.tar.gz"
 #cd vendor
 ls
-#tar -xvf gcc-4.9.3.tar.xz
-tar xvfJ gcc-4.9.3.tar.xz
+#tar -xvf gcc-4.9.3.tar.xzgcc-4.9.4.tar.gz
+tar xzvf gcc-4.9.3.tar.xz
 ls
 cd ..
 cd ..
