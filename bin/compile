@@ -187,13 +187,18 @@ cp -avr $BUILD_DIR/bin $VENDOR_DIR/bin
 cp -avr $BUILD_DIR/lib $VENDOR_DIR/lib
 cp -avr $BUILD_DIR/include $VENDOR_DIR/include
 
+
 echo "================" |indent
 echo "f77 installation completed, searching for binaries" | indent
 find $VENDOR_DIR/ -name '*f2c*' -mmin -5
 find $VENDOR_DIR/ -name '*f77*' -mmin -5
 sleep 5
 cd ~
-ls
+echo "================" |indent
+echo "listing which gfortran is available" | indent
+which gfortran
+echo "================" |indent
+echo "listing home directory" | indent
 export PATH="$VENDOR_DIR/lib:$VENDOR_DIR/bin:$PATH"
 export LD_LIBRARY_PATH=".:$VENDOR_DIR/lib:/lib:/usr/lib:/usr/lib/x86_64-linux-gnu:$LD_LIBRARY_PATH"
 export LIBRARY_PATH=".:$VENDOR_DIR/lib:$VENDOR_DIR/include:/lib:/usr/lib:/usr/lib/x86_64-linux-gnu"
