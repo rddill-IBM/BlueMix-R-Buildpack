@@ -208,7 +208,7 @@ ls
 #tar xf gcc-4.4.tar.xz -C /usr/local/
 export PATH=$PATH:/app/vendor/gcc-4.4/bin
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/app/vendor/gcc-4.9.4/lib
-sudo ln -s /app/vendor/g++ /app/vendor/gxx
+ln -s /app/vendor/g++ /app/vendor/gxx
 #tar -xvf gcc-4.9.3.tar.xz
 #tar xzvf gcc-4.9.4.tar.gz
 ls
