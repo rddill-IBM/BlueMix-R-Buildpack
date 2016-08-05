@@ -202,8 +202,8 @@ cd vendor
 wget "https://ftp.gnu.org/gnu/gcc/gcc-4.9.4/gcc-4.9.4.tar.gz" -O "gcc-4.9.4.tar.gz"
 #cd vendor
 ls
-#tar -xvf gcc-4.9.3.tar.xzgcc-4.9.4.tar.gz
-tar xzvf gcc-4.9.3.tar.xz
+#tar -xvf gcc-4.9.3.tar.xz
+tar xzvf gcc-4.9.4.tar.gz
 ls
 cd ..
 cd ..
