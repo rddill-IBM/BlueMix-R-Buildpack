@@ -194,6 +194,7 @@ export LIBRARY_PATH=".:$BUILD_DIR/lib:/lib:/usr/lib:/usr/lib/x86_64-linux-gnu"
 echo "maxxxxxxxxxxxxx"
 #GSC-20160805
 download "http://gfortran.com/download/x86_64/snapshots/gcc-4.9.3.tar.xz" gcc-4.9.3.tar.xz
+ls
 tar xJf /tmp/buildpacks/BlueMix-R-Buildpack/bin/gcc-4.9.3.tar.xz -C $vendordir
 
 # patch gcc features.h file
