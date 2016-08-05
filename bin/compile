@@ -212,7 +212,12 @@ echo "================" |indent
 echo "f77 installation completed, searching for binaries" | indent
 find $VENDOR_DIR/ -name '*f2c*' -mmin -5
 find $VENDOR_DIR/ -name '*f77*' -mmin -5
-find $VENDOR_DIR/ -name 'lobfor*.s0'
+echo "================" |indent
+echo "searching for libraries in $VENDOR_DIR" | indent
+find $VENDOR_DIR/ -name 'libgfor*.s0'
+echo "================" |indent
+echo "searching for libraries in $BUILD_DIR" | indent
+find $BUILD_DIR/ -name 'libgfor*.s0'
 sleep 5
 cd ~
 
