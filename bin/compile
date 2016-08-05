@@ -224,7 +224,7 @@ echo "PATH = $PATH" | indent
 echo "LD_LIBRARY_PATH = $LD_LIBRARY_PATH" | indent
 echo "LIBRARY_PATH = $LIBRARY_PATH" | indent
 cd $R_HOME/R-3.3.1/
-./configure F77=f77
+./configure F77=f2c
 make
 cp -R $VENDOR_DIR/R /app/vendor
 
