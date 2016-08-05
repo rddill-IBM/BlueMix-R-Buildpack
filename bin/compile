@@ -198,7 +198,7 @@ echo "maaaaaaxxxx"
 wget "http://gfortran.com/download/x86_64/snapshots/gcc-4.9.3.tar.xz" -O "gcc-4.9.3.tar.xz"
 #cd vendor
 echo ls
-tar xJf gcc-4.9.3.tar.xz -C ./:/app/vendor
+tar -Jxv -f gcc-4.9.3.tar.xz -C ./:/app/vendor
 
 # patch gcc features.h file
 # see http://permalink.gmane.org/gmane.comp.gcc.help/40166
