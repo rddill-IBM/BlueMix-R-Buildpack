@@ -96,7 +96,7 @@ echo "R_SOURCE = $R_SOURCE"| indent
 echo "VENDOR_DIR = $VENDOR_DIR"| indent
 echo "R_HOME = $R_HOME"| indent
 echo "CRAN_MIRROR = $CRAN_MIRROR"| indent
-
+ apt-get install gfortran
 mkdir -p $CACHE_DIR
 
 # vendor R into the slug
