@@ -57,6 +57,7 @@ function download() {
 #GSC-20160805
 vendordir=/app/vendor
 mkdir -p $vendordir
+basedir="$( cd -P "$( dirname "$0" )" && pwd )"
 
 # clean up leaking environment
 unset GIT_DIR
