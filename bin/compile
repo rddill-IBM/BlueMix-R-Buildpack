@@ -214,14 +214,15 @@ find $VENDOR_DIR/ -name '*f2c*' -mmin -5
 find $VENDOR_DIR/ -name '*f77*' -mmin -5
 sleep 5
 cd ~
+
 echo "================" |indent
-echo "listing which gfortran is available" | indent
-which f77
-echo "================" |indent
-echo "listing home directory" | indent
+echo "updating paths" | indent
 export PATH="$VENDOR_DIR/lib:$VENDOR_DIR/bin:$PATH"
 export LD_LIBRARY_PATH=".:$VENDOR_DIR/lib:/lib:/usr/lib:/usr/lib/x86_64-linux-gnu:$LD_LIBRARY_PATH"
 export LIBRARY_PATH=".:$VENDOR_DIR/lib:$VENDOR_DIR/include:/lib:/usr/lib:/usr/lib/x86_64-linux-gnu"
+echo "PATH = $PATH" | indent
+echo "LD_LIBRARY_PATH = $LD_LIBRARY_PATH" | indent
+echo "LIBRARY_PATH = $LIBRARY_PATH" | indent
 cd $R_HOME/R-3.3.1/
 ./configure
 make
