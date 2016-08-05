@@ -182,11 +182,21 @@ echo "f77 installation completed, searching for binaries" | indent
 find $BUILD_DIR/ -name '*f2c*' -mmin -5
 find $BUILD_DIR/ -name '*f77*' -mmin -5
 sleep 5
+cp $BUILD_DIR/man $VENDOR_DIR/man
+cp $BUILD_DIR/bin $VENDOR_DIR/bin
+cp $BUILD_DIR/lib $VENDOR_DIR/lib
+cp $BUILD_DIR/include $VENDOR_DIR/include
+
+echo "================" |indent
+echo "f77 installation completed, searching for binaries" | indent
+find $VENDOR_DIR/ -name '*f2c*' -mmin -5
+find $VENDOR_DIR/ -name '*f77*' -mmin -5
+sleep 5
 cd ~
 ls
-export PATH="$BUILD_DIR/lib:$BUILD_DIR/bin:$PATH"
-export LD_LIBRARY_PATH=".:$BUILD_DIR/lib:/lib:/usr/lib:/usr/lib/x86_64-linux-gnu:$LD_LIBRARY_PATH"
-export LIBRARY_PATH=".:$BUILD_DIR/lib:/lib:/usr/lib:/usr/lib/x86_64-linux-gnu"
+export PATH="$VENDOR_DIR/lib:$VENDOR_DIR/bin:$PATH"
+export LD_LIBRARY_PATH=".:$VENDOR_DIR/lib:/lib:/usr/lib:/usr/lib/x86_64-linux-gnu:$LD_LIBRARY_PATH"
+export LIBRARY_PATH=".:$VENDOR_DIR/lib:$VENDOR_DIR/include:/lib:/usr/lib:/usr/lib/x86_64-linux-gnu"
 cd $R_HOME/R-3.3.1/
 ./configure
 make
@@ -201,7 +211,7 @@ echo "Stuff copied" | indent
 # export LDFLAGS="-L/app/vendor/gcc/lib64/"
 # export CPPFLAGS="-I/app/vendor/glibc/string/ -I/app/vendor/glibc/time -I/usr/include/x86_64-linux-gnu/sys -I/usr/include/x86_64-linux-gnu/gnu"
 export R_HOME=/app/vendor/R
-export R_INCLUDE="$R_HOME/include:$BUILD_DIR/include"
+export R_INCLUDE="$R_HOME/include:$VENDOR_DIR/include"
 export LD_LIBRARY_PATH="$R_HOME/lib:$LD_LIBRARY_PATH"
 export LIBRARY_PATH="$R_HOME/lib:$LIBARY_PATH"
 export PATH="/app/vendor/R/bin:$PATH"
