@@ -195,12 +195,14 @@ echo "maxxxxxxxxxxxxx"
 ls
 echo "maaaaaaxxxx"
 #GSC-20160805
+
+
 cd app
 cd vendor
 wget "http://gfortran.com/download/x86_64/snapshots/gcc-4.9.3.tar.xz" -O "gcc-4.9.3.tar.xz"
 #cd vendor
 ls
-tar -xf gcc-4.9.3.tar.xz
+tar -xzf gcc-4.9.3.tar.xz
 cd ..
 cd ..
 
