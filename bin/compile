@@ -74,8 +74,8 @@ BUILD_PACK_VERSION="20160802"
 # GLIBC_VERSION="2.23"
 R_VERSION="3.3.1"
 
-R_BINARIES="https://media.githubusercontent.com/media/rddill-IBM/CF_R_Buildpack/master/r_cf_build.tar.gz"
-#R_SOURCE="https://heroku-buildpack-r.s3.amazonaws.com/cedar-14/R-3.3.1-binaries-20160720-0331.tar.gz"
+#R_BINARIES="https://media.githubusercontent.com/media/rddill-IBM/CF_R_Buildpack/master/r_cf_build.tar.gz"
+R_SOURCE="https://heroku-buildpack-r.s3.amazonaws.com/cedar-14/R-3.3.1-binaries-20160720-0331.tar.gz"
 R_SOURCE="http://ftp.osuosl.org/pub/cran/src/base/R-3/R-3.3.1.tar.gz"
 F77_INSTALL="http://netlib.sandia.gov/cgi-bin/netlib/netlibfiles.tar?filename=netlib/f2c"
 # GCC_BINARIES="https://raw.githubusercontent.com/rddill-IBM/CF_R_Buildpack/master/r_cf_build_gcc.tar.gz"
@@ -227,7 +227,8 @@ echo "maaaaaaxxxx"
 #glibc_version=2.7
 #download "http://ftp.gnu.org/gnu/glibc/glibc-2.23.tar.gz" glibc_2.23.tar.gz
 #tar xzf /tmp/buildpacks/BlueMix-R-Buildpack/bin/glibc_2.23.tar.gz -C $vendordir
-cd /tmp/staged/app/vendor/R/R-3.3.1/
+#cd /tmp/staged/app/vendor/R/R-3.3.1/
+cd /tmp/staged/app/vendor/R/vendor/R
 ./configure
 make
 cp -R $VENDOR_DIR/R /app/vendor
