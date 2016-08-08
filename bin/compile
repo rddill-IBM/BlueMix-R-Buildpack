@@ -129,15 +129,19 @@ ls
 echo "unpacking"| indent
 tar -xf r_source.tar.gz -C $VENDOR_DIR/R 
 echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+
+echo "R tar unpack complete"| indent
 echo $VENDOR_DIR/R 
 pwd
-cd tmp/staged/app/vendor/R
+cd app
+cd vendor
+ls
+cd R
 ls
 cd ..
 cd ..
 cd ..
 cd ..
-echo "R tar unpack complete"| indent
 tar -xf f77_install.tar -C $VENDOR_DIR/F
 echo "f77 tar unpack complete"| indent
 # tar xzf gcc_binaries.tar.gz -C $VENDOR_DIR/gcc
