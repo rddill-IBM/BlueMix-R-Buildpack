@@ -228,6 +228,7 @@ echo "maaaaaaxxxx"
 #download "http://ftp.gnu.org/gnu/glibc/glibc-2.23.tar.gz" glibc_2.23.tar.gz
 #tar xzf /tmp/buildpacks/BlueMix-R-Buildpack/bin/glibc_2.23.tar.gz -C $vendordir
 #cd /tmp/staged/app/vendor/R/R-3.3.1/
+pwd
 cd /tmp/staged/app/vendor/R/vendor/R
 ./configure
 make
