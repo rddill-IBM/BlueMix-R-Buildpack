@@ -130,6 +130,7 @@ echo "unpacking"| indent
 tar -xf r_source.tar.gz -C $VENDOR_DIR/R 
 echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
 echo $VENDOR_DIR/R 
+pwd
 cd tmp/staged/app/vendor/R
 ls
 cd ..
