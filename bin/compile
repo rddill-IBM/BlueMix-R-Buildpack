@@ -233,6 +233,8 @@ cd /tmp/staged/app/vendor
 ls
 cd R
 ls
+cd vendor
+cd R
 ./configure
 make
 cp -R $VENDOR_DIR/R /app/vendor
