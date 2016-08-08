@@ -132,20 +132,6 @@ echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
 
 echo "R tar unpack complete"| indent
 echo $VENDOR_DIR/R 
-pwd
-cd app
-cd vendor
-ls
-cd R
-ls
-cd vendor
-cd R
-echo "RRRR"
-ls
-cd ..
-cd ..
-cd ..
-cd ..
 tar -xf f77_install.tar -C $VENDOR_DIR/F
 echo "f77 tar unpack complete"| indent
 # tar xzf gcc_binaries.tar.gz -C $VENDOR_DIR/gcc
@@ -241,7 +227,7 @@ echo "maaaaaaxxxx"
 #glibc_version=2.7
 #download "http://ftp.gnu.org/gnu/glibc/glibc-2.23.tar.gz" glibc_2.23.tar.gz
 #tar xzf /tmp/buildpacks/BlueMix-R-Buildpack/bin/glibc_2.23.tar.gz -C $vendordir
-cd $R_HOME/R-3.3.1/
+cd /tmp/staged/app/vendor/R/R-3.3.1/
 ./configure
 make
 cp -R $VENDOR_DIR/R /app/vendor
