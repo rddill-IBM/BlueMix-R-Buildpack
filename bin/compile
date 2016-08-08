@@ -138,6 +138,8 @@ cd vendor
 ls
 cd R
 ls
+cd vendor
+ls
 cd ..
 cd ..
 cd ..
