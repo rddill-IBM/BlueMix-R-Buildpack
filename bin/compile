@@ -127,7 +127,10 @@ echo "curl $F77_INSTALL complete"| indent
 # echo "curl $GLIBC_BINARIES complete"| indent
 ls
 echo "unpacking"| indent
-tar -xf r_source.tar.gz -C $VENDOR_DIR/R
+tar -xf r_source.tar.gz -C $VENDOR_DIR/R 
+echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+cd $VENDOR_DIR/R
+ls
 echo "R tar unpack complete"| indent
 tar -xf f77_install.tar -C $VENDOR_DIR/F
 echo "f77 tar unpack complete"| indent
