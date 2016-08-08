@@ -130,7 +130,12 @@ echo "unpacking"| indent
 tar -xf r_source.tar.gz -C $VENDOR_DIR/R 
 echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
 echo $VENDOR_DIR/R 
-
+cd /tmp/staged/app/vendor/R
+ls
+cd ..
+cd ..
+cd ..
+cd ..
 echo "R tar unpack complete"| indent
 tar -xf f77_install.tar -C $VENDOR_DIR/F
 echo "f77 tar unpack complete"| indent
