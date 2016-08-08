@@ -229,7 +229,10 @@ echo "maaaaaaxxxx"
 #tar xzf /tmp/buildpacks/BlueMix-R-Buildpack/bin/glibc_2.23.tar.gz -C $vendordir
 #cd /tmp/staged/app/vendor/R/R-3.3.1/
 pwd
-cd /tmp/staged/app/vendor/R/vendor/R
+cd /tmp/staged/app/vendor
+ls
+cd R
+ls
 ./configure
 make
 cp -R $VENDOR_DIR/R /app/vendor
