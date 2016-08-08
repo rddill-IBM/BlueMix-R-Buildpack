@@ -13,5 +13,5 @@ dependencies:
   uri: https://ftp.gnu.org/gnu/gcc/gcc-4.9.4/gcc-4.9.4.tar.gz
   md5: 75df3c195f9d9615714cf49361843ff8
   cf_stacks:
-    - Inference-Engine
-    - Cognitive-Advider-Secure
+    - lucid64
+    - cflinuxfs2
