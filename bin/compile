@@ -276,8 +276,10 @@ export LD_LIBRARY_PATH="/home/vcap/app/vendor/gccF/lib:/home/vcap/app/vendor/gcc
 #glibc_version=2.7
 #download "http://ftp.gnu.org/gnu/glibc/glibc-2.23.tar.gz" glibc_2.23.tar.gz
 #tar xzf /tmp/buildpacks/BlueMix-R-Buildpack/bin/glibc_2.23.tar.gz -C $vendordir
+export CFLAGS="$CFLAGS -fPIC"
+export CXXFLAGS="$CXXFLAGS -fPIC"
 cd $R_HOME/R-3.3.1/
-./configure F77=/home/vcap/app/vendor/gccF/bin/gfortran -fPIC
+./configure F77=/home/vcap/app/vendor/gccF/bin/gfortran 
 make -j16
 cp -R $VENDOR_DIR/R /app/vendor
 
