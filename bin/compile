@@ -278,6 +278,7 @@ export LD_LIBRARY_PATH="/home/vcap/app/vendor/gccF/lib:/home/vcap/app/vendor/gcc
 #tar xzf /tmp/buildpacks/BlueMix-R-Buildpack/bin/glibc_2.23.tar.gz -C $vendordir
 export CFLAGS="$CFLAGS -fPIC"
 export LDFLAGS="$LDFLAGS -fPIC"
+export LIBTOOLFLAGS="LIBTOOLFLAGS -shared"
 export CXXFLAGS="$CXXFLAGS -fPIC"
 cd $R_HOME/R-3.3.1/
 ./configure F77=/home/vcap/app/vendor/gccF/bin/gfortran
