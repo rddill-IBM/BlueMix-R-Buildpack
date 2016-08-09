@@ -54,6 +54,10 @@ function download() {
     echo Got $2...
   fi
 }
+#GSC-20160805
+vendordir=/app/vendor
+mkdir -p $vendordir
+basedir="$( cd -P "$( dirname "$0" )" && pwd )"
 
 # clean up leaking environment
 unset GIT_DIR
@@ -70,8 +74,9 @@ BUILD_PACK_VERSION="20160802"
 # GLIBC_VERSION="2.23"
 R_VERSION="3.3.1"
 
-R_BINARIES="https://media.githubusercontent.com/media/rddill-IBM/CF_R_Buildpack/master/r_cf_build.tar.gz"
-R_SOURCE="http://ftp.osuosl.org/pub/cran/src/base/R-3/R-3.3.1.tar.gz"
+#R_BINARIES="https://media.githubusercontent.com/media/rddill-IBM/CF_R_Buildpack/master/r_cf_build.tar.gz"
+R_SOURCE="https://heroku-buildpack-r.s3.amazonaws.com/cedar-14/R-3.3.1-binaries-20160720-0331.tar.gz"
+#R_SOURCE="http://ftp.osuosl.org/pub/cran/src/base/R-3/R-3.3.1.tar.gz"
 F77_INSTALL="http://netlib.sandia.gov/cgi-bin/netlib/netlibfiles.tar?filename=netlib/f2c"
 # GCC_BINARIES="https://raw.githubusercontent.com/rddill-IBM/CF_R_Buildpack/master/r_cf_build_gcc.tar.gz"
 # GLIBC_BINARIES="https://raw.githubusercontent.com/rddill-IBM/CF_R_Buildpack/master/r_cf_build_glibc.tar.gz"
@@ -125,7 +130,10 @@ echo "listing current directory" |indent
 ls
 echo "unpacking"| indent
 tar -xf r_source.tar.gz -C $VENDOR_DIR/R
+echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+
 echo "R tar unpack complete"| indent
+echo $VENDOR_DIR/R
 tar -xf f77_install.tar -C $VENDOR_DIR/F
 echo "f77 tar unpack complete"| indent
 # tar xzf gcc_binaries.tar.gz -C $VENDOR_DIR/gcc
@@ -220,18 +228,101 @@ echo "searching for libraries in $BUILD_DIR" | indent
 find $BUILD_DIR/ -name 'libgfor*.s0'
 sleep 5
 cd ~
+ls
+export PATH="$BUILD_DIR/lib:$BUILD_DIR/bin:$PATH"
+export LD_LIBRARY_PATH=".:$BUILD_DIR/lib:/lib:/usr/lib:/usr/lib/x86_64-linux-gnu:$LD_LIBRARY_PATH"
+export LIBRARY_PATH=".:$BUILD_DIR/lib:/lib:/usr/lib:/usr/lib/x86_64-linux-gnu"
+echo "================"
+ls
+echo "================"
+#GSC-20160809
 
-echo "================" |indent
-echo "updating paths" | indent
-export PATH="$VENDOR_DIR/lib:$VENDOR_DIR/bin:$PATH"
-export LD_LIBRARY_PATH=".:$VENDOR_DIR/lib:/lib:/usr/lib:/usr/lib/x86_64-linux-gnu:$LD_LIBRARY_PATH"
-export LIBRARY_PATH=".:$VENDOR_DIR/lib:$VENDOR_DIR/include:/lib:/usr/lib:/usr/lib/x86_64-linux-gnu"
-echo "PATH = $PATH" | indent
-echo "LD_LIBRARY_PATH = $LD_LIBRARY_PATH" | indent
-echo "LIBRARY_PATH = $LIBRARY_PATH" | indent
+echo "PEK77-PWD"
+pwd
+cd app
+cd vendor
+which gcc
+mkdir "gcc"
+#yum -y install gcc gcc-c++ kernel-devel
+
+echo "PEK77-gmp-6.1.1"
+wget "https://gmplib.org/download/gmp/gmp-6.1.1.tar.bz2"
+tar jxf gmp-6.1.1.tar.bz2
+cd gmp-6.1.1
+./configure --disable-shared --enable-static --prefix=/home/vcap/app/vendor/gcc
+make -j16
+#make check
+make install
+cd ..
+ls
+
+echo "PEK77-mpfr-3.1.4"
+wget "http://www.mpfr.org/mpfr-current/mpfr-3.1.4.tar.gz"
+tar zxf mpfr-3.1.4.tar.gz
+cd mpfr-3.1.4
+./configure --disable-shared --enable-static --prefix=/home/vcap/app/vendor/gcc --with-gmp=/home/vcap/app/vendor/gcc
+make -j16
+#make check
+make install
+cd ..
+ls
+
+echo "PEK77-mpc-1.0.3"
+wget "https://ftp.gnu.org/gnu/mpc/mpc-1.0.3.tar.gz"
+tar zxf mpc-1.0.3.tar.gz
+cd mpc-1.0.3
+./configure --disable-shared --enable-static --prefix=/home/vcap/app/vendor/gcc --with-gmp=/home/vcap/app/vendor/gcc  --with-mpfr=/home/vcap/app/vendor/gcc
+make -j16
+#make check
+make install
+cd ..
+ls
+export LD_LIBRARY_PATH="/home/vcap/app/vendor/gcc:$LD_LIBRARY_PATH"
+
+echo "PEK77-GCC"
+wget "https://ftp.gnu.org/gnu/gcc/gcc-4.9.4/gcc-4.9.4.tar.gz" -O "gcc-4.9.4.tar.gz"
+tar zxf gcc-4.9.4.tar.gz
+mkdir "gccF"
+ls
+cd gcc-4.9.4
+./configure --prefix=/home/vcap/app/vendor/gccF --disable-shared --disable-bootstrap --disable-libstdcxx-pch --enable-languages=fortran --enable-libgomp --enable-lto --enable-threads=posix --enable-tls --with-gmp=/home/vcap/app/vendor/gcc  --with-mpfr=/home/vcap/app/vendor/gcc --with-mpc=/home/vcap/app/vendor/gcc --with-fpmath=sse --disable-multilib
+make -j16
+make install
+echo "PEK77-gfortran"
+cd ..
+cd gccF
+/home/vcap/app/vendor/gccF/bin/gfortran --version
+echo "=====1111111======"
+ls
+#echo "=====1111111======"
+#ls -r
+#echo "=====2222222======"
+#cd x86_64-unknown-linux-gnu
+#ls -r
+#echo "=====3333333======"
+#cd 4.9.4
+#ls -r
+#echo "=====4444444======"
+#echo "$LIBDIR"| indent
+#echo "=================="
+#cd include
+#ls -r
+
+# patch gcc features.h file
+# see http://permalink.gmane.org/gmane.comp.gcc.help/40166
+#mkdir -p $vendordir/gcc-4/lib/gcc/x86_64-unknown-linux-gnu/4.9.3/include-fixed
+#cp /tmp/buildpacks/BlueMix-R-Buildpack/bin/features.h $vendordir/gcc-4/lib/gcc/x86_64-unknown-linux-gnu/4.9.3/include-fixed/features.h
+export LIBRARY_PATH="$BUILD_DIR/lib:/lib:/usr/lib:/usr/lib/x86_64-linux-gnu:/home/vcap/app/vendor/gccF/lib64:/home/vcap/app/vendor/gccF/bin:/home/vcap/app/vendor/gccF/lib"
+export LD_LIBRARY_PATH="/home/vcap/app/vendor/gccF/lib:/home/vcap/app/vendor/gccF/lib64:/home/vcap/app/vendor/gccF/bin:$LD_LIBRARY_PATH"
+#export LD_RUN_PATH="/home/vcap/app/vendor/gccF:$LD_LIBRARY_PATH:$LIBDIR"
+# https://www.gnu.org/software/libc/
+#glibc_version=2.7
+#download "http://ftp.gnu.org/gnu/glibc/glibc-2.23.tar.gz" glibc_2.23.tar.gz
+#tar xzf /tmp/buildpacks/BlueMix-R-Buildpack/bin/glibc_2.23.tar.gz -C $vendordir
 cd $R_HOME/R-3.3.1/
-./configure F77=f2c
-make
+./configure F77=/home/vcap/app/vendor/gccF/bin/gfortran -fPIC
+make -j16
+
 cp -R $VENDOR_DIR/R /app/vendor
 
 echo "Stuff copied" | indent
@@ -280,6 +371,7 @@ ls app/vendor/R/lib
 export CPATH=$R_INCLUDE:/usr/lib/x86_64-linux-gnu
 
 echo "CPATH = $CPATH"| indent
+
 
 echo "variables set" | indent
 
