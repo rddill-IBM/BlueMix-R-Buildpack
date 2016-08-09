@@ -7,3 +7,11 @@ applications:
   domain: cfapps.io
   path: .
   buildpack: https://github.com/alexkago/cf-buildpack-r
+dependencies:
+- name: gfortran
+  version: 4.9.4
+  uri: https://ftp.gnu.org/gnu/gcc/gcc-4.9.4/gcc-4.9.4.tar.gz
+  md5: 75df3c195f9d9615714cf49361843ff8
+  cf_stacks:
+    - lucid64
+    - cflinuxfs2
