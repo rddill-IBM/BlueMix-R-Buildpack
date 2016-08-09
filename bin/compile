@@ -30,7 +30,7 @@ function build() {
   pushd $1
     ./configure --prefix=$VENDOR_DIR/$2 ${@:3} > /dev/null 2>&1
     echo "configure finished" | indent
-    make
+    make -j16
     echo "make finished" | indent
     make install > /dev/null 2>&1
     echo "install finished" | indent
@@ -74,9 +74,8 @@ BUILD_PACK_VERSION="20160802"
 # GLIBC_VERSION="2.23"
 R_VERSION="3.3.1"
 
-#R_BINARIES="https://media.githubusercontent.com/media/rddill-IBM/CF_R_Buildpack/master/r_cf_build.tar.gz"
-R_SOURCE="https://heroku-buildpack-r.s3.amazonaws.com/cedar-14/R-3.3.1-binaries-20160720-0331.tar.gz"
-#R_SOURCE="http://ftp.osuosl.org/pub/cran/src/base/R-3/R-3.3.1.tar.gz"
+R_BINARIES="https://media.githubusercontent.com/media/rddill-IBM/CF_R_Buildpack/master/r_cf_build.tar.gz"
+R_SOURCE="http://ftp.osuosl.org/pub/cran/src/base/R-3/R-3.3.1.tar.gz"
 F77_INSTALL="http://netlib.sandia.gov/cgi-bin/netlib/netlibfiles.tar?filename=netlib/f2c"
 # GCC_BINARIES="https://raw.githubusercontent.com/rddill-IBM/CF_R_Buildpack/master/r_cf_build_gcc.tar.gz"
 # GLIBC_BINARIES="https://raw.githubusercontent.com/rddill-IBM/CF_R_Buildpack/master/r_cf_build_glibc.tar.gz"
@@ -101,6 +100,7 @@ echo "R_SOURCE = $R_SOURCE"| indent
 echo "VENDOR_DIR = $VENDOR_DIR"| indent
 echo "R_HOME = $R_HOME"| indent
 echo "CRAN_MIRROR = $CRAN_MIRROR"| indent
+
 mkdir -p $CACHE_DIR
 
 # vendor R into the slug
@@ -115,38 +115,29 @@ mkdir -p $VENDOR_DIR/F && mkdir -p /app/vendor/F
 # mkdir -p $VENDOR_DIR/glibc
 echo "mkdir $VENDOR_DIR complete"| indent
 curl $R_SOURCE -s -o r_source.tar.gz
-echo "curl $R_SOURCE download complete"| indent
+echo "curl $R_SOURCE complete"| indent
 curl $F77_INSTALL -s -o f77_install.tar
-echo "curl $F77_INSTALL download complete"| indent
+echo "curl $F77_INSTALL complete"| indent
 # curl $R_BINARIES -s -o r_binaries.tar.gz
 # echo "curl $R_BINARIES complete"| indent
 # curl $GCC_BINARIES -s -o gcc_binaries.tar.gz
 # echo "curl $GCC_BINARIES complete"| indent
 # curl $GLIBC_BINARIES -s -o glibc_binaries.tar.gz
 # echo "curl $GLIBC_BINARIES complete"| indent
-echo "================"
-echo "listing current directory" |indent
 ls
 echo "unpacking"| indent
 tar -xf r_source.tar.gz -C $VENDOR_DIR/R
-echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
-
 echo "R tar unpack complete"| indent
-echo $VENDOR_DIR/R
 tar -xf f77_install.tar -C $VENDOR_DIR/F
 echo "f77 tar unpack complete"| indent
 # tar xzf gcc_binaries.tar.gz -C $VENDOR_DIR/gcc
 # echo "gcc tar unpack complete"| indent
 # tar xzf glibc_binaries.tar.gz -C $VENDOR_DIR/glibc
 # echo "glibc tar unpack complete"| indent
-echo "================"
-echo "Removing tar files" |indent
 rm r_source.tar.gz
 rm f77_install.tar
 # rm gcc_binaries.tar.gz
 # rm glibc_binaries.tar.gz
-echo "================"
-echo "Listing current directory" |indent
 ls
 # find /app/ -d -print0 | xargs -0 ls -ld
 sleep 2
@@ -155,53 +146,39 @@ sleep 2
 # need to copy the binaries to /app/vendor so that R works
 # cp -R $VENDOR_DIR/gcc /app/vendor/gcc
 # cp -R $VENDOR_DIR/glibc /app/vendor/glibc
-echo "================"
-echo "creating f77 folders" |indent
-cd $VENDOR_DIR/F/f2c/
-mkdir -p libf2c
-mkdir -p $BUILD_DIR/include
-mkdir -p $BUILD_DIR/lib
-mkdir -p $BUILD_DIR/bin
-mkdir -p $BUILD_DIR/man/man1
-echo "================"
-echo "Extending Path" |indent
 export PATH=./:/app/vendor/R/bin:$BUILD_DIR/lib:$PATH
-echo "================"
-echo "New PATH = $PATH" |indent
+cd $VENDOR_DIR/F/f2c/
+chmod a+x src/xsum
+mkdir -p libf2c
 mv libf2c.zip libf2c
 cd libf2c/
 unzip libf2c.zip
 echo "================" |indent
-echo "libf2c successfully unzipped. " | indent
-echo "================"
-echo "removing old xsum" |indent
-cd ../src/
-rm xsum
-echo "================"
-echo "making new xsum" |indent
-cc -O xsum.c -o xsum
-chmod +x xsum
-echo "================" |indent
-echo " Starting make" | indent
-cd ../libf2c/
+echo "libf2c successfully unzipped. Starting make" | indent
 cp makefile.u Makefile
-make
+make -j16
 echo "================" |indent
 echo "libf2c make completed copying results." | indent
 cp f2c.h $BUILD_DIR/include
 cp libf2c.a $BUILD_DIR/lib
+cd ../src/
+ls
+sleep 2
+rm xsum
+cc -O xsum.c -o xsum
+chmod +x xsum
+cp makefile.u Makefile
 echo "================" |indent
 echo "redirected to src directory. Starting make" | indent
-cd ../src/
-cp makefile.u Makefile
 make  --print-directory
 echo "================" |indent
 echo "src make successfully completed. copying files" | indent
+mkdir -p $BUILD_DIR/bin
 cp f2c $BUILD_DIR/bin
 cd ../
+mkdir -p $BUILD_DIR/man/man1
 cp f2c.1t $BUILD_DIR/man/man1
-cp fc $BUILD_DIR/bin/
-mv $BUILD_DIR/bin/fc $BUILD_DIR/bin/f77
+cp fc $BUILD_DIR/bin/f77
 chmod +x $BUILD_DIR/bin/f77
 cd ../
 echo "================" |indent
@@ -209,32 +186,13 @@ echo "f77 installation completed, searching for binaries" | indent
 find $BUILD_DIR/ -name '*f2c*' -mmin -5
 find $BUILD_DIR/ -name '*f77*' -mmin -5
 sleep 5
-cp -avr $BUILD_DIR/man $VENDOR_DIR/man
-cp -avr $BUILD_DIR/bin $VENDOR_DIR/bin
-cp -avr $BUILD_DIR/lib $VENDOR_DIR/lib
-cp -avr $BUILD_DIR/include $VENDOR_DIR/include
-
-
-echo "================" |indent
-echo "f77 installation completed, searching for binaries" | indent
-find $VENDOR_DIR/ -name '*f2c*' -mmin -5
-find $VENDOR_DIR/ -name '*f77*' -mmin -5
-echo "================" |indent
-echo "searching for libraries in $VENDOR_DIR" | indent
-find $VENDOR_DIR/ -name 'libgfor*.s0'
-echo "================" |indent
-echo "searching for libraries in $BUILD_DIR" | indent
-find $BUILD_DIR/ -name 'libgfor*.s0'
-sleep 5
 cd ~
 ls
 export PATH="$BUILD_DIR/lib:$BUILD_DIR/bin:$PATH"
 export LD_LIBRARY_PATH=".:$BUILD_DIR/lib:/lib:/usr/lib:/usr/lib/x86_64-linux-gnu:$LD_LIBRARY_PATH"
-export LIBRARY_PATH=".:$BUILD_DIR/lib:/lib:/usr/lib:/usr/lib/x86_64-linux-gnu"
-echo "================"
+export LIBRARY_PATH="$BUILD_DIR/lib:/lib:/usr/lib:/usr/lib/x86_64-linux-gnu"
 ls
-echo "================"
-#GSC-20160809
+#GSC-20160805
 
 echo "PEK77-PWD"
 pwd
@@ -321,7 +279,6 @@ export LD_LIBRARY_PATH="/home/vcap/app/vendor/gccF/lib:/home/vcap/app/vendor/gcc
 cd $R_HOME/R-3.3.1/
 ./configure F77=/home/vcap/app/vendor/gccF/bin/gfortran -fPIC
 make -j16
-
 cp -R $VENDOR_DIR/R /app/vendor
 
 echo "Stuff copied" | indent
@@ -333,7 +290,7 @@ echo "Stuff copied" | indent
 # export LDFLAGS="-L/app/vendor/gcc/lib64/"
 # export CPPFLAGS="-I/app/vendor/glibc/string/ -I/app/vendor/glibc/time -I/usr/include/x86_64-linux-gnu/sys -I/usr/include/x86_64-linux-gnu/gnu"
 export R_HOME=/app/vendor/R
-export R_INCLUDE="$R_HOME/include:$VENDOR_DIR/include"
+export R_INCLUDE="$R_HOME/include:$BUILD_DIR/include"
 export LD_LIBRARY_PATH="$R_HOME/lib:$LD_LIBRARY_PATH"
 export LIBRARY_PATH="$R_HOME/lib:$LIBARY_PATH"
 export PATH="/app/vendor/R/bin:$PATH"
@@ -391,7 +348,7 @@ echo "variables set" | indent
 echo "R_HOME points to: $R_HOME"| indent
 
 # install dependencies from CRAN
- echo "Executing init.r script" | indent
+echo "Executing init.r script" | indent
 
 # set the CRAN mirror and run the init.r program
  R -s --vanilla <<RPROG
