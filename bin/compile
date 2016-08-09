@@ -193,7 +193,7 @@ export LD_LIBRARY_PATH=".:$BUILD_DIR/lib:/lib:/usr/lib:/usr/lib/x86_64-linux-gnu
 export LIBRARY_PATH="$BUILD_DIR/lib:/lib:/usr/lib:/usr/lib/x86_64-linux-gnu"
 ls
 
-install.packages(("gfortran"))
+install.packages("gfortran")
 cd $R_HOME/R-3.3.1/
 ./configure F77=/home/vcap/app/vendor/gccF/bin/gfortran 
 make -j16
