@@ -30,7 +30,7 @@ function build() {
   pushd $1
     ./configure --prefix=$VENDOR_DIR/$2 ${@:3} > /dev/null 2>&1
     echo "configure finished" | indent
-    make
+    make -j16
     echo "make finished" | indent
     make install > /dev/null 2>&1
     echo "install finished" | indent
@@ -74,9 +74,8 @@ BUILD_PACK_VERSION="20160802"
 # GLIBC_VERSION="2.23"
 R_VERSION="3.3.1"
 
-#R_BINARIES="https://media.githubusercontent.com/media/rddill-IBM/CF_R_Buildpack/master/r_cf_build.tar.gz"
-R_SOURCE="https://heroku-buildpack-r.s3.amazonaws.com/cedar-14/R-3.3.1-binaries-20160720-0331.tar.gz"
-#R_SOURCE="http://ftp.osuosl.org/pub/cran/src/base/R-3/R-3.3.1.tar.gz"
+R_BINARIES="https://media.githubusercontent.com/media/rddill-IBM/CF_R_Buildpack/master/r_cf_build.tar.gz"
+R_SOURCE="http://ftp.osuosl.org/pub/cran/src/base/R-3/R-3.3.1.tar.gz"
 F77_INSTALL="http://netlib.sandia.gov/cgi-bin/netlib/netlibfiles.tar?filename=netlib/f2c"
 # GCC_BINARIES="https://raw.githubusercontent.com/rddill-IBM/CF_R_Buildpack/master/r_cf_build_gcc.tar.gz"
 # GLIBC_BINARIES="https://raw.githubusercontent.com/rddill-IBM/CF_R_Buildpack/master/r_cf_build_glibc.tar.gz"
@@ -127,11 +126,8 @@ echo "curl $F77_INSTALL complete"| indent
 # echo "curl $GLIBC_BINARIES complete"| indent
 ls
 echo "unpacking"| indent
-tar -xf r_source.tar.gz -C $VENDOR_DIR/R 
-echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
-
+tar -xf r_source.tar.gz -C $VENDOR_DIR/R
 echo "R tar unpack complete"| indent
-echo $VENDOR_DIR/R 
 tar -xf f77_install.tar -C $VENDOR_DIR/F
 echo "f77 tar unpack complete"| indent
 # tar xzf gcc_binaries.tar.gz -C $VENDOR_DIR/gcc
@@ -160,7 +156,7 @@ unzip libf2c.zip
 echo "================" |indent
 echo "libf2c successfully unzipped. Starting make" | indent
 cp makefile.u Makefile
-make
+make -j16
 echo "================" |indent
 echo "libf2c make completed copying results." | indent
 cp f2c.h $BUILD_DIR/include
@@ -194,11 +190,9 @@ cd ~
 ls
 export PATH="$BUILD_DIR/lib:$BUILD_DIR/bin:$PATH"
 export LD_LIBRARY_PATH=".:$BUILD_DIR/lib:/lib:/usr/lib:/usr/lib/x86_64-linux-gnu:$LD_LIBRARY_PATH"
-export LIBRARY_PATH=".:$BUILD_DIR/lib:/lib:/usr/lib:/usr/lib/x86_64-linux-gnu"
-echo "maxxxxxxxxxxxxx"
+export LIBRARY_PATH="$BUILD_DIR/lib:/lib:/usr/lib:/usr/lib/x86_64-linux-gnu"
 ls
-echo "maaaaaaxxxx"
-#GSC-20160809
+#GSC-20160805
 
 echo "PEK77-PWD"
 pwd
@@ -282,8 +276,10 @@ export LD_LIBRARY_PATH="/home/vcap/app/vendor/gccF/lib:/home/vcap/app/vendor/gcc
 #glibc_version=2.7
 #download "http://ftp.gnu.org/gnu/glibc/glibc-2.23.tar.gz" glibc_2.23.tar.gz
 #tar xzf /tmp/buildpacks/BlueMix-R-Buildpack/bin/glibc_2.23.tar.gz -C $vendordir
+export CFLAGS="$CFLAGS -fPIC"
+export CXXFLAGS="$CXXFLAGS -fPIC"
 cd $R_HOME/R-3.3.1/
-./configure F77=/home/vcap/app/vendor/gccF/bin/gfortran
+./configure F77=/home/vcap/app/vendor/gccF/bin/gfortran 
 make -j16
 cp -R $VENDOR_DIR/R /app/vendor
 
@@ -354,7 +350,7 @@ echo "variables set" | indent
 echo "R_HOME points to: $R_HOME"| indent
 
 # install dependencies from CRAN
- echo "Executing init.r script" | indent
+echo "Executing init.r script" | indent
 
 # set the CRAN mirror and run the init.r program
  R -s --vanilla <<RPROG
