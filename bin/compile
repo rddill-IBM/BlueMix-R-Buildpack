@@ -275,7 +275,7 @@ export PATH="/home/vcap/app/vendor/gccF/bin:/home/vcap/app/vendor/gccF/bin/gfort
 #download "http://ftp.gnu.org/gnu/glibc/glibc-2.23.tar.gz" glibc_2.23.tar.gz
 #tar xzf /tmp/buildpacks/BlueMix-R-Buildpack/bin/glibc_2.23.tar.gz -C $vendordir
 cd $R_HOME/R-3.3.1/
-./configure --disable-file --without-pic --disable-shared
+./configure --without-pic --disable-shared
 cp -R $VENDOR_DIR/R /app/vendor
 
 echo "Stuff copied" | indent
@@ -300,7 +300,7 @@ echo "R_INCLUDE =$R_INCLUDE"| indent
 echo "LIBRARY_PATH =$LIBRARY_PATH"| indent
 
 # ln -sv app/vendor/R/lib/libgomp.so.1.0.0 app/vendor/R/lib/libgomp.so.1
-ls app/vendor/R/lib
+#ls app/vendor/R/lib
 
 
 # ln -s /usr/lib/libreadline.so $R_HOME/lib64/libreadline.so.5 2>&1
