@@ -118,7 +118,7 @@ echo "================" |indent
 echo "Exports created, Listing home (~) directory" | indent
 ls
 echo "================" |indent
-echo "finding existing gcc compiler"
+echo "finding existing gcc compiler" |indent
 pwd
 cd app
 cd vendor
@@ -126,7 +126,7 @@ which gcc
 mkdir "gcc"
 
 echo "================" |indent
-echo "installing gmp-6.1.1"
+echo "installing gmp-6.1.1" |indent
 wget "https://gmplib.org/download/gmp/gmp-6.1.1.tar.bz2"
 tar jxf gmp-6.1.1.tar.bz2
 cd gmp-6.1.1
@@ -139,7 +139,7 @@ cd ..
 ls
 
 echo "================" |indent
-echo "Installing mpfr-3.1.4"
+echo "Installing mpfr-3.1.4" |indent
 wget "http://www.mpfr.org/mpfr-current/mpfr-3.1.4.tar.gz"
 tar zxf mpfr-3.1.4.tar.gz
 cd mpfr-3.1.4
@@ -152,7 +152,7 @@ cd ..
 ls
 
 echo "================" |indent
-echo "Installing mpc-1.0.3"
+echo "Installing mpc-1.0.3" |indent
 wget "https://ftp.gnu.org/gnu/mpc/mpc-1.0.3.tar.gz"
 tar zxf mpc-1.0.3.tar.gz
 cd mpc-1.0.3
@@ -166,7 +166,7 @@ ls
 export LD_LIBRARY_PATH="/home/vcap/app/vendor/gcc:$LD_LIBRARY_PATH"
 
 echo "================" |indent
-echo "Installing GCC"
+echo "Installing GCC" |indent
 wget "https://ftp.gnu.org/gnu/gcc/gcc-4.9.4/gcc-4.9.4.tar.gz" -O "gcc-4.9.4.tar.gz"
 tar zxf gcc-4.9.4.tar.gz
 mkdir "gccF"
@@ -177,12 +177,12 @@ cd gcc-4.9.4
 make -j16
 make install
 echo "================" |indent
-echo "Validating gfortran"
+echo "Validating gfortran" |indent
 cd ..
 cd gccF
 /home/vcap/app/vendor/gccF/bin/gfortran --version
 echo "================" |indent
-echo "list current directory"
+echo "list current directory" |indent
 ls
 export LIBRARY_PATH="$BUILD_DIR/lib:/lib:/usr/lib:/usr/lib/x86_64-linux-gnu:/home/vcap/app/vendor/gccF/lib64:/home/vcap/app/vendor/gccF/bin:/home/vcap/app/vendor/gccF/lib"
 export LD_LIBRARY_PATH="/home/vcap/app/vendor/gccF/lib:/home/vcap/app/vendor/gccF/lib64:/home/vcap/app/vendor/gccF/bin:$LD_LIBRARY_PATH"
