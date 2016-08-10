@@ -286,7 +286,7 @@ echo "Stuff copied" | indent
 # R needs to know where gfortran and glibc header files are
 # export LDFLAGS="-L/app/vendor/gcc/lib64/"
 # export CPPFLAGS="-I/app/vendor/glibc/string/ -I/app/vendor/glibc/time -I/usr/include/x86_64-linux-gnu/sys -I/usr/include/x86_64-linux-gnu/gnu"
-export R_HOME=/app/vendor/R
+export R_HOME="/home/vcap/app/vendor/R:$R_HOME"
 export R_INCLUDE="$R_HOME/include:$BUILD_DIR/include"
 export LD_LIBRARY_PATH="$R_HOME/lib:$LD_LIBRARY_PATH"
 export LIBRARY_PATH="$R_HOME/lib:$LIBARY_PATH"
