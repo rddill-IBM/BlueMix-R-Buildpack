@@ -186,14 +186,19 @@ echo "f77 installation completed, searching for binaries" | indent
 find $BUILD_DIR/ -name '*f2c*' -mmin -5
 find $BUILD_DIR/ -name '*f77*' -mmin -5
 sleep 5
+echo "================" |indent
+echo "Listing home (~) directory" | indent
 cd ~
 ls
 export PATH="$BUILD_DIR/lib:$BUILD_DIR/bin:$PATH"
 export LD_LIBRARY_PATH=".:$BUILD_DIR/lib:/lib:/usr/lib:/usr/lib/x86_64-linux-gnu:$LD_LIBRARY_PATH"
 export LIBRARY_PATH="$BUILD_DIR/lib:/lib:/usr/lib:/usr/lib/x86_64-linux-gnu"
+echo "================" |indent
+echo "Exports created, Listing home (~) directory" | indent
 ls
 #GSC-20160805
 
+echo "================" |indent
 echo "PEK77-PWD"
 pwd
 cd app
@@ -299,11 +304,11 @@ export LD_LIBRARY_PATH="$R_HOME/lib:$LD_LIBRARY_PATH"
 export LIBRARY_PATH="$R_HOME/lib:$LIBARY_PATH"
 export PATH="/app/vendor/R/bin:$PATH"
 echo "PATH =$PATH"| indent
-# echo "LDFLAGS =$LDFLAGS"| indent
-# echo "CPPFLAGS =$CPPFLAGS"| indent
+echo "LDFLAGS =$LDFLAGS"| indent
+echo "CPPFLAGS =$CPPFLAGS"| indent
 echo "R_HOME =$R_HOME"| indent
 echo "R_INCLUDE =$R_INCLUDE"| indent
-# echo "LD_LIBRARY_PATH =$LD_LIBRARY_PATH"| indent
+echo "LD_LIBRARY_PATH =$LD_LIBRARY_PATH"| indent
 echo "LIBRARY_PATH =$LIBRARY_PATH"| indent
 
 # ln -sv app/vendor/R/lib/libgomp.so.1.0.0 app/vendor/R/lib/libgomp.so.1
