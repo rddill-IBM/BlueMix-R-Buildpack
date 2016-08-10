@@ -299,7 +299,7 @@ echo "R_INCLUDE =$R_INCLUDE"| indent
 # echo "LD_LIBRARY_PATH =$LD_LIBRARY_PATH"| indent
 echo "LIBRARY_PATH =$LIBRARY_PATH"| indent
 cd /
-ls -r R*
+ls -r
 R --version
 # ln -sv app/vendor/R/lib/libgomp.so.1.0.0 app/vendor/R/lib/libgomp.so.1
 #ls app/vendor/R/lib
