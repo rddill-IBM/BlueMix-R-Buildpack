@@ -58,9 +58,8 @@ function download() {
 echo "tttttttttttttt"
 echo "$1"
 echo "$2"
-cd /home/vcap/app/support_heroku_buildpacks
-cd app
-ls 
+cd /home/vcap/app
+ls
 vendordir=/app/vendor
 mkdir -p $vendordir
 basedir="$( cd -P "$( dirname "$0" )" && pwd )"
