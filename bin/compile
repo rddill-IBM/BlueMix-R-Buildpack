@@ -276,7 +276,7 @@ export PATH="/home/vcap/app/vendor/gccF/bin:/home/vcap/app/vendor/gccF/bin/gfort
 #tar xzf /tmp/buildpacks/BlueMix-R-Buildpack/bin/glibc_2.23.tar.gz -C $vendordir
 cd $R_HOME/R-3.3.1/
 ./configure --without-pic --disable-shared
-cp -R $VENDOR_DIR/R /app/vendor
+cp -R $VENDOR_DIR/R /home/vcap/app/vendor
 
 echo "Stuff copied" | indent
 # find /app/vendor/ type -d -print0 | xargs -0 ls -ld
