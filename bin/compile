@@ -55,7 +55,7 @@ function download() {
   fi
 }
 #GSC-20160805
-echo"tttttttttttttt"
+echo "tttttttttttttt"
 echo "$1"
 echo "$2"
 vendordir=/app/vendor
