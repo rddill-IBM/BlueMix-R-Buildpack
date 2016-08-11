@@ -1,0 +1,95 @@
+#!/usr/bin/env bash
+# bin/compile <build-dir> <cache-dir>
+BUILD_DIR=$1
+CACHE_DIR=$2/vendor
+function error() {
+  echo " !     $*" >&2
+  exit 1
+}
+function indent() {
+  c='s/^/       /'
+  case $(uname) in
+    Darwin) sed -l "$c";;
+    *)      sed -u "$c";;
+  esac
+}
+
+cd /home/vcap/app/
+
+mkdir R
+mkdir gcc
+mkdir gccF
+
+echo "PEK77-gmp-6.1.1"
+wget "https://gmplib.org/download/gmp/gmp-6.1.1.tar.bz2"
+tar jxf gmp-6.1.1.tar.bz2
+cd gmp-6.1.1
+./configure --disable-shared --enable-static --prefix=/home/vcap/app/gcc
+make -j16
+#make check
+make install
+cd ..
+
+echo "PEK77-mpfr-3.1.4"
+wget "http://www.mpfr.org/mpfr-current/mpfr-3.1.4.tar.gz"
+tar zxf mpfr-3.1.4.tar.gz
+cd mpfr-3.1.4
+./configure --disable-shared --enable-static --prefix=/home/vcap/app/gcc --with-gmp=/home/vcap/app/gcc
+make -j16
+#make check
+make install
+cd ..
+
+echo "PEK77-mpc-1.0.3"
+wget "https://ftp.gnu.org/gnu/mpc/mpc-1.0.3.tar.gz"
+tar zxf mpc-1.0.3.tar.gz
+cd mpc-1.0.3
+./configure --disable-shared --enable-static --prefix=/home/vcap/app/gcc --with-gmp=/home/vcap/app/gcc  --with-mpfr=/home/vcap/app/gcc
+make -j16
+#make check
+make install
+cd ..
+
+#export LD_LIBRARY_PATH="/home/vcap/app/gcc:$LD_LIBRARY_PATH"
+echo "PEK77-GCC"
+wget "https://ftp.gnu.org/gnu/gcc/gcc-4.9.4/gcc-4.9.4.tar.gz"
+tar zxf gcc-4.9.4.tar.gz
+cd gcc-4.9.4
+./configure --prefix=/home/vcap/app/gccF --disable-shared --disable-bootstrap --disable-libstdcxx-pch --enable-languages=fortran --enable-libgomp --enable-lto --enable-threads=posix --enable-tls --with-gmp=/home/vcap/app/gcc  --with-mpfr=/home/vcap/app/gcc --with-mpc=/home/vcap/app/gcc --with-fpmath=sse --disable-multilib
+make -j16
+make install
+cd ..
+
+export LIBRARY_PATH="/home/vcap/app/gccF/lib64:/home/vcap/app/gccF/lib:$LIBRARY_PATH"
+export LD_LIBRARY_PATH="/home/vcap/app/gccF/lib:/home/vcap/app/gccF/lib64:$LD_LIBRARY_PATH"
+export PATH="/home/vcap/app/gccF/bin:/home/vcap/app/gccF/bin/gfortran:$PATH"
+
+#export R_HOME="/home/vcap/app/R:$R_HOME"
+
+echo "PEK77-R-3.3.1"
+wget "https://cran.r-project.org/src/base/R-3/R-3.3.1.tar.gz"
+tar zxf R-3.3.1.tar.gz
+cd R-3.3.1
+./configure --prefix=/home/vcap/app/R --with-readline=yes --with-libpng=yes --with-x=no
+make -j16
+make install
+cd ..
+echo "PEK77-FINISH"
+
+export PATH="/home/vcap/app/R/bin/:/home/vcap/app/R/bin/R:$PATH"
+export LIBRARY_PATH="/home/vcap/app/R/lib:$LIBRARY_PATH"
+export LD_LIBRARY_PATH="/home/vcap/app/R/lib:$LD_LIBRARY_PATH"
+R --version
+/home/vcap/app/R/bin/R --no-save -s <<RPROG 2>&1 | indent
+  cat("\n=====> init.r Starting...\n")
+  Sys.setenv(BUILD_DIR="$BUILD_DIR")
+  setwd("$BUILD_DIR")
+  r <- getOption("repos");
+  r["CRAN"] <- "$CRAN_MIRROR";
+  options(repos=r);
+  `cat $BUILD_DIR/init.r`
+  cat("\n=====> init.r Completed Successfully\n")
+RPROG
+echo "R CMD-FINISH"
+#R CMD bash /tmp/buildpacks/BlueMix-R-Buildpack/bin/init.r /tmp/buildpacks/BlueMix-R-Buildpack/bin/init.rout
+#cat /tmp/buildpacks/BlueMix-R-Buildpack/bin/init.rout

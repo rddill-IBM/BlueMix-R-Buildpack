@@ -1,11 +1,19 @@
 #!/usr/bin/env bash
 # bin/compile <build-dir> <cache-dir>
-BUILD_DIR=$1
-CACHE_DIR=$2/vendor
+
+# fail fast
+set -e
+
+# debug
+# set -x
+
+shopt -s extglob
+
 function error() {
   echo " !     $*" >&2
   exit 1
 }
+
 function indent() {
   c='s/^/       /'
   case $(uname) in
@@ -14,82 +22,364 @@ function indent() {
   esac
 }
 
-cd /home/vcap/app/
+function build() {
+  echo ----------------------------------------------------------------------
+  echo Building $@...
+  echo ----------------------------------------------------------------------
+  echo
+  pushd $1
+    ./configure --prefix=$VENDOR_DIR/$2 ${@:3} > /dev/null 2>&1
+    echo "configure finished" | indent
+    make -j16
+    echo "make finished" | indent
+    make install > /dev/null 2>&1
+    echo "install finished" | indent
+    make clean > /dev/null 2>&1
+    echo "clean finished" | indent
+  popd > /dev/null
+  echo
+  echo
 
-mkdir R
-mkdir gcc
-mkdir gccF
+  # add to libraries and pkg-config
+  export LD_LIBRARY_PATH="$VENDOR_DIR/$2/lib:$LD_LIBRARY_PATH"
+  export PKG_CONFIG_PATH="$VENDOR_DIR/$2/lib/pkgconfig:$PKG_CONFIG_PATH"
+
+}
+
+function download() {
+  if [ ! -f "$2" ]; then
+    echo Downloading $2...
+    curl $1 -o $2 -s -S
+  else
+    echo Got $2...
+  fi
+}
+#GSC-20160805
+vendordir=/app/vendor
+mkdir -p $vendordir
+basedir="$( cd -P "$( dirname "$0" )" && pwd )"
+
+# clean up leaking environment
+unset GIT_DIR
+
+lsb_release -a
+# parse and derive params
+BUILD_DIR=$1
+CACHE_DIR="$2/vendor"
+LP_DIR=`cd $(dirname $0); cd ..; pwd`
+BUILDPACK_DIR="$(dirname $(dirname $0))"
+# config
+BUILD_PACK_VERSION="20160802"
+# GCC_VERSION="4.9"
+# GLIBC_VERSION="2.23"
+R_VERSION="3.3.1"
+
+R_BINARIES="https://media.githubusercontent.com/media/rddill-IBM/CF_R_Buildpack/master/r_cf_build.tar.gz"
+R_SOURCE="http://ftp.osuosl.org/pub/cran/src/base/R-3/R-3.3.1.tar.gz"
+F77_INSTALL="http://netlib.sandia.gov/cgi-bin/netlib/netlibfiles.tar?filename=netlib/f2c"
+# GCC_BINARIES="https://raw.githubusercontent.com/rddill-IBM/CF_R_Buildpack/master/r_cf_build_gcc.tar.gz"
+# GLIBC_BINARIES="https://raw.githubusercontent.com/rddill-IBM/CF_R_Buildpack/master/r_cf_build_glibc.tar.gz"
+VENDOR_DIR="$BUILD_DIR/vendor"
+R_HOME="$VENDOR_DIR/R"
+# GCC_HOME="$VENDOR_DIR/gcc"
+# GLIBC_HOME="$VENDOR_DIR/glibc"
+CRAN_MIRROR="http://cran.cnr.berkeley.edu/"
+echo "================" |indent
+echo "input variable 1 = $1"| indent
+echo "input variable 2 = $2"| indent
+echo "BUILD_DIR = $BUILD_DIR "| indent
+echo "CACHE_DIR = $CACHE_DIR"| indent
+echo "LP_DIR = $LP_DIR"| indent
+echo "BUILDPACK_DIR = $BUILDPACK_DIR"| indent
+echo "BUILD_PACK_VERSION = $BUILD_PACK_VERSION"| indent
+# echo "GCC_VERSION = $GCC_VERSION"| indent
+# echo "GLIBC_VERSION = $GLIBC_VERSION"| indent
+echo "R_VERSION = $R_VERSION"| indent
+echo "R_BINARIES = $R_BINARIES"| indent
+echo "R_SOURCE = $R_SOURCE"| indent
+echo "VENDOR_DIR = $VENDOR_DIR"| indent
+echo "R_HOME = $R_HOME"| indent
+echo "CRAN_MIRROR = $CRAN_MIRROR"| indent
+
+mkdir -p $CACHE_DIR
+
+# vendor R into the slug
+echo "Vendoring R $R_VERSION" | indent
+
+# download and unpack binaries
+echo "Downloading and unpacking R binaries" | indent
+mkdir -p $VENDOR_DIR && mkdir -p /app/vendor
+mkdir -p $VENDOR_DIR/R && mkdir -p /app/vendor/R
+mkdir -p $VENDOR_DIR/F && mkdir -p /app/vendor/F
+# mkdir -p $VENDOR_DIR/gcc
+# mkdir -p $VENDOR_DIR/glibc
+echo "mkdir $VENDOR_DIR complete"| indent
+curl $R_SOURCE -s -o r_source.tar.gz
+echo "curl $R_SOURCE complete"| indent
+curl $F77_INSTALL -s -o f77_install.tar
+echo "curl $F77_INSTALL complete"| indent
+# curl $R_BINARIES -s -o r_binaries.tar.gz
+# echo "curl $R_BINARIES complete"| indent
+# curl $GCC_BINARIES -s -o gcc_binaries.tar.gz
+# echo "curl $GCC_BINARIES complete"| indent
+# curl $GLIBC_BINARIES -s -o glibc_binaries.tar.gz
+# echo "curl $GLIBC_BINARIES complete"| indent
+ls
+echo "unpacking"| indent
+tar -xf r_source.tar.gz -C $VENDOR_DIR/R
+echo "R tar unpack complete"| indent
+tar -xf f77_install.tar -C $VENDOR_DIR/F
+echo "f77 tar unpack complete"| indent
+# tar xzf gcc_binaries.tar.gz -C $VENDOR_DIR/gcc
+# echo "gcc tar unpack complete"| indent
+# tar xzf glibc_binaries.tar.gz -C $VENDOR_DIR/glibc
+# echo "glibc tar unpack complete"| indent
+rm r_source.tar.gz
+rm f77_install.tar
+# rm gcc_binaries.tar.gz
+# rm glibc_binaries.tar.gz
+ls
+# find /app/ -d -print0 | xargs -0 ls -ld
+sleep 2
+# find /tmp/ type -d -print0 | xargs -0 ls -ld
+#sleep 10
+# need to copy the binaries to /app/vendor so that R works
+# cp -R $VENDOR_DIR/gcc /app/vendor/gcc
+# cp -R $VENDOR_DIR/glibc /app/vendor/glibc
+export PATH=./:/app/vendor/R/bin:$BUILD_DIR/lib:$PATH
+cd $VENDOR_DIR/F/f2c/
+chmod a+x src/xsum
+mkdir -p libf2c
+mv libf2c.zip libf2c
+cd libf2c/
+unzip libf2c.zip
+echo "================" |indent
+echo "libf2c successfully unzipped. Starting make" | indent
+cp makefile.u Makefile
+make -j16
+echo "================" |indent
+echo "libf2c make completed copying results." | indent
+cp f2c.h $BUILD_DIR/include
+cp libf2c.a $BUILD_DIR/lib
+cd ../src/
+ls
+sleep 2
+rm xsum
+cc -O xsum.c -o xsum
+chmod +x xsum
+cp makefile.u Makefile
+echo "================" |indent
+echo "redirected to src directory. Starting make" | indent
+make  --print-directory
+echo "================" |indent
+echo "src make successfully completed. copying files" | indent
+mkdir -p $BUILD_DIR/bin
+cp f2c $BUILD_DIR/bin
+cd ../
+mkdir -p $BUILD_DIR/man/man1
+cp f2c.1t $BUILD_DIR/man/man1
+cp fc $BUILD_DIR/bin/f77
+chmod +x $BUILD_DIR/bin/f77
+cd ../
+echo "================" |indent
+echo "f77 installation completed, searching for binaries" | indent
+find $BUILD_DIR/ -name '*f2c*' -mmin -5
+find $BUILD_DIR/ -name '*f77*' -mmin -5
+sleep 5
+cd ~
+ls
+export PATH="$BUILD_DIR/lib:$BUILD_DIR/bin:$PATH"
+export LD_LIBRARY_PATH=".:$BUILD_DIR/lib:/lib:/usr/lib:/usr/lib/x86_64-linux-gnu:$LD_LIBRARY_PATH"
+export LIBRARY_PATH="$BUILD_DIR/lib:/lib:/usr/lib:/usr/lib/x86_64-linux-gnu"
+ls
+#GSC-20160805
+
+echo "PEK77-PWD"
+pwd
+cd app
+cd vendor
+which gcc
+mkdir "gcc"
+#yum -y install gcc gcc-c++ kernel-devel
 
 echo "PEK77-gmp-6.1.1"
 wget "https://gmplib.org/download/gmp/gmp-6.1.1.tar.bz2"
 tar jxf gmp-6.1.1.tar.bz2
 cd gmp-6.1.1
-./configure --disable-shared --enable-static --prefix=/home/vcap/app/gcc
+./configure --disable-shared --enable-static --prefix=/home/vcap/app/vendor/gcc
 make -j16
 #make check
 make install
 cd ..
+ls
 
 echo "PEK77-mpfr-3.1.4"
 wget "http://www.mpfr.org/mpfr-current/mpfr-3.1.4.tar.gz"
 tar zxf mpfr-3.1.4.tar.gz
 cd mpfr-3.1.4
-./configure --disable-shared --enable-static --prefix=/home/vcap/app/gcc --with-gmp=/home/vcap/app/gcc
+./configure --disable-shared --enable-static --prefix=/home/vcap/app/vendor/gcc --with-gmp=/home/vcap/app/vendor/gcc
 make -j16
 #make check
 make install
 cd ..
+ls
 
 echo "PEK77-mpc-1.0.3"
 wget "https://ftp.gnu.org/gnu/mpc/mpc-1.0.3.tar.gz"
 tar zxf mpc-1.0.3.tar.gz
 cd mpc-1.0.3
-./configure --disable-shared --enable-static --prefix=/home/vcap/app/gcc --with-gmp=/home/vcap/app/gcc  --with-mpfr=/home/vcap/app/gcc
+./configure --disable-shared --enable-static --prefix=/home/vcap/app/vendor/gcc --with-gmp=/home/vcap/app/vendor/gcc  --with-mpfr=/home/vcap/app/vendor/gcc
 make -j16
 #make check
 make install
 cd ..
+ls
+export LD_LIBRARY_PATH="/home/vcap/app/vendor/gcc:$LD_LIBRARY_PATH"
 
-#export LD_LIBRARY_PATH="/home/vcap/app/gcc:$LD_LIBRARY_PATH"
 echo "PEK77-GCC"
-wget "https://ftp.gnu.org/gnu/gcc/gcc-4.9.4/gcc-4.9.4.tar.gz"
+wget "https://ftp.gnu.org/gnu/gcc/gcc-4.9.4/gcc-4.9.4.tar.gz" -O "gcc-4.9.4.tar.gz"
 tar zxf gcc-4.9.4.tar.gz
+mkdir "gccF"
+ls
 cd gcc-4.9.4
-./configure --prefix=/home/vcap/app/gccF --disable-shared --disable-bootstrap --disable-libstdcxx-pch --enable-languages=fortran --enable-libgomp --enable-lto --enable-threads=posix --enable-tls --with-gmp=/home/vcap/app/gcc  --with-mpfr=/home/vcap/app/gcc --with-mpc=/home/vcap/app/gcc --with-fpmath=sse --disable-multilib
+./configure --prefix=/home/vcap/app/vendor/gccF --disable-shared --disable-bootstrap --disable-libstdcxx-pch --enable-languages=fortran --enable-libgomp --enable-lto --enable-threads=posix --enable-tls --with-gmp=/home/vcap/app/vendor/gcc  --with-mpfr=/home/vcap/app/vendor/gcc --with-mpc=/home/vcap/app/vendor/gcc --with-fpmath=sse --disable-multilib
 make -j16
 make install
-cd ..
+echo "PEK77-gfortran"
+/home/vcap/app/vendor/gccF/bin/gfortran --version
+echo "=====1111111======"
+#echo "=====1111111======"
+#ls -r
+#echo "=====2222222======"
+#cd x86_64-unknown-linux-gnu
+#ls -r
+#echo "=====3333333======"
+#cd 4.9.4
+#ls -r
+#echo "=====4444444======"
+#echo "$LIBDIR"| indent
+#echo "=================="
+#cd include
+#ls -r
 
-export LIBRARY_PATH="/home/vcap/app/gccF/lib64:/home/vcap/app/gccF/lib:$LIBRARY_PATH"
-export LD_LIBRARY_PATH="/home/vcap/app/gccF/lib:/home/vcap/app/gccF/lib64:$LD_LIBRARY_PATH"
-export PATH="/home/vcap/app/gccF/bin:/home/vcap/app/gccF/bin/gfortran:$PATH"
+# patch gcc features.h file
+# see http://permalink.gmane.org/gmane.comp.gcc.help/40166
+#mkdir -p $vendordir/gcc-4/lib/gcc/x86_64-unknown-linux-gnu/4.9.3/include-fixed
+#cp /tmp/buildpacks/BlueMix-R-Buildpack/bin/features.h $vendordir/gcc-4/lib/gcc/x86_64-unknown-linux-gnu/4.9.3/include-fixed/features.h
+export LIBRARY_PATH="$BUILD_DIR/lib:/lib:/usr/lib:/usr/lib/x86_64-linux-gnu:/home/vcap/app/vendor/gccF/lib64:/home/vcap/app/vendor/gccF/bin:/home/vcap/app/vendor/gccF/lib"
+export LD_LIBRARY_PATH="/home/vcap/app/vendor/gccF/lib:/home/vcap/app/vendor/gccF/lib64:/home/vcap/app/vendor/gccF/bin:$LD_LIBRARY_PATH"
+export PATH="/home/vcap/app/vendor/gccF/bin:/home/vcap/app/vendor/gccF/bin/gfortran:$PATH"
+#export LD_RUN_PATH="/home/vcap/app/vendor/gccF:$LD_LIBRARY_PATH:$LIBDIR"
+# https://www.gnu.org/software/libc/
+#glibc_version=2.7
+#download "http://ftp.gnu.org/gnu/glibc/glibc-2.23.tar.gz" glibc_2.23.tar.gz
+#tar xzf /tmp/buildpacks/BlueMix-R-Buildpack/bin/glibc_2.23.tar.gz -C $vendordir
+cd $R_HOME/R-3.3.1/
+./configure --without-pic --disable-shared
+cp -R $VENDOR_DIR/R /app/vendor
 
-#export R_HOME="/home/vcap/app/R:$R_HOME"
+echo "Stuff copied" | indent
+# find /app/vendor/ type -d -print0 | xargs -0 ls -ld
+# find /app/vendor/R/ type -d -print0 | xargs -0 ls -ld
+# sleep 15
 
-echo "PEK77-R-3.3.1"
-wget "https://cran.r-project.org/src/base/R-3/R-3.3.1.tar.gz"
-tar zxf R-3.3.1.tar.gz
-cd R-3.3.1
-./configure --prefix=/home/vcap/app/R --with-readline=yes --with-libpng=yes --with-x=no
-make -j16
-make install
-cd ..
-echo "PEK77-FINISH"
+# R needs to know where gfortran and glibc header files are
+# export LDFLAGS="-L/app/vendor/gcc/lib64/"
+# export CPPFLAGS="-I/app/vendor/glibc/string/ -I/app/vendor/glibc/time -I/usr/include/x86_64-linux-gnu/sys -I/usr/include/x86_64-linux-gnu/gnu"
+export R_HOME="/usr/local/R"
+export R_INCLUDE="$R_HOME/include:$BUILD_DIR/include"
+export LD_LIBRARY_PATH="$R_HOME/lib:$LD_LIBRARY_PATH"
+export LIBRARY_PATH="$R_HOME/lib:$LIBARY_PATH"
+export PATH="$R_HOME/bin:$PATH"
+echo "PATH =$PATH"| indent
+# echo "LDFLAGS =$LDFLAGS"| indent
+# echo "CPPFLAGS =$CPPFLAGS"| indent
+echo "R_HOME =$R_HOME"| indent
+echo "R_INCLUDE =$R_INCLUDE"| indent
+# echo "LD_LIBRARY_PATH =$LD_LIBRARY_PATH"| indent
+echo "LIBRARY_PATH =$LIBRARY_PATH"| indent
 
-export PATH="/home/vcap/app/R/bin/:/home/vcap/app/R/bin/R:$PATH"
-export LIBRARY_PATH="/home/vcap/app/R/lib:$LIBRARY_PATH"
-export LD_LIBRARY_PATH="/home/vcap/app/R/lib:$LD_LIBRARY_PATH"
-R --version
-/home/vcap/app/R/bin/R --no-save -s <<RPROG 2>&1 | indent
-  cat("\n=====> init.r Starting...\n")
-  Sys.setenv(BUILD_DIR="$BUILD_DIR")
-  setwd("$BUILD_DIR")
-  r <- getOption("repos");
-  r["CRAN"] <- "$CRAN_MIRROR";
-  options(repos=r);
-  `cat $BUILD_DIR/init.r`
-  cat("\n=====> init.r Completed Successfully\n")
+# ln -sv app/vendor/R/lib/libgomp.so.1.0.0 app/vendor/R/lib/libgomp.so.1
+#ls app/vendor/R/lib
+
+
+# ln -s /usr/lib/libreadline.so $R_HOME/lib64/libreadline.so.5 2>&1
+# ln -s /usr/lib/x86_64-linux-gnu/libreadline.so $R_HOME/lib64/libreadline.so.5 2>&1
+# ln -s /usr/lib/x86_64-linux-gnu/libmpfr.so.4.1.2 $R_HOME/lib64/libmpfr.so.1 2>&1
+# ln -s /usr/lib/x86_64-linux-gnu/libgmp.so.10.1.3 $R_HOME/lib64/libgmp.so.3 2>&1
+# ln -s /usr/lib/x86_64-linux-gnu/crti.o $R_HOME/lib64/crti.o 2>&1
+
+#mkdir $R_INCLUDE/sys
+#mkdir $R_INCLUDE/gnu
+#mkdir $R_INCLUDE/bits
+#mkdir $R_INCLUDE/asm
+
+#cp -R /usr/include/x86_64-linux-gnu/sys/* $R_INCLUDE/sys
+#cp -R /usr/include/x86_64-linux-gnu/gnu/* $R_INCLUDE/gnu
+#cp -R /usr/include/x86_64-linux-gnu/bits/* $R_INCLUDE/bits
+#cp -R /usr/include/x86_64-linux-gnu/asm/* $R_INCLUDE/asm
+# cp -R /usr/include/x86_64-linux-gnu/* $R_INCLUDE
+# cp -R /usr/include/* $R_INCLUDE
+
+export CPATH=$R_INCLUDE:/usr/lib/x86_64-linux-gnu
+
+echo "CPATH = $CPATH"| indent
+
+
+echo "variables set" | indent
+
+# copy over environment
+ mkdir -p $BUILD_DIR/.profile.d
+ cp "$BUILDPACK_DIR/bin/r_environment.sh" $BUILD_DIR/.profile.d/r_environment.sh
+ cat $BUILD_DIR/.profile.d/r_environment.sh
+
+ echo "environment copied" | indent
+
+# prevent warnings
+ mkdir -p /app/vendor/R/lib64/R/doc/html
+ touch /app/vendor/R/lib64/R/doc/html/R.css
+
+
+# add ldpaths to existing space
+
+echo "R_HOME points to: $R_HOME"| indent
+
+# install dependencies from CRAN
+echo "Executing init.r script" | indent
+
+
+
+# set the CRAN mirror and run the init.r program
+ R -s --vanilla <<RPROG
+   Sys.setenv(BUILD_DIR="$BUILD_DIR")
+   print("Sys.setenv complete")
+   setwd("$BUILD_DIR")
+   print("setwd complete")
+   r <- getOption("repos");
+   print(r)
+   print("setting r complete")
+   r["CRAN"] <- "$CRAN_MIRROR";
+   print("setting r[CRAN] complete")
+   options(repos=r);
+   print("options(repos=r) complete")
+   `cat $BUILD_DIR/init.r`
+   print("cat $BUILD_DIR/init.r complete")
 RPROG
-echo "R CMD-FINISH"
-#R CMD bash /tmp/buildpacks/BlueMix-R-Buildpack/bin/init.r /tmp/buildpacks/BlueMix-R-Buildpack/bin/init.rout
-#cat /tmp/buildpacks/BlueMix-R-Buildpack/bin/init.rout
+
+#cat indent
+
+echo "R $R_VERSION successfully installed" | indent
+
+# need to copy binaries back so that any installed packages are included in the slug
+rm -rf $VENDOR_DIR && mkdir -p $VENDOR_DIR
+# cp -R /app/vendor/gcc $VENDOR_DIR/gcc
+# cp -R /app/vendor/glibc $VENDOR_DIR/glibc
+cp -R /app/vendor/R $VENDOR_DIR/R
+
+
+# HACK
+ # cp $VENDOR_DIR/gcc/lib64/* $VENDOR_DIR/R/lib64/R/lib
+
+# remove unneeded files to make slug smaller
+ # pushd $VENDOR_DIR/gcc > /dev/null && rm -rf !(lib64) && popd > /dev/null
+ # pushd $VENDOR_DIR/glibc > /dev/null && rm -rf !(string|time) && popd > /dev/null
