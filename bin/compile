@@ -67,5 +67,5 @@ export PATH="/home/vcap/app/R/bin/:/home/vcap/app/R/bin/R:$PATH"
 export LIBRARY_PATH="/home/vcap/app/R/lib:$LIBRARY_PATH"
 export LD_LIBRARY_PATH="/home/vcap/app/R/lib:$LD_LIBRARY_PATH"
 R --version
-R CMD bash /tmp/buildpacks/BlueMix-R-Buildpack/bin/init.r
-R --no-save < /tmp/buildpacks/BlueMix-R-Buildpack/bin/test.R
+R CMD bash /tmp/buildpacks/BlueMix-R-Buildpack/bin/init.r /tmp/buildpacks/BlueMix-R-Buildpack/bin/init.rout
+cat /tmp/buildpacks/BlueMix-R-Buildpack/bin/init.rout
