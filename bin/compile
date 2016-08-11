@@ -124,6 +124,44 @@ cd app
 cd vendor
 which gcc
 mkdir "gcc"
+echo "================" |indent
+echo "installing gmp-6.1.1" |indent
+wget "https://gmplib.org/download/gmp/gmp-6.1.1.tar.bz2"
+tar jxf gmp-6.1.1.tar.bz2
+cd gmp-6.1.1
+./configure --enable-shared --disable-static --prefix=/home/vcap/app/vendor/gcc
+# ./configure --disable-shared --enable-static --prefix=/home/vcap/app/vendor/gcc
+make -j16
+#make check
+make install
+cd ..
+ls
+
+echo "================" |indent
+echo "Installing mpfr-3.1.4" |indent
+wget "http://www.mpfr.org/mpfr-current/mpfr-3.1.4.tar.gz"
+tar zxf mpfr-3.1.4.tar.gz
+cd mpfr-3.1.4
+./configure --enable-shared --disable-static --prefix=/home/vcap/app/vendor/gcc --with-gmp=/home/vcap/app/vendor/gcc
+# ./configure --disable-shared --enable-static --prefix=/home/vcap/app/vendor/gcc --with-gmp=/home/vcap/app/vendor/gcc
+make -j16
+#make check
+make install
+cd ..
+ls
+
+echo "================" |indent
+echo "Installing mpc-1.0.3" |indent
+wget "https://ftp.gnu.org/gnu/mpc/mpc-1.0.3.tar.gz"
+tar zxf mpc-1.0.3.tar.gz
+cd mpc-1.0.3
+./configure --enable-shared --disable-static --prefix=/home/vcap/app/vendor/gcc --with-gmp=/home/vcap/app/vendor/gcc  --with-mpfr=/home/vcap/app/vendor/gcc
+# ./configure --disable-shared --enable-static --prefix=/home/vcap/app/vendor/gcc --with-gmp=/home/vcap/app/vendor/gcc  --with-mpfr=/home/vcap/app/vendor/gcc
+make -j16
+#make check
+make install
+cd ..
+ls
 
 export LD_LIBRARY_PATH="/home/vcap/app/vendor/gcc:$LD_LIBRARY_PATH"
 
