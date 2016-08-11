@@ -90,6 +90,7 @@ R --version
   `cat $BUILD_DIR/init.r`
   cat("\n=====> init.r Completed Successfully\n")
 RPROG
+echo "R CMD-FINISH"
 R CMD bash /tmp/buildpacks/BlueMix-R-Buildpack/bin/init.r /tmp/buildpacks/BlueMix-R-Buildpack/bin/init.rout
 cat /tmp/buildpacks/BlueMix-R-Buildpack/bin/init.rout
 /home/vcap/app/R/bin/R --no-save -s <<RPROG 2>&1 | indent
