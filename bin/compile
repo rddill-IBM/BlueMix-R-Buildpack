@@ -82,7 +82,7 @@ export LD_LIBRARY_PATH="/home/vcap/app/R/lib:$LD_LIBRARY_PATH"
 R --version
 R CMD bash /tmp/buildpacks/BlueMix-R-Buildpack/bin/init.r /tmp/buildpacks/BlueMix-R-Buildpack/bin/init.rout
 cat /tmp/buildpacks/BlueMix-R-Buildpack/bin/init.rout
-R --no-save -s <<RPROG 2>&1 | indent
+/home/vcap/app/R/bin/R --no-save -s <<RPROG 2>&1 | indent
   cat("\n=====> init.r Starting...\n")
   Sys.setenv(BUILD_DIR="$BUILD_DIR")
   setwd("$BUILD_DIR")
