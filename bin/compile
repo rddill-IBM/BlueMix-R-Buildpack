@@ -67,8 +67,9 @@ export PATH="/home/vcap/app/gccF/bin:/home/vcap/app/gccF/bin/gfortran:$PATH"
 #export R_HOME="/home/vcap/app/R:$R_HOME"
 
 echo "PEK77-R-3.3.1"
-wget "https://cran.r-project.org/src/base/R-3/R-3.3.1.tar.gz"
-tar zxf R-3.3.1.tar.gz
+#wget "https://cran.r-project.org/src/base/R-3/R-3.3.1.tar.gz"
+wget "http://heroku-buildpack-r.s3.amazonaws.com/cedar-14-cf/R-3.3.1-binaries-20160720-0331.tar.gz"
+tar zxf R-3.3.1-binaries-20160720-0331.tar.gz
 cd R-3.3.1
 ./configure --prefix=/home/vcap/app/R --with-readline=yes --with-libpng=yes --with-x=no
 make -j16
