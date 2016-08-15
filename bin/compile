@@ -137,10 +137,10 @@ echo ============================================================
 echo Building dependencies...
 echo ======================================================================
 
-build "$vendordir/gmp-6.1.1" gmp
-build "$vendordir/mpfr-3.1.4" mpfr
-build "$vendordir/mpc-1.0.3" mpc
-build "$vendordir/cairo-1.14.6" cairo
+build "/tmp/staged/gmp-6.1.1" gmp
+build "/tmp/staged/mpfr-3.1.4" mpfr
+build "/tmp/staged/mpc-1.0.3" mpc
+build "/tmp/staged/cairo-1.14.6" cairo
 
 # build R
 echo ============================================================
