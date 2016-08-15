@@ -98,7 +98,7 @@ tar zxf gcc-4.9.4.tar.gz
 # http://www.cairographics.org
 cairo_version=1.12.16
 download "http://www.cairographics.org/releases/cairo-$cairo_version.tar.xz" cairo-$cairo_version.tar.xz
-tar xvf cairo-$cairo_version.tar.xz
+tar xf cairo-$cairo_version.tar.xz
 
 # R
 # download "http://cran.r-project.org/src/base/R-$r_version_major/R-$r_version.tar.gz" R-$r_version.tar.gz
