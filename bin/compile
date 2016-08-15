@@ -1,218 +1,98 @@
-#!/bin/bash
-
-# NOTE: Heroku Cedar Stack
-#  gcc needs to be 4.3
-
-# See http://cran.r-project.org/doc/manuals/R-admin.html for details on building R
-
-# fail fast
-set -e
-
-# debug
- set -x
-
-## HELPERS
-
-function download() {
-  if [ ! -f "$2" ]; then
-    echo Downloading $2...
-    curl $1 -o $2 -s -S
-  else
-    echo Got $2...
-  fi
-}
-
-function build() {
-  echo ----------------------------------------------------------------------
-  echo Building $@...
-  echo Vendordir $vendordir/$2 ${@:3}
-  echo ----------------------------------------------------------------------
-  echo
-  pushd $1
-    ./configure --prefix=$vendordir/$2 ${@:3} --enable-shared --disable-static && make -j16 && make install && make clean
-  popd > /dev/null
-  echo
-  echo
-
-  # add to libraries and pkg-config
-  export LD_LIBRARY_PATH="$vendordir/$2:$LD_LIBRARY_PATH"
-  export PKG_CONFIG_PATH="$vendordir/$2/lib/pkgconfig:$PKG_CONFIG_PATH"
-
-}
-
-## SCRIPT
-
-# upgrade from R V 2.15.1 to R Version 3.2.5
-# r_version="${1:-2.15.1}"
-# r_version_major=${r_version:0:1}
-r_version="${1:-3.3.1}"
-r_version_major=${r_version:0:1}
-build_no=${3:-`date +%Y%m%d-%H%M`}
-
-# check arguments
-if ([ -z "$r_version" ] || [ -z "$build_no" ]); then
-  echo
-  echo "USAGE: $0 VERSION [BUILDNUM]"
-  echo
-  echo "  VERSION    is the R version. E.g. 3.3.1"
-  echo "  BUILDNUM   the build number. E.g. 20131031-1400"
-  echo
+#!/usr/bin/env bash
+# bin/compile <build-dir> <cache-dir>
+BUILD_DIR=$1
+CACHE_DIR=$2/vendor
+function error() {
+  echo " !     $*" >&2
   exit 1
-fi
+}
+function indent() {
+  c='s/^/       /'
+  case $(uname) in
+    Darwin) sed -l "$c";;
+    *)      sed -u "$c";;
+  esac
+}
 
-basedir="$( cd -P "$( dirname "$0" )" && pwd )"
-echo "basedir"
-echo $basedir
-# create output directory
-vendordir=/app/vendor
-mkdir -p $vendordir
+cd /home/vcap/app/
 
-echo ======================================================================
-echo Downloading and unpacking dependancies...
-echo ======================================================================
-pushd $vendordir
+mkdir R
+mkdir gcc
+mkdir gccF
 
-download "https://gmplib.org/download/gmp/gmp-6.1.1.tar.bz2" gmp-6.1.1.tar.bz2
-pwd
-echo pwd
+echo "PEK77-gmp-6.1.1"
+wget "https://gmplib.org/download/gmp/gmp-6.1.1.tar.bz2"
 tar jxf gmp-6.1.1.tar.bz2
+cd gmp-6.1.1
+./configure --disable-shared --enable-static --prefix=/home/vcap/app/gcc
+make -j16
+#make check
+make install
+cd ..
 
-# http://directfb.org/
-directfb_version=1.2.9
-directfb_ver_major=${directfb_version:0:3}
-#download "http:// .org/downloads/Core/DirectFB-$directfb_ver_major/DirectFB-$directfb_version.tar.gz" DirectFB-$directfb_version.tar.gz
-#tar -xzf DirectFB-$directfb_version.tar.gz
-
-# http://www.libpng.org/pub/png/libpng.html
-libpng_version=1.2.50
-download "http://www.mpfr.org/mpfr-current/mpfr-3.1.4.tar.gz" mpfr-3.1.4.tar.gz
+echo "PEK77-mpfr-3.1.4"
+wget "http://www.mpfr.org/mpfr-current/mpfr-3.1.4.tar.gz"
 tar zxf mpfr-3.1.4.tar.gz
+cd mpfr-3.1.4
+./configure --disable-shared --enable-static --prefix=/home/vcap/app/gcc --with-gmp=/home/vcap/app/gcc
+make -j16
+#make check
+make install
+cd ..
 
-# http://www.cairographics.org
-pixman_version=0.30.2
-download "https://ftp.gnu.org/gnu/mpc/mpc-1.0.3.tar.gz" mpc-1.0.3.tar.gz
+echo "PEK77-mpc-1.0.3"
+wget "https://ftp.gnu.org/gnu/mpc/mpc-1.0.3.tar.gz"
 tar zxf mpc-1.0.3.tar.gz
+cd mpc-1.0.3
+./configure --disable-shared --enable-static --prefix=/home/vcap/app/gcc --with-gmp=/home/vcap/app/gcc  --with-mpfr=/home/vcap/app/gcc
+make -j16
+#make check
+make install
+cd ..
 
-# http://www.freedesktop.org/software/fontconfig
-fontconfig_version=2.10.93
-download "https://ftp.gnu.org/gnu/gcc/gcc-4.9.4/gcc-4.9.4.tar.gz" gcc-4.9.4.tar.gz
+#export LD_LIBRARY_PATH="/home/vcap/app/gcc:$LD_LIBRARY_PATH"
+echo "PEK77-GCC"
+wget "https://ftp.gnu.org/gnu/gcc/gcc-4.9.4/gcc-4.9.4.tar.gz"
 tar zxf gcc-4.9.4.tar.gz
+cd gcc-4.9.4
+./configure --prefix=/home/vcap/app/gccF --disable-shared --disable-bootstrap --disable-libstdcxx-pch --enable-languages=fortran --enable-libgomp --enable-lto --enable-threads=posix --enable-tls --with-gmp=/home/vcap/app/gcc  --with-mpfr=/home/vcap/app/gcc --with-mpc=/home/vcap/app/gcc --with-fpmath=sse --disable-multilib
+make -j16
+make install
+cd ..
 
-# http://www.cairographics.org
-cairo_version=1.12.16
-download "https://www.cairographics.org/releases/cairo-1.14.6.tar.xz" cairo-1.14.6.tar.xz
-tar xvf cairo-1.14.6.tar.xz
+export LIBRARY_PATH="/home/vcap/app/gccF/lib64:/home/vcap/app/gccF/lib:$LIBRARY_PATH"
+export LD_LIBRARY_PATH="/home/vcap/app/gccF/lib:/home/vcap/app/gccF/lib64:$LD_LIBRARY_PATH"
+export PATH="/home/vcap/app/gccF/bin:/home/vcap/app/gccF/bin/gfortran:$PATH"
 
-# R
-# download "http://cran.r-project.org/src/base/R-$r_version_major/R-$r_version.tar.gz" R-$r_version.tar.gz
-# tar xzf R-$r_version.tar.gz
-download "https://cran.r-project.org/src/base/R-3/R-3.3.1.tar.gz" R-3.3.1.tar.gz
-tar zxf R-3.3.1.tar.gz
+#export R_HOME="/home/vcap/app/R:$R_HOME"
 
-# http://gcc.gnu.org/wiki/GFortran
-# changed gcc version from 4.3.6 to 4.9.3
-# gcc_ver=4.3.6
-gcc_ver=4.9.3
-# gcc_version=${gcc_ver:0:3}
-gcc_version=${gcc_ver:0:9}
-# download "http://gfortran.com/download/x86_64/snapshots/gcc-$gcc_version.tar.xz" gcc-$gcc_version.tar.xz
-# tar xJf $basedir/gcc-$gcc_version.tar.xz -C $vendordir
-#download "http://gfortran.com/download/x86_64/snapshots/gcc-4.9.3.tar.xz" gcc-4.9.3.tar.xz
-download "http://gfortran.meteodat.ch/download/x86_64/snapshots/gcc-5.tar.xz" gcc-5.tar.xz
-tar xvf gcc-5.tar.xz
+echo "PEK77-R-3.3.1"
+wget "https://cran.r-project.org/src/base/R-3/R-3.3.1.tar.gz"
+#wget "http://heroku-buildpack-r.s3.amazonaws.com/cedar-14-cf/R-3.3.1-binaries-20160720-0331.tar.gz"
+tar zxf R-3.3.1-binaries-20160720-0331.tar.gz
+cd R-3.3.1
+./configure --prefix=/home/vcap/app/R --with-readline=yes --with-libpng=yes --with-x=no
+make -j16
+make install
+cd ..
+echo "PEK77-FINISH"
 
-# patch gcc features.h file
-# see http://permalink.gmane.org/gmane.comp.gcc.help/40166
-#find / -name '*features*'
-mkdir -p $vendordir/gcc-5/lib/gcc/x86_64-unknown-linux-gnu/5/include-fixed
-cp /tmp/buildpacks/BlueMix-R-Buildpack/support/features.h $vendordir/gcc-5/lib/gcc/x86_64-unknown-linux-gnu/5/include-fixed/features.h
-export LD_LIBRARY_PATH="$vendordir/gcc-5:$LD_LIBRARY_PATH"
-
-# https://www.gnu.org/software/libc/
-glibc_version=2.7
-download "http://ftp.gnu.org/gnu/glibc/glibc-2.23.tar.gz" glibc_2.23.tar.gz
-tar xzf glibc_2.23.tar.gz
-
-echo ============================================================
-echo Building dependencies...
-echo ======================================================================
-
-export CFLAGS="$CFLAGS -fPIC"
-export LDFLAGS="$LDFLAGS -fPIC"
-export LIBTOOLFLAGS="LIBTOOLFLAGS -shared"
-export CXXFLAGS="$CXXFLAGS -fPIC"
-
-build "$vendordir/gmp-6.1.1" gmp
-build "$vendordir/mpfr-3.1.4" mpfr
-build "$vendordir/mpc-1.0.3" mpc
-build "$vendordir/cairo-1.14.6" cairo
-
-build "$vendordir/gcc-4.9.4" gcc
-
-popd
-# build R
-echo ============================================================
-echo Building R
-echo ============================================================
-pushd "$vendordir/R-3.3.1/"
-
-# change gcc-5 to gcc
-export LDFLAGS="-L$vendordir/gcc/lib64"
-export CPPFLAGS="-I$vendordir/glibc-2.23/string -I/tmp/staged/glibc-2.23/time -I/tmp/staged/cairo/include/cairo/include"
-# change gcc-5 to gcc
-export PATH="$vendordir/gcc/bin:$PATH"
-
-echo ----------------------------------------------------------------------
-echo LD_LIBRARY_PATH=$LD_LIBRARY_PATH
-echo PKG_CONFIG_PATH=$PKG_CONFIG_PATH
-echo ----------------------------------------------------------------------
-
-./configure F77=$vendordir/gcc/bin/gfortran --prefix=$vendordir/R --with-x --with-libpng --with-cairo --enable-R-shlib && make -j16 && make install
-
-popd
-# copy over environment
- mkdir -p $BUILD_DIR/.profile.d
- cp "$BUILDPACK_DIR/bin/r_environment.sh" $BUILD_DIR/.profile.d/r_environment.sh
- cat $BUILD_DIR/profile.d/r_environment.sh
-
- echo "================" |indent
-echo "environment copied" | indent
-
-# prevent warnings
- mkdir -p /app/vendor/R/lib64/R/doc/html
- touch /app/vendor/R/lib64/R/doc/html/R.css
-
- echo "================" |indent
-echo "R_HOME points to: $R_HOME"| indent
-echo "Executing init.r script" | indent
-
-# set the CRAN mirror and run the init.r program
- R -s --vanilla <<RPROG
-   Sys.setenv(BUILD_DIR="$BUILD_DIR")
-   print("Sys.setenv complete")
-   setwd("$BUILD_DIR")
-   print("setwd complete")
-   r <- getOption("repos");
-   print(r)
-   print("setting r complete")
-   r["CRAN"] <- "$CRAN_MIRROR";
-   print("setting r[CRAN] complete")
-   options(repos=r);
-   print("options(repos=r) complete")
-   `cat $BUILD_DIR/init.r`
-   print("cat $BUILD_DIR/init.r complete")
+export PATH="/home/vcap/app/R/bin/:/home/vcap/app/R/bin/R:$PATH"
+export LIBRARY_PATH="/home/vcap/app/R/lib:$LIBRARY_PATH"
+export LD_LIBRARY_PATH="/home/vcap/app/R/lib:$LD_LIBRARY_PATH"
+R --version
+R CMD BATCH /tmp/buildpacks/BlueMix-R-Buildpack/bin/init.r /tmp/buildpacks/BlueMix-R-Buildpack/bin/init.rout
+cat /tmp/buildpacks/BlueMix-R-Buildpack/bin/init.rout
+/home/vcap/app/R/bin/R --no-save -s <<RPROG 2>&1 | indent
+  cat("\n=====> init.r Starting...\n")
+  Sys.setenv(BUILD_DIR="$BUILD_DIR")
+  setwd("$BUILD_DIR")
+  r <- getOption("repos");
+  r["CRAN"] <- "$CRAN_MIRROR";
+  options(repos=r);
+  `cat $BUILD_DIR/init.r`
+  cat("\n=====> init.r Completed Successfully\n")
 RPROG
-
-#cat indent
-
-echo "================" |indent
-echo "R $R_VERSION successfully installed" | indent
-
-# TODO: remove unneeded files to make buildpack smaller
-
-# upload to S3 bucket
-#pushd $vendordir
-#tar czf "R-3.2.5-binaries-$build_no.tar.gz" freetype DirectFB libpng pixman fontconfig cairo R
-#popd
-
-#bundle exec ruby ./s3_upload.rb "$vendordir/R-3.2.5-binaries-$build_no.tar.gz"
+echo "R CMD-FINISH"
+#R CMD BATCH /tmp/buildpacks/BlueMix-R-Buildpack/bin/init.r /tmp/buildpacks/BlueMix-R-Buildpack/bin/init.rout
+#cat /tmp/buildpacks/BlueMix-R-Buildpack/bin/init.rout
