@@ -136,10 +136,10 @@ echo ============================================================
 echo Building dependencies...
 echo ======================================================================
 
-build "$basedir/gmp-6.1.1" gmp
-build "$basedir/mpfr-3.1.4" mpfr
-build "$basedir/mpc-1.0.3" mpc
-build "$basedir/cairo-$cairo_version" cairo
+build "$basedir/gmp-6.1.1" gmp-6.1.1
+build "$basedir/mpfr-3.1.4" mpfr-3.1.4
+build "$basedir/mpc-1.0.3" mpc-1.0.3
+build "$basedir/cairo-1.14.6" cairo-1.14.6
 
 # build R
 echo ============================================================
