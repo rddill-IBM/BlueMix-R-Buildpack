@@ -115,8 +115,10 @@ gcc_ver=4.9.3
 gcc_version=${gcc_ver:0:9}
 # download "http://gfortran.com/download/x86_64/snapshots/gcc-$gcc_version.tar.xz" gcc-$gcc_version.tar.xz
 # tar xJf $basedir/gcc-$gcc_version.tar.xz -C $vendordir
-download "http://gfortran.com/download/x86_64/snapshots/gcc-4.9.3.tar.xz" gcc-4.9.3.tar.xz
-tar xJf $basedir/gcc-4.9.3.tar.xz -C $vendordir
+#download "http://gfortran.com/download/x86_64/snapshots/gcc-4.9.3.tar.xz" gcc-4.9.3.tar.xz
+download "http://gfortran.meteodat.ch/download/x86_64/snapshots/gcc-5.tar.xz" gcc-5.tar.xz
+
+tar xvf $basedir/gcc-5.tar.xz -C $vendordir
 
 # patch gcc features.h file
 # see http://permalink.gmane.org/gmane.comp.gcc.help/40166
