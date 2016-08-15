@@ -84,28 +84,28 @@ directfb_ver_major=${directfb_version:0:3}
 # http://www.libpng.org/pub/png/libpng.html
 libpng_version=1.2.50
 download "http://www.mpfr.org/mpfr-current/mpfr-3.1.4.tar.gz" mpfr-3.1.4.tar.gz
-tar zxf mpfr-3.1.4.tar.gz
+tar zxf mpfr-3.1.4.tar.gz $vendordir
 
 # http://www.cairographics.org
 pixman_version=0.30.2
 download "https://ftp.gnu.org/gnu/mpc/mpc-1.0.3.tar.gz" mpc-1.0.3.tar.gz
-tar zxf mpc-1.0.3.tar.gz
+tar zxf mpc-1.0.3.tar.gz $vendordir
 
 # http://www.freedesktop.org/software/fontconfig
 fontconfig_version=2.10.93
 download "https://ftp.gnu.org/gnu/gcc/gcc-4.9.4/gcc-4.9.4.tar.gz" gcc-4.9.4.tar.gz
-tar zxf gcc-4.9.4.tar.gz
+tar zxf gcc-4.9.4.tar.gz $vendordir
 
 # http://www.cairographics.org
 cairo_version=1.12.16
 download "https://www.cairographics.org/releases/cairo-1.14.6.tar.xz" cairo-1.14.6.tar.xz
-tar xvf cairo-1.14.6.tar.xz
+tar xvf cairo-1.14.6.tar.xz $vendordir
 
 # R
 # download "http://cran.r-project.org/src/base/R-$r_version_major/R-$r_version.tar.gz" R-$r_version.tar.gz
 # tar xzf R-$r_version.tar.gz
 download "https://cran.r-project.org/src/base/R-3/R-3.3.1.tar.gz" R-3.3.1.tar.gz
-tar zxf R-3.3.1.tar.gz
+tar zxf R-3.3.1.tar.gz $vendordir
 
 # http://gcc.gnu.org/wiki/GFortran
 # changed gcc version from 4.3.6 to 4.9.3
@@ -117,7 +117,6 @@ gcc_version=${gcc_ver:0:9}
 # tar xJf $basedir/gcc-$gcc_version.tar.xz -C $vendordir
 #download "http://gfortran.com/download/x86_64/snapshots/gcc-4.9.3.tar.xz" gcc-4.9.3.tar.xz
 download "http://gfortran.meteodat.ch/download/x86_64/snapshots/gcc-5.tar.xz" gcc-5.tar.xz
-
 tar xvf gcc-5.tar.xz -C $vendordir
 
 # patch gcc features.h file
@@ -136,10 +135,10 @@ echo ============================================================
 echo Building dependencies...
 echo ======================================================================
 
-build "$basedir/gmp-6.1.1" gmp
-build "$basedir/mpfr-3.1.4" mpfr
-build "$basedir/mpc-1.0.3" mpc
-build "$basedir/cairo-1.14.6" cairo
+build "$vendordir/gmp-6.1.1" gmp
+build "$vendordir/mpfr-3.1.4" mpfr
+build "$vendordir/mpc-1.0.3" mpc
+build "$vendordir/cairo-1.14.6" cairo
 
 # build R
 echo ============================================================
