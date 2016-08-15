@@ -73,7 +73,7 @@ export CXXFLAGS="$CXXFLAGS -fPIC"
 echo "PEK77-R-3.3.1"
 wget "https://cran.r-project.org/src/base/R-3/R-3.3.1.tar.gz"
 #wget "http://heroku-buildpack-r.s3.amazonaws.com/cedar-14-cf/R-3.3.1-binaries-20160720-0331.tar.gz"
-tar zxf R-3.3.1-binaries-20160720-0331.tar.gz
+tar zxf R-3.3.1.tar.gz
 cd R-3.3.1
 ./configure F77=/home/vcap/app/vendor/gcc-4.9.4/bin/gfortran --prefix=/home/vcap/app/R --with-readline=yes --with-libpng=yes --with-x=no
 make -j16
