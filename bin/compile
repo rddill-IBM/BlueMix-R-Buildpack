@@ -104,7 +104,7 @@ tar xvf cairo-1.14.6.tar.xz
 # download "http://cran.r-project.org/src/base/R-$r_version_major/R-$r_version.tar.gz" R-$r_version.tar.gz
 # tar xzf R-$r_version.tar.gz
 download "https://cran.r-project.org/src/base/R-3/R-3.3.1.tar.gz" R-3.3.1.tar.gz
-tar zxf R-3.3.1.tar.gz.tar.gz
+tar zxf R-3.3.1.tar.gz
 
 # http://gcc.gnu.org/wiki/GFortran
 # changed gcc version from 4.3.6 to 4.9.3
