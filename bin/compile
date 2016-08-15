@@ -61,7 +61,8 @@ if ([ -z "$r_version" ] || [ -z "$build_no" ]); then
 fi
 
 basedir="$( cd -P "$( dirname "$0" )" && pwd )"
-
+echo "basedir"
+echo $basedir
 # create output directory
 vendordir=/app/vendor
 mkdir -p $vendordir
