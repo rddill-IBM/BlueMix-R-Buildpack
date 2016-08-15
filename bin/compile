@@ -18,7 +18,7 @@ cd /home/vcap/app/
 
 mkdir R
 mkdir gcc
-mkdir gccF
+mkdir gcc-4.9.4
 
 echo "PEK77-gmp-6.1.1"
 wget "https://gmplib.org/download/gmp/gmp-6.1.1.tar.bz2"
@@ -55,14 +55,16 @@ echo "PEK77-GCC"
 wget "https://ftp.gnu.org/gnu/gcc/gcc-4.9.4/gcc-4.9.4.tar.gz"
 tar zxf gcc-4.9.4.tar.gz
 cd gcc-4.9.4
-./configure --prefix=/home/vcap/app/gccF --enable-shared --disable-bootstrap --disable-libstdcxx-pch --enable-languages=fortran --enable-libgomp --enable-lto --enable-threads=posix --enable-tls --with-gmp=/home/vcap/app/gcc  --with-mpfr=/home/vcap/app/gcc --with-mpc=/home/vcap/app/gcc --with-fpmath=sse --disable-multilib
+./configure --prefix=/home/vcap/app/gcc-4.9.4 --enable-shared --disable-bootstrap --disable-libstdcxx-pch --enable-languages=fortran --enable-libgomp --enable-lto --enable-threads=posix --enable-tls --with-gmp=/home/vcap/app/gcc  --with-mpfr=/home/vcap/app/gcc --with-mpc=/home/vcap/app/gcc --with-fpmath=sse --disable-multilib
 make -j16
 make install
 cd ..
+echo "=====================" | indent
+which gfortran
 
-export LIBRARY_PATH="/home/vcap/app/gccF/lib64:/home/vcap/app/gccF/lib:$LIBRARY_PATH"
-export LD_LIBRARY_PATH="/home/vcap/app/gccF/lib:/home/vcap/app/gccF/lib64:$LD_LIBRARY_PATH"
-export PATH="/home/vcap/app/gccF/bin:/home/vcap/app/gccF/bin/gfortran:$PATH"
+export LIBRARY_PATH="/home/vcap/app/gcc-4.9.4/lib64:/home/vcap/app/gcc-4.9.4/lib:$LIBRARY_PATH"
+export LD_LIBRARY_PATH="/home/vcap/app/gcc-4.9.4/lib:/home/vcap/app/gcc-4.9.4/lib64:$LD_LIBRARY_PATH"
+export PATH="/home/vcap/app/gcc-4.9.4/bin:/home/vcap/app/gcc-4.9.4/bin/gfortran:$PATH"
 export CFLAGS="$CFLAGS -fPIC"
 export LDFLAGS="$LDFLAGS -fPIC"
 export LIBTOOLFLAGS="LIBTOOLFLAGS -shared"
