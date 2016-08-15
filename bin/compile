@@ -131,7 +131,7 @@ export LD_LIBRARY_PATH="$vendordir/gcc-5:$LD_LIBRARY_PATH"
 # https://www.gnu.org/software/libc/
 glibc_version=2.7
 download "http://ftp.gnu.org/gnu/glibc/glibc-2.23.tar.gz" glibc_2.23.tar.gz
-tar xzf glibc_2.23.tar.gz -C 
+tar xzf glibc_2.23.tar.gz 
 
 echo ============================================================
 echo Building dependencies...
