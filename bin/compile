@@ -167,7 +167,7 @@ echo LD_LIBRARY_PATH=$LD_LIBRARY_PATH
 echo PKG_CONFIG_PATH=$PKG_CONFIG_PATH
 echo ----------------------------------------------------------------------
 
-./configure --prefix=$vendordir/R --with-x --with-libpng --with-cairo --enable-R-shlib && make -j16 && make install
+./configure F77=$vendordir/gcc/bin/gfortran --prefix=$vendordir/R --with-x --with-libpng --with-cairo --enable-R-shlib && make -j16 && make install
 
 popd
 # copy over environment
