@@ -29,7 +29,7 @@ function build() {
   echo ----------------------------------------------------------------------
   echo
   pushd $1
-    ./configure --prefix=$vendordir/$2 ${@:3} && make && make install && make clean
+    ./configure --prefix=$vendordir/$2 ${@:3} -j16&& make -j16&& make install && make clean
   popd > /dev/null
   echo
   echo
@@ -70,7 +70,7 @@ mkdir -p $vendordir
 echo ======================================================================
 echo Downloading and unpacking dependancies...
 echo ======================================================================
-
+pushd $vendordir
 
 download "https://gmplib.org/download/gmp/gmp-6.1.1.tar.bz2" gmp-6.1.1.tar.bz2
 pwd
@@ -137,19 +137,19 @@ echo ============================================================
 echo Building dependencies...
 echo ======================================================================
 
-build "/tmp/staged/gmp-6.1.1" gmp
-build "/tmp/staged/mpfr-3.1.4" mpfr
-build "/tmp/staged/mpc-1.0.3" mpc
-build "/tmp/staged/cairo-1.14.6" cairo
-
+build "$vendordir/gmp-6.1.1" gmp
+build "$vendordir/mpfr-3.1.4" mpfr
+build "$vendordir/mpc-1.0.3" mpc
+build "$vendordir/cairo-1.14.6" cairo
+popd
 # build R
 echo ============================================================
 echo Building R
 echo ============================================================
-pushd $basedir/R-3.3.1/
+pushd "$vendordir/R-3.3.1/"
 
 export LDFLAGS="-L$vendordir/gcc-5/lib64"
-export CPPFLAGS="-I$vendordir/glibc-2.23/string -I$vendordir/glibc-2.23/time -I$vendordir/cairo/include/cairo/include"
+export CPPFLAGS="-I$vendordir/glibc-2.23/string -I/tmp/staged/glibc-2.23/time -I/tmp/staged/cairo/include/cairo/include"
 export PATH="$vendordir/gcc-5/bin:$PATH"
 
 echo ----------------------------------------------------------------------
@@ -157,15 +157,15 @@ echo LD_LIBRARY_PATH=$LD_LIBRARY_PATH
 echo PKG_CONFIG_PATH=$PKG_CONFIG_PATH
 echo ----------------------------------------------------------------------
 
-./configure --prefix=$vendordir/R --with-x --with-libpng --with-cairo --enable-R-shlib && make && make install
+./configure --prefix=$vendordir/R --with-x --with-libpng --with-cairo --enable-R-shlib -j16&& make -j16&& make install
 
 popd
 
 # TODO: remove unneeded files to make buildpack smaller
 
 # upload to S3 bucket
-pushd $vendordir
-tar czf "R-3.2.5-binaries-$build_no.tar.gz" freetype DirectFB libpng pixman fontconfig cairo R
-popd
+#pushd $vendordir
+#tar czf "R-3.2.5-binaries-$build_no.tar.gz" freetype DirectFB libpng pixman fontconfig cairo R
+#popd
 
-bundle exec ruby ./s3_upload.rb "$vendordir/R-3.2.5-binaries-$build_no.tar.gz"
+#bundle exec ruby ./s3_upload.rb "$vendordir/R-3.2.5-binaries-$build_no.tar.gz"
