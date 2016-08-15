@@ -1,11 +1,19 @@
 #!/usr/bin/env bash
 # bin/compile <build-dir> <cache-dir>
-BUILD_DIR=$1
-CACHE_DIR=$2/vendor
+
+# fail fast
+set -e
+
+# debug
+# set -x
+
+shopt -s extglob
+
 function error() {
   echo " !     $*" >&2
   exit 1
 }
+
 function indent() {
   c='s/^/       /'
   case $(uname) in
@@ -14,85 +22,248 @@ function indent() {
   esac
 }
 
-cd /home/vcap/app/
+function build() {
+  echo ----------------------------------------------------------------------
+  echo Building $@...
+  echo ----------------------------------------------------------------------
+  echo
+  pushd $1
+    ./configure --prefix=$VENDOR_DIR/$2 ${@:3} > /dev/null 2>&1
+    echo "configure finished" | indent
+    make -j16
+    echo "make finished" | indent
+    make install > /dev/null 2>&1
+    echo "install finished" | indent
+    make clean > /dev/null 2>&1
+    echo "clean finished" | indent
+  popd > /dev/null
+  echo
+  echo
 
-mkdir R
-mkdir gcc
-mkdir gccF
+  # add to libraries and pkg-config
+  export LD_LIBRARY_PATH="$VENDOR_DIR/$2/lib:$LD_LIBRARY_PATH"
+  export PKG_CONFIG_PATH="$VENDOR_DIR/$2/lib/pkgconfig:$PKG_CONFIG_PATH"
 
-echo "PEK77-gmp-6.1.1"
+}
+
+function download() {
+  if [ ! -f "$2" ]; then
+    echo Downloading $2...
+    curl $1 -o $2 -s -S
+  else
+    echo Got $2...
+  fi
+}
+#GSC-20160805
+vendordir=/app/vendor
+mkdir -p $vendordir
+basedir="$( cd -P "$( dirname "$0" )" && pwd )"
+
+# clean up leaking environment
+unset GIT_DIR
+
+lsb_release -a
+# parse and derive params
+BUILD_DIR=$1
+CACHE_DIR="$2/vendor"
+LP_DIR=`cd $(dirname $0); cd ..; pwd`
+BUILDPACK_DIR="$(dirname $(dirname $0))"
+# config
+BUILD_PACK_VERSION="20160810"
+R_VERSION="3.3.1"
+
+R_SOURCE="http://ftp.osuosl.org/pub/cran/src/base/R-3/R-3.3.1.tar.gz"
+VENDOR_DIR="$BUILD_DIR/vendor"
+R_HOME="$VENDOR_DIR/R"
+CRAN_MIRROR="http://cran.cnr.berkeley.edu/"
+echo "================" |indent
+echo "input variable 1 = $1"| indent
+echo "input variable 2 = $2"| indent
+echo "BUILD_DIR = $BUILD_DIR "| indent
+echo "CACHE_DIR = $CACHE_DIR"| indent
+echo "LP_DIR = $LP_DIR"| indent
+echo "BUILDPACK_DIR = $BUILDPACK_DIR"| indent
+echo "BUILD_PACK_VERSION = $BUILD_PACK_VERSION"| indent
+echo "R_VERSION = $R_VERSION"| indent
+echo "R_SOURCE = $R_SOURCE"| indent
+echo "VENDOR_DIR = $VENDOR_DIR"| indent
+echo "R_HOME = $R_HOME"| indent
+echo "CRAN_MIRROR = $CRAN_MIRROR"| indent
+
+mkdir -p $CACHE_DIR
+
+# vendor R into the slug
+echo "Vendoring R $R_VERSION" | indent
+
+# download and unpack binaries
+echo "Downloading and unpacking R binaries" | indent
+mkdir -p $VENDOR_DIR && mkdir -p /app/vendor
+mkdir -p $VENDOR_DIR/R && mkdir -p /app/vendor/R
+echo "mkdir $VENDOR_DIR complete"| indent
+curl $R_SOURCE -s -o r_source.tar.gz
+echo "curl $R_SOURCE complete"| indent
+ls
+echo "unpacking"| indent
+tar -xf r_source.tar.gz -C $VENDOR_DIR/R
+echo "R tar unpack complete"| indent
+rm r_source.tar.gz
+
+echo "Listing home (~) directory" | indent
+cd ~
+ls
+export PATH="./:/app/vendor/R/bin:$BUILD_DIR/lib:$BUILD_DIR/bin:$PATH"
+export LD_LIBRARY_PATH=".:$BUILD_DIR/lib:/lib:/usr/lib:/usr/lib/x86_64-linux-gnu:$LD_LIBRARY_PATH"
+export LIBRARY_PATH="$BUILD_DIR/lib:/lib:/usr/lib:/usr/lib/x86_64-linux-gnu"
+echo "================" |indent
+echo "Exports created, Listing home (~) directory" | indent
+ls
+echo "================" |indent
+echo "finding existing gcc compiler" |indent
+pwd
+cd app
+cd vendor
+which gcc
+mkdir "gcc"
+echo "================" |indent
+echo "installing gmp-6.1.1" |indent
 wget "https://gmplib.org/download/gmp/gmp-6.1.1.tar.bz2"
 tar jxf gmp-6.1.1.tar.bz2
 cd gmp-6.1.1
-./configure --disable-shared --enable-static --prefix=/home/vcap/app/gcc
+./configure --enable-shared --disable-static --prefix=/home/vcap/app/vendor/gcc
+# ./configure --disable-shared --enable-static --prefix=/home/vcap/app/vendor/gcc
 make -j16
 #make check
 make install
 cd ..
+ls
 
-echo "PEK77-mpfr-3.1.4"
+echo "================" |indent
+echo "Installing mpfr-3.1.4" |indent
 wget "http://www.mpfr.org/mpfr-current/mpfr-3.1.4.tar.gz"
 tar zxf mpfr-3.1.4.tar.gz
 cd mpfr-3.1.4
-./configure --disable-shared --enable-static --prefix=/home/vcap/app/gcc --with-gmp=/home/vcap/app/gcc
+./configure --enable-shared --disable-static --prefix=/home/vcap/app/vendor/gcc --with-gmp=/home/vcap/app/vendor/gcc
+# ./configure --disable-shared --enable-static --prefix=/home/vcap/app/vendor/gcc --with-gmp=/home/vcap/app/vendor/gcc
 make -j16
 #make check
 make install
 cd ..
+ls
 
-echo "PEK77-mpc-1.0.3"
+echo "================" |indent
+echo "Installing mpc-1.0.3" |indent
 wget "https://ftp.gnu.org/gnu/mpc/mpc-1.0.3.tar.gz"
 tar zxf mpc-1.0.3.tar.gz
 cd mpc-1.0.3
-./configure --disable-shared --enable-static --prefix=/home/vcap/app/gcc --with-gmp=/home/vcap/app/gcc  --with-mpfr=/home/vcap/app/gcc
+./configure --enable-shared --disable-static --prefix=/home/vcap/app/vendor/gcc --with-gmp=/home/vcap/app/vendor/gcc  --with-mpfr=/home/vcap/app/vendor/gcc
+# ./configure --disable-shared --enable-static --prefix=/home/vcap/app/vendor/gcc --with-gmp=/home/vcap/app/vendor/gcc  --with-mpfr=/home/vcap/app/vendor/gcc
 make -j16
 #make check
 make install
 cd ..
+ls
 
-#export LD_LIBRARY_PATH="/home/vcap/app/gcc:$LD_LIBRARY_PATH"
-echo "PEK77-GCC"
-wget "https://ftp.gnu.org/gnu/gcc/gcc-4.9.4/gcc-4.9.4.tar.gz"
+export LD_LIBRARY_PATH="/home/vcap/app/vendor/gcc:$LD_LIBRARY_PATH"
+
+echo "================" |indent
+echo "Installing GCC" |indent
+wget "https://ftp.gnu.org/gnu/gcc/gcc-4.9.4/gcc-4.9.4.tar.gz" -O "gcc-4.9.4.tar.gz"
 tar zxf gcc-4.9.4.tar.gz
+mkdir "gccF"
+ls
 cd gcc-4.9.4
-./configure --prefix=/home/vcap/app/gccF --disable-shared --disable-bootstrap --disable-libstdcxx-pch --enable-languages=fortran --enable-libgomp --enable-lto --enable-threads=posix --enable-tls --with-gmp=/home/vcap/app/gcc  --with-mpfr=/home/vcap/app/gcc --with-mpc=/home/vcap/app/gcc --with-fpmath=sse --disable-multilib
+./configure --prefix=/home/vcap/app/vendor/gccF --enable-shared --disable-bootstrap --disable-libstdcxx-pch --enable-languages=fortran --enable-libgomp --enable-lto --enable-threads=posix --enable-tls --with-gmp=/home/vcap/app/vendor/gcc  --with-mpfr=/home/vcap/app/vendor/gcc --with-mpc=/home/vcap/app/vendor/gcc --with-fpmath=sse --disable-multilib
+# ./configure --prefix=/home/vcap/app/vendor/gccF --disable-shared --disable-bootstrap --disable-libstdcxx-pch --enable-languages=fortran --enable-libgomp --enable-lto --enable-threads=posix --enable-tls --with-gmp=/home/vcap/app/vendor/gcc  --with-mpfr=/home/vcap/app/vendor/gcc --with-mpc=/home/vcap/app/vendor/gcc --with-fpmath=sse --disable-multilib
 make -j16
 make install
+echo "================" |indent
+echo "Validating gfortran" |indent
 cd ..
-
-export LIBRARY_PATH="/home/vcap/app/gccF/lib64:/home/vcap/app/gccF/lib:$LIBRARY_PATH"
-export LD_LIBRARY_PATH="/home/vcap/app/gccF/lib:/home/vcap/app/gccF/lib64:$LD_LIBRARY_PATH"
-export PATH="/home/vcap/app/gccF/bin:/home/vcap/app/gccF/bin/gfortran:$PATH"
-
-#export R_HOME="/home/vcap/app/R:$R_HOME"
-
-echo "PEK77-R-3.3.1"
-ßßwget "https://cran.r-project.org/src/base/R-3/R-3.3.1.tar.gz"
-#wget "http://heroku-buildpack-r.s3.amazonaws.com/cedar-14-cf/R-3.3.1-binaries-20160720-0331.tar.gz"
-tar zxf R-3.3.1-binaries-20160720-0331.tar.gz
-cd R-3.3.1
-./configure --prefix=/home/vcap/app/R --with-readline=yes --with-libpng=yes --with-x=no
+cd gccF
+/home/vcap/app/vendor/gccF/bin/gfortran --version
+echo "================" |indent
+echo "list current directory" |indent
+ls
+export LIBRARY_PATH="$BUILD_DIR/lib:/lib:/usr/lib:/usr/lib/x86_64-linux-gnu:/home/vcap/app/vendor/gccF/lib64:/home/vcap/app/vendor/gccF/bin:/home/vcap/app/vendor/gccF/lib"
+export LD_LIBRARY_PATH="/home/vcap/app/vendor/gccF/lib:/home/vcap/app/vendor/gccF/lib64:/home/vcap/app/vendor/gccF/bin:$LD_LIBRARY_PATH"
+export CFLAGS="$CFLAGS -fPIC"
+export LDFLAGS="$LDFLAGS -fPIC"
+export LIBTOOLFLAGS="LIBTOOLFLAGS -shared"
+export CXXFLAGS="$CXXFLAGS -fPIC"
+echo "================" |indent
+echo "Installing R from Source Code" |indent
+cd $R_HOME/R-3.3.1/
+./configure F77=/home/vcap/app/vendor/gccF/bin/gfortran
 make -j16
-make install
-cd ..
-echo "PEK77-FINISH"
+cp -R $VENDOR_DIR/R /app/vendor
 
-export PATH="/home/vcap/app/R/bin/:/home/vcap/app/R/bin/R:$PATH"
-export LIBRARY_PATH="/home/vcap/app/R/lib:$LIBRARY_PATH"
-export LD_LIBRARY_PATH="/home/vcap/app/R/lib:$LD_LIBRARY_PATH"
-R --version
-R CMD BATCH /tmp/buildpacks/BlueMix-R-Buildpack/bin/init.r /tmp/buildpacks/BlueMix-R-Buildpack/bin/init.rout
-cat /tmp/buildpacks/BlueMix-R-Buildpack/bin/init.rout
-/home/vcap/app/R/bin/R --no-save -s <<RPROG 2>&1 | indent
-  cat("\n=====> init.r Starting...\n")
-  Sys.setenv(BUILD_DIR="$BUILD_DIR")
-  setwd("$BUILD_DIR")
-  r <- getOption("repos");
-  r["CRAN"] <- "$CRAN_MIRROR";
-  options(repos=r);
-  `cat $BUILD_DIR/init.r`
-  cat("\n=====> init.r Completed Successfully\n")
+echo "================" |indent
+echo "R copied" | indent
+
+export R_HOME=/app/vendor/R
+export R_INCLUDE="$R_HOME/include:$BUILD_DIR/include"
+export LD_LIBRARY_PATH="$R_HOME/lib:$LD_LIBRARY_PATH"
+export LIBRARY_PATH="$R_HOME/lib:$LIBARY_PATH"
+export PATH="/app/vendor/R/bin:$PATH"
+echo "PATH =$PATH"| indent
+echo "LDFLAGS =$LDFLAGS"| indent
+echo "CPPFLAGS =$CPPFLAGS"| indent
+echo "R_HOME =$R_HOME"| indent
+echo "R_INCLUDE =$R_INCLUDE"| indent
+echo "LD_LIBRARY_PATH =$LD_LIBRARY_PATH"| indent
+echo "LIBRARY_PATH =$LIBRARY_PATH"| indent
+
+echo "================" |indent
+echo "Listing R library directory" |indent
+ls app/vendor/R/lib
+
+export CPATH=$R_INCLUDE:/usr/lib/x86_64-linux-gnu:$CPATH
+echo "================" |indent
+echo "CPATH = $CPATH"| indent
+echo "variables set" | indent
+
+# copy over environment
+ mkdir -p $BUILD_DIR/.profile.d
+ cp "$BUILDPACK_DIR/bin/r_environment.sh" $BUILD_DIR/.profile.d/r_environment.sh
+ cat $BUILD_DIR/.profile.d/r_environment.sh
+
+ echo "================" |indent
+echo "environment copied" | indent
+
+# prevent warnings
+ mkdir -p /app/vendor/R/lib64/R/doc/html
+ touch /app/vendor/R/lib64/R/doc/html/R.css
+
+ echo "================" |indent
+echo "R_HOME points to: $R_HOME"| indent
+echo "Executing init.r script" | indent
+
+# set the CRAN mirror and run the init.r program
+ R -s --vanilla <<RPROG
+   Sys.setenv(BUILD_DIR="$BUILD_DIR")
+   print("Sys.setenv complete")
+   setwd("$BUILD_DIR")
+   print("setwd complete")
+   r <- getOption("repos");
+   print(r)
+   print("setting r complete")
+   r["CRAN"] <- "$CRAN_MIRROR";
+   print("setting r[CRAN] complete")
+   options(repos=r);
+   print("options(repos=r) complete")
+   `cat $BUILD_DIR/init.r`
+   print("cat $BUILD_DIR/init.r complete")
 RPROG
-echo "R CMD-FINISH"
-#R CMD BATCH /tmp/buildpacks/BlueMix-R-Buildpack/bin/init.r /tmp/buildpacks/BlueMix-R-Buildpack/bin/init.rout
-#cat /tmp/buildpacks/BlueMix-R-Buildpack/bin/init.rout
+
+#cat indent
+
+echo "================" |indent
+echo "R $R_VERSION successfully installed" | indent
+
+# need to copy binaries back so that any installed packages are included in the slug
+rm -rf $VENDOR_DIR && mkdir -p $VENDOR_DIR
+# cp -R /app/vendor/gcc $VENDOR_DIR/gcc
+# cp -R /app/vendor/glibc $VENDOR_DIR/glibc
+cp -R /app/vendor/R $VENDOR_DIR/R
+echo "================" |indent
+echo "R installation complete" |indent
