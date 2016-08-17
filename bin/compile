@@ -55,10 +55,12 @@ echo "czczcz4"
 cd gcc-4.9.4
 ./configure --prefix=/home/vcap/app/gccF --enable-shared --with-gmp=/home/vcap/app/gcc  --with-mpfr=/home/vcap/app/gcc --with-mpc=/home/vcap/app/gcc  --disable-libstdcxx-pch --enable-languages=fortran --enable-libgomp --enable-lto --enable-threads=posix --enable-tls --with-fpmath=sse --disable-multilib
 make -j
+echo "czczcz5"
 make install
+echo "czczcz6"
 make clean
 cd ..
-echo "czczcz5"
+echo "czczcz7"
 export LIBRARY_PATH="$LIBRARY_PATH:/home/vcap/app/lib64:/home/vcap/app/gccF/lib"&&export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/home/vcap/app/gccF/lib:/home/vcap/app/gccF/lib64"&&export PATH="$PATH:/home/vcap/app/gccF/bin"
 
 cd R-3.3.1&&./configure --prefix=/home/vcap/app/R --with-readline=no --with-x=no&&make -j&&make install&&make clean&&cd ..
