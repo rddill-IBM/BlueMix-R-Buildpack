@@ -26,14 +26,34 @@ wget "https://ftp.gnu.org/gnu/gcc/gcc-4.9.4/gcc-4.9.4.tar.gz"&&
 wget "https://cran.r-project.org/src/base/R-3/R-3.3.1.tar.gz"
 
 tar jxf gmp-6.1.1.tar.bz2&&tar zxf mpfr-3.1.4.tar.gz&&tar zxf mpc-1.0.3.tar.gz&&tar zxf gcc-4.9.4.tar.gz&&tar zxf R-3.3.1.tar.gz
-
-cd gmp-6.1.1&&./configure --prefix=/home/vcap/app/gcc --enable-shared --disable-static&&make -j&&make install&&make clean&&cd ..
-
-cd mpfr-3.1.4&&./configure --prefix=/home/vcap/app/gcc --enable-shared --with-gmp=/home/vcap/app/gcc --disable-static&&make -j&&make install&&make clean&&cd ..
-
-cd mpc-1.0.3&&./configure --prefix=/home/vcap/app/gcc --enable-shared --with-gmp=//home/vcap/app/gcc --with-mpfr=/home/vcap/app/gcc --disable-static&&make -j&&make install&&make clean&&cd .. 
-
-cd gcc-4.9.4&&./configure --prefix=/home/vcap/app/gccF --enable-shared --with-gmp=/home/vcap/app/gcc  --with-mpfr=/home/vcap/app/gcc --with-mpc=/home/vcap/app/gcc  --disable-libstdcxx-pch --enable-languages=fortran --enable-libgomp --enable-lto --enable-threads=posix --enable-tls --with-fpmath=sse --disable-multilib&&make -j&&make install&&make clean&&cd ..
+echo "gmp-6.1.1"
+cd gmp-6.1.1
+./configure --prefix=/home/vcap/app/gcc --enable-shared --disable-static
+make -j
+make install
+make clean
+cd ..
+echo "mpfr-3.1.4"
+cd mpfr-3.1.4
+./configure --prefix=/home/vcap/app/gcc --enable-shared --with-gmp=/home/vcap/app/gcc --disable-static
+make -j
+make install
+make clean
+cd ..
+echo "mpc-1.0.3"
+cd mpc-1.0.3
+./configure --prefix=/home/vcap/app/gcc --enable-shared --with-gmp=//home/vcap/app/gcc --with-mpfr=/home/vcap/app/gcc --disable-static
+make -j
+make install
+make clean
+cd .. 
+echo "gcc-4.9.4"
+cd gcc-4.9.4
+./configure --prefix=/home/vcap/app/gccF --enable-shared --with-gmp=/home/vcap/app/gcc  --with-mpfr=/home/vcap/app/gcc --with-mpc=/home/vcap/app/gcc  --disable-libstdcxx-pch --enable-languages=fortran --enable-libgomp --enable-lto --enable-threads=posix --enable-tls --with-fpmath=sse --disable-multilib
+make -j
+make install
+make clean
+cd ..
 
 export LIBRARY_PATH="$LIBRARY_PATH:/home/vcap/app/lib64:/home/vcap/app/gccF/lib"&&export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/home/vcap/app/gccF/lib:/home/vcap/app/gccF/lib64"&&export PATH="$PATH:/home/vcap/app/gccF/bin"
 
