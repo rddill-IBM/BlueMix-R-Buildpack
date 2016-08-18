@@ -134,6 +134,7 @@ cd gmp-6.1.1
 make -j16
 #make check
 make install
+make clean
 cd ..
 ls
 
@@ -147,6 +148,7 @@ cd mpfr-3.1.4
 make -j16
 #make check
 make install
+make clean
 cd ..
 ls
 
@@ -160,6 +162,7 @@ cd mpc-1.0.3
 make -j16
 #make check
 make install
+make clean
 cd ..
 ls
 
@@ -176,6 +179,7 @@ cd gcc-4.9.4
 # ./configure --prefix=/home/vcap/app/vendor/gccF --disable-shared --disable-bootstrap --disable-libstdcxx-pch --enable-languages=fortran --enable-libgomp --enable-lto --enable-threads=posix --enable-tls --with-gmp=/home/vcap/app/vendor/gcc  --with-mpfr=/home/vcap/app/vendor/gcc --with-mpc=/home/vcap/app/vendor/gcc --with-fpmath=sse --disable-multilib
 make -j16
 make install
+make clean
 echo "================" |indent
 echo "Validating gfortran" |indent
 cd ..
@@ -200,6 +204,7 @@ make -j16
 echo "================" |indent
 echo "R make -j16 complete. initiating make" | indent
 make install
+make clean
 cp -R $VENDOR_DIR/R /app/vendor
 
 echo "================" |indent

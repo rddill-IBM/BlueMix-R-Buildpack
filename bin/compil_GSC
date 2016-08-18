@@ -1,0 +1,86 @@
+#!/usr/bin/env bash
+# bin/compile <build-dir> <cache-dir>
+BUILD_DIR=$1
+CACHE_DIR=$2/vendor
+function error() {
+  echo " !     $*" >&2
+  exit 1
+}
+function indent() {
+  c='s/^/       /'
+  case $(uname) in
+    Darwin) sed -l "$c";;
+    *)      sed -u "$c";;
+  esac
+}
+
+cd /home/vcap/app/
+
+mkdir R
+mkdir gcc
+mkdir gccF
+wget "https://gmplib.org/download/gmp/gmp-6.1.1.tar.bz2"&&
+wget "http://www.mpfr.org/mpfr-current/mpfr-3.1.4.tar.gz"&&
+wget "https://ftp.gnu.org/gnu/mpc/mpc-1.0.3.tar.gz"&&
+wget "https://ftp.gnu.org/gnu/gcc/gcc-4.9.4/gcc-4.9.4.tar.gz"&&
+wget "https://cran.r-project.org/src/base/R-3/R-3.3.1.tar.gz"
+
+tar jxf gmp-6.1.1.tar.bz2&&tar zxf mpfr-3.1.4.tar.gz&&tar zxf mpc-1.0.3.tar.gz&&tar zxf gcc-4.9.4.tar.gz&&tar zxf R-3.3.1.tar.gz
+echo "gmp-6.1.1"
+echo "czczcz1"
+cd gmp-6.1.1
+./configure --prefix=/home/vcap/app/gcc --enable-shared --disable-static
+make -j
+make install
+make clean
+cd ..
+echo "mpfr-3.1.4"
+echo "czczcz2"
+cd mpfr-3.1.4
+./configure --prefix=/home/vcap/app/gcc --enable-shared --with-gmp=/home/vcap/app/gcc --disable-static
+make -j
+make install
+make clean
+cd ..
+echo "mpc-1.0.3"
+echo "czczcz3"
+cd mpc-1.0.3
+./configure --prefix=/home/vcap/app/gcc --enable-shared --with-gmp=//home/vcap/app/gcc --with-mpfr=/home/vcap/app/gcc --disable-static
+make -j
+make install
+make clean
+cd .. 
+echo "gcc-4.9.4"
+echo "czczcz4"
+cd gcc-4.9.4
+./configure --prefix=/home/vcap/app/gccF --enable-shared --with-gmp=/home/vcap/app/gcc  --with-mpfr=/home/vcap/app/gcc --with-mpc=/home/vcap/app/gcc  --disable-libstdcxx-pch --enable-languages=fortran --enable-libgomp --enable-lto --enable-threads=posix --enable-tls --with-fpmath=sse --disable-multilib
+echo "czczcz5"
+make -j
+echo "czczcz6"
+make install
+echo "czczcz7"
+make clean
+cd ..
+
+export LIBRARY_PATH="$LIBRARY_PATH:/home/vcap/app/lib64:/home/vcap/app/gccF/lib"&&export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/home/vcap/app/gccF/lib:/home/vcap/app/gccF/lib64"&&export PATH="$PATH:/home/vcap/app/gccF/bin"
+
+cd R-3.3.1&&./configure --prefix=/home/vcap/app/R --with-readline=no --with-x=no&&make -j&&make install&&make clean&&cd ..
+
+export PATH="/home/ibm/R/bin:$PATH"
+echo "czczcz6"
+R --version
+R CMD BATCH /tmp/buildpacks/BlueMix-R-Buildpack/bin/init.r /tmp/buildpacks/BlueMix-R-Buildpack/bin/init.rout
+cat /tmp/buildpacks/BlueMix-R-Buildpack/bin/init.rout
+R --no-save -s <<RPROG 2>&1 | indent
+  cat("\n=====> init.r Starting...\n")
+  Sys.setenv(BUILD_DIR="$BUILD_DIR")
+  setwd("$BUILD_DIR")
+  r <- getOption("repos");
+  r["CRAN"] <- "$CRAN_MIRROR";
+  options(repos=r);
+  `cat $BUILD_DIR/init.r`
+  cat("\n=====> init.r Completed Successfully\n")
+RPROG
+echo "R CMD-FINISH"
+#R CMD BATCH /tmp/buildpacks/BlueMix-R-Buildpack/bin/init.r /tmp/buildpacks/BlueMix-R-Buildpack/bin/init.rout
+#cat /tmp/buildpacks/BlueMix-R-Buildpack/bin/init.rout

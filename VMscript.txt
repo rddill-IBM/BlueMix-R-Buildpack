@@ -1,0 +1,31 @@
+wget "https://gmplib.org/download/gmp/gmp-6.1.1.tar.bz2"&&
+wget "http://www.mpfr.org/mpfr-current/mpfr-3.1.4.tar.gz"&&
+wget "https://ftp.gnu.org/gnu/mpc/mpc-1.0.3.tar.gz"&&
+wget "https://ftp.gnu.org/gnu/gcc/gcc-4.9.4/gcc-4.9.4.tar.gz"&&
+wget "https://cran.r-project.org/src/base/R-3/R-3.3.1.tar.gz"
+
+tar jxf gmp-6.1.1.tar.bz2&&tar zxf mpfr-3.1.4.tar.gz&&tar zxf mpc-1.0.3.tar.gz&&tar zxf gcc-4.9.4.tar.gz&&tar zxf R-3.3.1.tar.gz
+
+sudo apt-get install zlib1g-dev
+
+sudo apt-get install libbz2-dev
+
+sudo apt-get install liblzma-dev 
+
+sudo apt-get install libpcre3-dev
+
+sudo apt-get install libcurl3-dev
+
+cd gmp-6.1.1&&./configure --prefix=/home/ibm/gcc --enable-shared --disable-static&&make -j&&make install&&make clean&&cd ..
+
+cd mpfr-3.1.4&&./configure --prefix=/home/ibm/gcc --enable-shared --with-gmp=/home/ibm/gcc --disable-static&&make -j&&make install&&make clean&&cd ..
+
+cd mpc-1.0.3&&./configure --prefix=/home/ibm/gcc --enable-shared --with-gmp=/home/ibm/gcc --with-mpfr=/home/ibm/gcc --disable-static&&make -j&&make install&&make clean&&cd .. 
+
+cd gcc-4.9.4&&./configure --prefix=/home/ibm/gccF --enable-shared --with-gmp=/home/ibm/gcc  --with-mpfr=/home/ibm/gcc --with-mpc=/home/ibm/gcc  --disable-libstdcxx-pch --enable-languages=fortran --enable-libgomp --enable-lto --enable-threads=posix --enable-tls --with-fpmath=sse --disable-multilib&&make -j&&make install&&make clean&&cd ..
+
+export LIBRARY_PATH="$LIBRARY_PATH:/home/ibm/lib64:/home/ibm/gccF/lib"&&export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/home/ibm/gccF/lib:/home/ibm/gccF/lib64"&&export PATH="$PATH:/home/ibm/gccF/bin"
+
+cd R-3.3.1&&./configure --prefix=/home/ibm/R --with-readline=no --with-x=no&&make -j&&make install&&make clean&&cd ..
+
+export PATH="/home/ibm/R/bin:$PATH"
