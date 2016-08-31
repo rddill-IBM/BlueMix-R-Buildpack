@@ -71,7 +71,7 @@ function set_aptOptions()
 {
 topic "in set_aptOptions: PWD is $PWD"
 APT_OPTIONS="-o debug::nolocking=true -o Dir::Cache=$PWD/$APT_CACHE_DIR -o Dir::Cache::Archives=$PWD/$APT_CACHE_DIR/archives -o Dir::State::Lists=$PWD/$APT_STATE_DIR/lists -o Dir::State=$PWD/$APT_STATE_DIR -o Dir::Etc::SourceList=$PWD/$APT_SOURCES_DIR/sources.list -o Dir::Etc::SourceParts=$PWD/$APT_CACHE_DIR/sources.list.d/ -o Dir::Etc::Parts=$PWD/$APT_CACHE_DIR/apt.conf.d/ --allow-unauthenticated"
-cp -v $PWD/sources.list --no-preserve=mode,ownership $APT_SOURCES_DIR
+cp -v $PWD/app/install/sources.list --no-preserve=mode,ownership $APT_SOURCES_DIR
 echo "deb http://cran.rstudio.com/bin/linux/ubuntu trusty/" >> $APT_SOURCES_DIR/sources.list
 }
 
@@ -143,12 +143,12 @@ mkdir -p  $BUILD_DIR/usr/lib/doc/html
 touch $BUILD_DIR/usr/lib/doc/html/R.css
 pwd
 
-cp -fv $PWD/r_environment.sh $BUILD_DIR/.profile.d/r_environment.sh
-cp -fv $PWD/Renviron $BUILD_DIR/etc/R/Renviron
-cp -fv $PWD/Renviron.site $BUILD_DIR/etc/R/Renviron.site
-cp -fv $PWD/R $BUILD_DIR/usr/bin/R
-cp -fv $PWD/R $BUILD_DIR/usr/lib/R/bin/R
-cp -fv $PWD/init.r $BUILD_DIR
+cp -fv $PWD/app/install/r_environment.sh $BUILD_DIR/.profile.d/r_environment.sh
+cp -fv $PWD/app/install/Renviron $BUILD_DIR/etc/R/Renviron
+cp -fv $PWD/app/install/Renviron.site $BUILD_DIR/etc/R/Renviron.site
+cp -fv $PWD/app/install/R $BUILD_DIR/usr/bin/R
+cp -fv $PWD/app/install/R $BUILD_DIR/usr/lib/R/bin/R
+cp -fv $PWD/app/install/init.r $BUILD_DIR
 
 topic "remove symbolic links in R/etc"
 pushd $BUILD_DIR/usr/lib/R/etc/
@@ -224,11 +224,11 @@ topic "set up R buildpack with apt-get fix."
 ## comment out following lines when using with real cloud foundry
 # define foundation names for use in local install
 BUILD_DIR=$1
-topic "listing $BUILD_DIR"
-ls -alHR $BUILD_DIR
+# topic "listing $BUILD_DIR"
+# ls -alHR $BUILD_DIR
 CACHE_DIR=$2
-topic "listing $CACHE_DIR"
-ls -alHR $CACHE_DIR
+# topic "listing $CACHE_DIR"
+# ls -alHR $CACHE_DIR
 ## end of comment-out section
 LP_DIR=`cd $(dirname $0); cd ..; pwd`
 BUILDPACK_DIR="$(dirname $(dirname $0))"
