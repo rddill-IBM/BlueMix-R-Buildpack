@@ -245,11 +245,20 @@ do_aptGet
 # install packages
 do_DebInstall
 topic "create symbolic link for gcc"
+if [ ! -f "$BUILD_DIR/usr/bin/gcc" ]; then
+  rm -f $BUILD_DIR/usr/bin/gcc
   ln -s  $BUILD_DIR/usr/bin/gcc-4.8 $BUILD_DIR/usr/bin/gcc
+fi
 topic "create symbolic link for g++"
-  ln -s  $BUILD_DIR/usr/bin/g++-4.8 $BUILD_DIR/usr/bin/g++
+  if [ ! -f "$BUILD_DIR/usr/bin/g++" ]; then
+    rm -f $BUILD_DIR/usr/bin/g++
+    ln -s  $BUILD_DIR/usr/bin/g++-4.8 $BUILD_DIR/usr/bin/g++
+  fi
 topic "create symbolic link for gfortran"
-  ln -s  $BUILD_DIR/usr/bin/gfortran-4.8 $BUILD_DIR/usr/bin/gfortran
+  if [ ! -f "$BUILD_DIR/usr/bin/gfortran" ]; then
+    rm -f $BUILD_DIR/usr/bin/gfortran
+    ln -s  $BUILD_DIR/usr/bin/gfortran-4.8 $BUILD_DIR/usr/bin/gfortran
+  fi
 # install R
 do_install_R
 topic "end of R Buildpack install."
