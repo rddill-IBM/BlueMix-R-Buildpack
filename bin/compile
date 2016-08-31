@@ -70,7 +70,7 @@ export BUILD_DIR
 function set_aptOptions()
 {
 topic "in set_aptOptions: PWD is $PWD"
-APT_OPTIONS="-o debug::nolocking=true -o Dir::Cache=$PWD/$APT_CACHE_DIR -o Dir::Cache::Archives=$PWD/$APT_CACHE_DIR/archives -o Dir::State::Lists=$PWD/$APT_STATE_DIR/lists -o Dir::State=$PWD/$APT_STATE_DIR -o Dir::Etc::SourceList=$PWD/$APT_SOURCES_DIR/sources.list -o Dir::Etc::SourceParts=$PWD/$APT_CACHE_DIR/sources.list.d/ -o Dir::Etc::Parts=$PWD/$APT_CACHE_DIR/apt.conf.d/ --allow-unauthenticated"
+APT_OPTIONS="-o debug::nolocking=true -o Dir::Cache=$APT_CACHE_DIR -o Dir::Cache::Archives=$APT_CACHE_DIR/archives -o Dir::State::Lists=$APT_STATE_DIR/lists -o Dir::State=$APT_STATE_DIR -o Dir::Etc::SourceList=$APT_SOURCES_DIR/sources.list -o Dir::Etc::SourceParts=$APT_CACHE_DIR/sources.list.d/ -o Dir::Etc::Parts=$APT_CACHE_DIR/apt.conf.d/ --allow-unauthenticated"
 cp -v $PWD/app/install/sources.list --no-preserve=mode,ownership $APT_SOURCES_DIR
 echo "deb http://cran.rstudio.com/bin/linux/ubuntu trusty/" >> $APT_SOURCES_DIR/sources.list
 }
