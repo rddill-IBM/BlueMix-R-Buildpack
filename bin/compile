@@ -214,7 +214,7 @@ R -s <<RPROG
    options(repos=r);
    print("options(repos=r) complete")
    print("initiating cat init.r")
-   `cat install/init.r`
+   `cat $BUILD_DIR/install/init.r`
    print("cat init.r complete")
 RPROG
 }
