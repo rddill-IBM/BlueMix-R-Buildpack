@@ -105,7 +105,7 @@ topic "attempting apt-get install debian-archive-keyring"
 apt-get $APT_OPTIONS -y -d install debian-archive-keyring
 do_DebInstall
 apt-get $APT_OPTIONS -y -d -f install --reinstall\
- gcc-4.8-base gcc-4.8 cpp-4.8 gfortran-4.8 libgfortran-4.8-dev libgfortran3 g++-4.8 gcc-4.8-multilib\
+ gcc-4.8-base gcc-4.8 cpp-4.8 gfortran-4.8 libgfortran-4.8-dev libgfortran3 g++-4.8 gcc-4.8-multilib libx32gcc-4.8-dev\
  libssl-dev libgcc-4.8-dev libblas3 liblapack3 libblas-dev liblapack-dev libgfortran3\
  r-base
 
