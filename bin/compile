@@ -30,12 +30,12 @@ function indent() {
 
 function setBaseFolders()
 {
+APT_SOURCES_DIR="$CACHE_DIR/apt"
+mkdir -p  "$APT_SOURCES_DIR"
+rm -fR $APT_SOURCES_DIR
 APT_CACHE_DIR="$CACHE_DIR/apt/cache"
 APT_STATE_DIR="$CACHE_DIR/apt/state"
-APT_SOURCES_DIR="$CACHE_DIR/apt"
-
 mkdir -p  "$BUILD_DIR"
-mkdir -p  "$APT_SOURCES_DIR"
 mkdir -p  "$APT_CACHE_DIR"
 mkdir -p  "$APT_STATE_DIR"
 mkdir -p  "$APT_CACHE_DIR/archives"
