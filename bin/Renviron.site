@@ -1,0 +1,11 @@
+##						Emacs please make this -*- R -*-
+##  Renviron.site for R on cloud foundry
+##
+## Copyright (C) 2008 Dirk Eddelbuettel and GPL'ed
+##
+## see help(Startup) for documentation on ~/.Renviron and Renviron.site
+# ## Example ~/.Renviron on Unix
+# R_HOME=${BUILD_DIR}/usr/lib/R
+# R_LIBS=usr/lib/R/Library
+# R_INCLUDE=${BUILD_DIR}/usr/share/R/include
+# PAGER=${BUILD_DIR}/bin/less
