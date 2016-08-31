@@ -225,10 +225,10 @@ topic "set up R buildpack with apt-get fix."
 # define foundation names for use in local install
 BUILD_DIR=$1
 topic "listing $BUILD_DIR"
-ls -alH $BUILD_DIR
+ls -alHR $BUILD_DIR
 CACHE_DIR=$2
 topic "listing $CACHE_DIR"
-ls -alH $CACHE_DIR
+ls -alHR $CACHE_DIR
 ## end of comment-out section
 LP_DIR=`cd $(dirname $0); cd ..; pwd`
 BUILDPACK_DIR="$(dirname $(dirname $0))"
