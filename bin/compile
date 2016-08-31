@@ -60,7 +60,7 @@ export R_LIBS="$PWD/$BUILD_DIR/usr/lib/R/library"
 export R_SHARE_DIR="$PWD/$BUILD_DIR/usr/share/R/share"
 export R_INCLUDE_DIR="$PWD/$BUILD_DIR/usr/share/R/include"
 export R_DOC_DIR="$PWD/$BUILD_DIR/usr/share/R/doc"
-export R_LIBS_SITE="$PWD/$BUILD_DIR/usr/lib/R/site-library"             
+export R_LIBS_SITE="$PWD/$BUILD_DIR/usr/lib/R/site-library"
 export R_LIBS_USER="$PWD/$BUILD_DIR/usr/lib/R/r-library"
 export RHOME=$R_HOME
 
@@ -78,7 +78,7 @@ echo "deb http://cran.rstudio.com/bin/linux/ubuntu trusty/" >> $APT_SOURCES_DIR/
 function displayVars()
 {
 ls -alHR $APT_CACHE_DIR/
-topic "working directory = $(pwd)" 
+topic "working directory = $(pwd)"
 topic "BUILD_DIR = $BUILD_DIR"
 topic "CACHE_DIR = $CACHE_DIR"
 topic "APT_CACHE_DIR = $APT_CACHE_DIR"
@@ -100,20 +100,20 @@ topic "INCLUDE_PATH = $INCLUDE_PATH"
 function do_aptGet()
 {
 topic "attempting apt-get update"
-apt-get $APT_OPTIONS update 
+apt-get $APT_OPTIONS update
 topic "attempting apt-get install debian-archive-keyring"
 apt-get $APT_OPTIONS -y -d install debian-archive-keyring
 do_DebInstall
 apt-get $APT_OPTIONS -y -d -f install --reinstall\
  gcc-4.8-base gcc-4.8 cpp-4.8 gfortran-4.8 libgfortran-4.8-dev libgfortran3 g++-4.8\
  libssl-dev libgcc-4.8-dev libblas3 liblapack3 libblas-dev liblapack-dev libgfortran3\
- r-base  
+ r-base
 
 echo "deb http://http.us.debian.org/debian jessie main/" >> $APT_SOURCES_DIR/sources.list
 topic "attempting apt-get update with debian in place"
-apt-get $APT_OPTIONS update 
+apt-get $APT_OPTIONS update
 apt-get $APT_OPTIONS -y -d -f install --reinstall\
- libcurl4-openssl-dev libkrb5-dev libldap2-dev krb5-multidev libldap-2.4-2 comerr-dev libcomerr2 
+ libcurl4-openssl-dev libkrb5-dev libldap2-dev krb5-multidev libldap-2.4-2 comerr-dev libcomerr2
 
 topic "listing contents of $APT_CACHE_DIR/archives/"
 ls -alH $APT_CACHE_DIR/archives/
@@ -161,7 +161,7 @@ rm -r Renviron.site
 rm -r repositories
 rm -r Rprofile.site
 topic "verifying removal of symbolic links"
-ls -alH 
+ls -alH
 popd
 topic "create new symbolic links in R/etc using pwd = $PWD"
 ln -s $PWD/$BUILD_DIR/etc/R/ldpaths $PWD/$BUILD_DIR/usr/lib/R/etc/
@@ -196,7 +196,7 @@ R -s <<RPROG
    setwd("$BUILD_DIR")
    print(Sys.getenv())
    print(getwd())
-   print("r.home is: ") 
+   print("r.home is: ")
    print(R.home())
    print("r.home(bin) is:")
    print(R.home("bin"))
@@ -224,8 +224,12 @@ topic "set up R buildpack with apt-get fix."
 ## comment out following lines when using with real cloud foundry
 # define foundation names for use in local install
 BUILD_DIR=$1
+topic "listing $BUILD_DIR"
+ls -alH $BUILD_DIR
 CACHE_DIR=$2
-## end of comment-out section 
+topic "listing $CACHE_DIR"
+ls -alH $CACHE_DIR
+## end of comment-out section
 LP_DIR=`cd $(dirname $0); cd ..; pwd`
 BUILDPACK_DIR="$(dirname $(dirname $0))"
 PWD=$(pwd)
