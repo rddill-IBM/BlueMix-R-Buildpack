@@ -45,23 +45,23 @@ mkdir -p  "$APT_STATE_DIR/lists/partial"
 topic "Writing profile script"
 mkdir -p  $BUILD_DIR/.profile.d
 
-export PATH="$PWD/$BUILD_DIR/usr/bin:$PWD/$BUILD_DIR/usr/lib/R:$PWD/$BUILD_DIR/usr/lib/R/bin:$PWD/$BUILD_DIR/usr/lib/R/etc:$PWD/$BUILD_DIR/.profile.d:$PWD/$BUILD_DIR/usr/lib/gcc/x86_64-linux-gnu/4.8:$PATH"
-export LD_LIBRARY_PATH="$PWD/$BUILD_DIR/usr/lib/x86_64-linux-gnu:$PWD/$BUILD_DIR/usr/lib:$PWD/$BUILD_DIR/usr/lib/R/library:$PWD/$BUILD_DIR/usr/lib/lapack:$PWD/$BUILD_DIR/usr/lib/libblas:$LD_LIBRARY_PATH"
-export LIBRARY_PATH="$PWD/$BUILD_DIR/usr/lib/x86_64-linux-gnu:$PWD/$BUILD_DIR/usr/lib/i386-linux-gnu:$PWD/$BUILD_DIR/usr/lib:$PWD/$BUILD_DIR/usr/lib/R/library:$PWD/$BUILD_DIR/usr/lib/lapack:$PWD/$BUILD_DIR/usr/lib/libblas:$LIBRARY_PATH"
-export INCLUDE_PATH="$PWD/$BUILD_DIR/usr/include:$PWD/$BUILD_DIR/usr/include/c++/4.8/trl:$PWD/$BUILD_DIR/usr/include/c++/4.8:$PWD/$BUILD_DIR/usr/include/x86_64-linux-gnu/c++/4.8:$PWD/$BUILD_DIR/usr/lib/gcc/x86_64-linux-gnu/4.8/finclude:$PWD/$BUILD_DIR/usr/share/R/include:$PWD/$BUILD_DIR/usr/include/x86_64-linux-gnu/openssl:$INCLUDE_PATH"
+export PATH="$BUILD_DIR/usr/bin:$BUILD_DIR/usr/lib/R:$BUILD_DIR/usr/lib/R/bin:$BUILD_DIR/usr/lib/R/etc:$BUILD_DIR/.profile.d:$BUILD_DIR/usr/lib/gcc/x86_64-linux-gnu/4.8:$PATH"
+export LD_LIBRARY_PATH="$BUILD_DIR/usr/lib/x86_64-linux-gnu:$BUILD_DIR/usr/lib:$BUILD_DIR/usr/lib/R/library:$BUILD_DIR/usr/lib/lapack:$BUILD_DIR/usr/lib/libblas:$LD_LIBRARY_PATH"
+export LIBRARY_PATH="$BUILD_DIR/usr/lib/x86_64-linux-gnu:$BUILD_DIR/usr/lib/i386-linux-gnu:$BUILD_DIR/usr/lib:$BUILD_DIR/usr/lib/R/library:$BUILD_DIR/usr/lib/lapack:$BUILD_DIR/usr/lib/libblas:$LIBRARY_PATH"
+export INCLUDE_PATH="$BUILD_DIR/usr/include:$BUILD_DIR/usr/include/c++/4.8/trl:$BUILD_DIR/usr/include/c++/4.8:$BUILD_DIR/usr/include/x86_64-linux-gnu/c++/4.8:$BUILD_DIR/usr/lib/gcc/x86_64-linux-gnu/4.8/finclude:$BUILD_DIR/usr/share/R/include:$BUILD_DIR/usr/include/x86_64-linux-gnu/openssl:$INCLUDE_PATH"
 export C_INCLUDE_PATH="$INCLUDE_PATH"
 export CPATH="$INCLUDE_PATH"
 export CPPPATH="$INCLUDE_PATH"
 export CPLUS_INCLUDE_PATH="$INCLUDE_PATH"
-export LDFLAGS="-L$PWD/$BUILD_DIR/usr/lib -L$PWD/$BUILD_DIR/usr/lib/R/lib "
-export PKG_CONFIG_PATH="$PWD/$BUILD_DIR/usr/lib/x86_64-linux-gnu/pkgconfig:$BUILD_DIR/usr/lib/i386-linux-gnu/pkgconfig:$BUILD_DIR/usr/lib/pkgconfig:$PKG_CONFIG_PATH"
-export R_HOME="$PWD/$BUILD_DIR/usr/lib/R"
-export R_LIBS="$PWD/$BUILD_DIR/usr/lib/R/library"
-export R_SHARE_DIR="$PWD/$BUILD_DIR/usr/share/R/share"
-export R_INCLUDE_DIR="$PWD/$BUILD_DIR/usr/share/R/include"
-export R_DOC_DIR="$PWD/$BUILD_DIR/usr/share/R/doc"
-export R_LIBS_SITE="$PWD/$BUILD_DIR/usr/lib/R/site-library"
-export R_LIBS_USER="$PWD/$BUILD_DIR/usr/lib/R/r-library"
+export LDFLAGS="-L$BUILD_DIR/usr/lib -L$BUILD_DIR/usr/lib/R/lib "
+export PKG_CONFIG_PATH="$BUILD_DIR/usr/lib/x86_64-linux-gnu/pkgconfig:$BUILD_DIR/usr/lib/i386-linux-gnu/pkgconfig:$BUILD_DIR/usr/lib/pkgconfig:$PKG_CONFIG_PATH"
+export R_HOME="$BUILD_DIR/usr/lib/R"
+export R_LIBS="$BUILD_DIR/usr/lib/R/library"
+export R_SHARE_DIR="$BUILD_DIR/usr/share/R/share"
+export R_INCLUDE_DIR="$BUILD_DIR/usr/share/R/include"
+export R_DOC_DIR="$BUILD_DIR/usr/share/R/doc"
+export R_LIBS_SITE="$BUILD_DIR/usr/lib/R/site-library"
+export R_LIBS_USER="$BUILD_DIR/usr/lib/R/r-library"
 export RHOME=$R_HOME
 
 export BUILD_DIR
@@ -71,7 +71,7 @@ function set_aptOptions()
 {
 topic "in set_aptOptions: PWD is $PWD"
 APT_OPTIONS="-o debug::nolocking=true -o Dir::Cache=$APT_CACHE_DIR -o Dir::Cache::Archives=$APT_CACHE_DIR/archives -o Dir::State::Lists=$APT_STATE_DIR/lists -o Dir::State=$APT_STATE_DIR -o Dir::Etc::SourceList=$APT_SOURCES_DIR/sources.list -o Dir::Etc::SourceParts=$APT_CACHE_DIR/sources.list.d/ -o Dir::Etc::Parts=$APT_CACHE_DIR/apt.conf.d/ --allow-unauthenticated"
-cp -v $PWD/app/install/sources.list --no-preserve=mode,ownership $APT_SOURCES_DIR
+cp -v app/install/sources.list --no-preserve=mode,ownership $APT_SOURCES_DIR
 echo "deb http://cran.rstudio.com/bin/linux/ubuntu trusty/" >> $APT_SOURCES_DIR/sources.list
 }
 
@@ -123,7 +123,7 @@ function do_DebInstall()
 {
 for DEB in $(ls -1 $APT_CACHE_DIR/archives/*.deb); do
    topic "Installing $(basename $DEB)"
-   dpkg -x --root="$PWD/$BUILD_DIR" $DEB $BUILD_DIR/
+   dpkg -x --root="$BUILD_DIR" $DEB $BUILD_DIR/
  done
 }
 
@@ -143,12 +143,12 @@ mkdir -p  $BUILD_DIR/usr/lib/doc/html
 touch $BUILD_DIR/usr/lib/doc/html/R.css
 pwd
 
-cp -fv $PWD/app/install/r_environment.sh $BUILD_DIR/.profile.d/r_environment.sh
-cp -fv $PWD/app/install/Renviron $BUILD_DIR/etc/R/Renviron
-cp -fv $PWD/app/install/Renviron.site $BUILD_DIR/etc/R/Renviron.site
-cp -fv $PWD/app/install/R $BUILD_DIR/usr/bin/R
-cp -fv $PWD/app/install/R $BUILD_DIR/usr/lib/R/bin/R
-cp -fv $PWD/app/install/init.r $BUILD_DIR
+cp -fv app/install/r_environment.sh $BUILD_DIR/.profile.d/r_environment.sh
+cp -fv app/install/Renviron $BUILD_DIR/etc/R/Renviron
+cp -fv app/install/Renviron.site $BUILD_DIR/etc/R/Renviron.site
+cp -fv app/install/R $BUILD_DIR/usr/bin/R
+cp -fv app/install/R $BUILD_DIR/usr/lib/R/bin/R
+cp -fv app/install/init.r $BUILD_DIR
 
 topic "remove symbolic links in R/etc"
 pushd $BUILD_DIR/usr/lib/R/etc/
@@ -164,19 +164,19 @@ topic "verifying removal of symbolic links"
 ls -alH
 popd
 topic "create new symbolic links in R/etc using pwd = $PWD"
-ln -s $PWD/$BUILD_DIR/etc/R/ldpaths $PWD/$BUILD_DIR/usr/lib/R/etc/
-ln -s $PWD/$BUILD_DIR/etc/R/Makeconf $PWD/$BUILD_DIR/usr/lib/R/etc/
-ln -s $PWD/$BUILD_DIR/etc/R/Renviron $PWD/$BUILD_DIR/usr/lib/R/etc/
-ln -s $PWD/$BUILD_DIR/etc/R/Renviron.site $PWD/$BUILD_DIR/usr/lib/R/etc/
-ln -s $PWD/$BUILD_DIR/etc/R/repositories $PWD/$BUILD_DIR/usr/lib/R/etc/
-ln -s $PWD/$BUILD_DIR/etc/R/Rprofile.site $PWD/$BUILD_DIR/usr/lib/R/etc/
+ln -s $BUILD_DIR/etc/R/ldpaths $BUILD_DIR/usr/lib/R/etc/
+ln -s $BUILD_DIR/etc/R/Makeconf $BUILD_DIR/usr/lib/R/etc/
+ln -s $BUILD_DIR/etc/R/Renviron $BUILD_DIR/usr/lib/R/etc/
+ln -s $BUILD_DIR/etc/R/Renviron.site $BUILD_DIR/usr/lib/R/etc/
+ln -s $BUILD_DIR/etc/R/repositories $BUILD_DIR/usr/lib/R/etc/
+ln -s $BUILD_DIR/etc/R/Rprofile.site $BUILD_DIR/usr/lib/R/etc/
 topic "verifying creation of new symbolic links"
 pushd $BUILD_DIR/usr/lib/R/etc/
 ls -alH
 popd
 topic "completing R setup"
 topic "copying openssl include"
-cp -f $PWD/$BUILD_DIR/usr/include/x86_64-linux-gnu/openssl/opensslconf.h $PWD/$BUILD_DIR/usr/include/openssl/
+cp -f $BUILD_DIR/usr/include/x86_64-linux-gnu/openssl/opensslconf.h $BUILD_DIR/usr/include/openssl/
 
 topic "checking for g++"
 which g++
@@ -245,11 +245,11 @@ do_aptGet
 # install packages
 do_DebInstall
 topic "create symbolic link for gcc"
-  ln -s  $PWD/$BUILD_DIR/usr/bin/gcc-4.8 $PWD/$BUILD_DIR/usr/bin/gcc
+  ln -s  $BUILD_DIR/usr/bin/gcc-4.8 $BUILD_DIR/usr/bin/gcc
 topic "create symbolic link for g++"
-  ln -s  $PWD/$BUILD_DIR/usr/bin/g++-4.8 $PWD/$BUILD_DIR/usr/bin/g++
+  ln -s  $BUILD_DIR/usr/bin/g++-4.8 $BUILD_DIR/usr/bin/g++
 topic "create symbolic link for gfortran"
-  ln -s  $PWD/$BUILD_DIR/usr/bin/gfortran-4.8 $PWD/$BUILD_DIR/usr/bin/gfortran
+  ln -s  $BUILD_DIR/usr/bin/gfortran-4.8 $BUILD_DIR/usr/bin/gfortran
 # install R
 do_install_R
 topic "end of R Buildpack install."
