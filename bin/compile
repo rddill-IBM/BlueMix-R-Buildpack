@@ -3,7 +3,6 @@
 
 # fail fast
 set -e
-lsb_release -a
 
 # debug ... uncomment following line to put this script in debug mode
 # set -x
@@ -190,6 +189,8 @@ which gcc
 gcc -v
 topic "LD_LIBRARY_PATH = $LD_LIBRARY_PATH"
 topic "LIBRARY_PATH = $LIBRARY_PATH"
+topic "check contents of $BUILD_DIR/usr/lib/R/lib/"
+ls -alH $BUILD_DIR/usr/lib/R/lib/
 topic "starting R -s script"
 R -s <<RPROG
    Sys.setenv(BUILD_DIR="$BUILD_DIR")
