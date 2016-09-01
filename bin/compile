@@ -106,14 +106,14 @@ apt-get $APT_OPTIONS -y -d install debian-archive-keyring
 do_DebInstall
 apt-get $APT_OPTIONS -y -d -f install --reinstall\
  gcc-4.8-base gcc-4.8 cpp-4.8 gfortran-4.8 libgfortran-4.8-dev libgfortran3 g++-4.8 \
- libssl-dev libgcc-4.8-dev libblas3 liblapack3 libblas-dev liblapack-dev libgfortran3\
+ libssl-dev libgcc-4.8-dev libblas3 liblapack3 libblas-dev liblapack-dev \
  r-base
 
 echo "deb http://http.us.debian.org/debian jessie main/" >> $APT_SOURCES_DIR/sources.list
 topic "attempting apt-get update with debian in place"
 apt-get $APT_OPTIONS update
 apt-get $APT_OPTIONS -y -d -f install --reinstall\
- libcurl4-openssl-dev libkrb5-dev libldap2-dev krb5-multidev libldap-2.4-2 comerr-dev libcomerr2
+ libcurl4-openssl-dev libkrb5-dev libldap2-dev krb5-multidev libldap-2.4-2 comerr-dev libcomerr2 libstdc++-4.8-dev
 
 topic "listing contents of $APT_CACHE_DIR/archives/"
 ls -alH $APT_CACHE_DIR/archives/
