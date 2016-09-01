@@ -3,6 +3,7 @@
 
 # fail fast
 set -e
+lsb_release -a
 
 # debug ... uncomment following line to put this script in debug mode
 # set -x
