@@ -97,75 +97,138 @@ topic "INCLUDE_PATH = $INCLUDE_PATH"
 
 }
 
-function do_unpack
+function do_aptGet()
 {
-  topic "get tar file"
-  R_BINARIES="https://media.githubusercontent.com/media/rddill-IBM/CF_R_Buildpack/master/r_build.tar.gz"
-  curl $R_BINARIES -s -o r_binaries.tar.gz
-  topic "unzip tar file"
-  tar xzf r_binaries.tar.gz -C $VENDOR_DIR
-  rm r_binaries.tar.gz
+topic "attempting apt-get update"
+apt-get $APT_OPTIONS update
+topic "attempting apt-get install debian-archive-keyring"
+apt-get $APT_OPTIONS -y -d install debian-archive-keyring
+do_DebInstall
+apt-get $APT_OPTIONS -y -d -f install --reinstall\
+ gcc-4.8-base gcc-4.8 cpp-4.8 gfortran-4.8 libgfortran-4.8-dev libgfortran3 g++-4.8 \
+ libssl-dev libgcc-4.8-dev libblas3 liblapack3 libblas-dev liblapack-dev \
+ r-base
 
-  topic "copy folders"
-  mv $VENDOR_DIR/cf_build/* $BUILD_DIR
-  ls -alHR $BUILD_DIR
+echo "deb http://http.us.debian.org/debian jessie main/" >> $APT_SOURCES_DIR/sources.list
+topic "attempting apt-get update with debian in place"
+apt-get $APT_OPTIONS update
+apt-get $APT_OPTIONS -y -d -f install --reinstall\
+ libcurl4-openssl-dev libkrb5-dev libldap2-dev krb5-multidev libldap-2.4-2 comerr-dev libcomerr2 libstdc++-4.8-dev
 
-  topic "prevent warnings"
-  touch $BUILD_DIR/usr/lib/doc/html/R.css
-  topic "remove, create new logical links"
-  topic "remove symbolic links in R/etc"
-  pushd $BUILD_DIR/usr/lib/R/etc/
-  topic "listing R/etc"
-  ls -alH
-  rm -r ldpaths
-  rm -r Makeconf
-  rm -r Renviron
-  rm -r Renviron.site
-  rm -r repositories
-  rm -r Rprofile.site
-  topic "verifying removal of symbolic links"
-  ls -alH
-  popd
-  topic "create new symbolic links in R/etc using pwd = $PWD"
-  ln -s $BUILD_DIR/etc/R/ldpaths $BUILD_DIR/usr/lib/R/etc/
-  ln -s $BUILD_DIR/etc/R/Makeconf $BUILD_DIR/usr/lib/R/etc/
-  ln -s $BUILD_DIR/etc/R/Renviron $BUILD_DIR/usr/lib/R/etc/
-  ln -s $BUILD_DIR/etc/R/Renviron.site $BUILD_DIR/usr/lib/R/etc/
-  ln -s $BUILD_DIR/etc/R/repositories $BUILD_DIR/usr/lib/R/etc/
-  ln -s $BUILD_DIR/etc/R/Rprofile.site $BUILD_DIR/usr/lib/R/etc/
-  topic "verifying creation of new symbolic links"
-  pushd $BUILD_DIR/usr/lib/R/etc/
-  ls -alH
-  popd
-  topic "completing R setup"
-  topic "copying openssl include"
-  cp -f $BUILD_DIR/usr/include/x86_64-linux-gnu/openssl/opensslconf.h $BUILD_DIR/usr/include/openssl/
-
-  topic "create symbolic link for gcc"
-  if [ ! -f "$BUILD_DIR/usr/bin/gcc" ]; then
-    rm -f $BUILD_DIR/usr/bin/gcc
-    ln -s  $BUILD_DIR/usr/bin/gcc-4.8 $BUILD_DIR/usr/bin/gcc
-  fi
-  topic "create symbolic link for g++"
-    if [ ! -f "$BUILD_DIR/usr/bin/g++" ]; then
-      rm -f $BUILD_DIR/usr/bin/g++
-      ln -s  $BUILD_DIR/usr/bin/g++-4.8 $BUILD_DIR/usr/bin/g++
-    fi
-  topic "create symbolic link for gfortran"
-    if [ ! -f "$BUILD_DIR/usr/bin/gfortran" ]; then
-      rm -f $BUILD_DIR/usr/bin/gfortran
-      ln -s  $BUILD_DIR/usr/bin/gfortran-4.8 $BUILD_DIR/usr/bin/gfortran
-    fi
-
+topic "listing contents of $APT_CACHE_DIR/archives/"
+ls -alH $APT_CACHE_DIR/archives/
 }
+
+function do_DebInstall()
+{
+for DEB in $(ls -1 $APT_CACHE_DIR/archives/*.deb); do
+   topic "Installing $(basename $DEB)"
+   dpkg -x --root="$BUILD_DIR" $DEB $BUILD_DIR/
+ done
+}
+
+function do_install_R()
+{
+topic "create user library folder for R"
+MY_LIB="$R_HOME/r_library"
+if [ ! -d "$MY_LIB" ]; then
+  mkdir -p  $MY_LIB
+fi
+if [ ! -d "$R_HOME/site-library" ]; then
+  mkdir -p  $R_HOME/site-library
+fi
+
+topic "prevent warnings"
+mkdir -p  $BUILD_DIR/usr/lib/doc/html
+touch $BUILD_DIR/usr/lib/doc/html/R.css
+pwd
+
+cp -fv app/install/r_environment.sh $BUILD_DIR/.profile.d/r_environment.sh
+cp -fv app/install/Renviron $BUILD_DIR/etc/R/Renviron
+cp -fv app/install/Renviron.site $BUILD_DIR/etc/R/Renviron.site
+cp -fv app/install/R $BUILD_DIR/usr/bin/R
+cp -fv app/install/R $BUILD_DIR/usr/lib/R/bin/R
+cp -fv app/install/init.r $BUILD_DIR
+
+topic "remove symbolic links in R/etc"
+pushd $BUILD_DIR/usr/lib/R/etc/
+topic "listing R/etc"
+ls -alH
+rm -r ldpaths
+rm -r Makeconf
+rm -r Renviron
+rm -r Renviron.site
+rm -r repositories
+rm -r Rprofile.site
+topic "verifying removal of symbolic links"
+ls -alH
+popd
+topic "create new symbolic links in R/etc using pwd = $PWD"
+ln -s $BUILD_DIR/etc/R/ldpaths $BUILD_DIR/usr/lib/R/etc/
+ln -s $BUILD_DIR/etc/R/Makeconf $BUILD_DIR/usr/lib/R/etc/
+ln -s $BUILD_DIR/etc/R/Renviron $BUILD_DIR/usr/lib/R/etc/
+ln -s $BUILD_DIR/etc/R/Renviron.site $BUILD_DIR/usr/lib/R/etc/
+ln -s $BUILD_DIR/etc/R/repositories $BUILD_DIR/usr/lib/R/etc/
+ln -s $BUILD_DIR/etc/R/Rprofile.site $BUILD_DIR/usr/lib/R/etc/
+topic "verifying creation of new symbolic links"
+pushd $BUILD_DIR/usr/lib/R/etc/
+ls -alH
+popd
+topic "completing R setup"
+topic "copying openssl include"
+cp -f $BUILD_DIR/usr/include/x86_64-linux-gnu/openssl/opensslconf.h $BUILD_DIR/usr/include/openssl/
+
+topic "checking for g++"
+which g++
+g++ -v
+topic "checking for gfortran"
+which gfortran
+gfortran -v
+topic "checking for gcc"
+which gcc
+gcc -v
+topic "LD_LIBRARY_PATH = $LD_LIBRARY_PATH"
+topic "LIBRARY_PATH = $LIBRARY_PATH"
+topic "check contents of $BUILD_DIR/usr/lib/R/lib/"
+ls -alH $BUILD_DIR/usr/lib/R/lib/
+topic "starting R -s script"
+R -s <<RPROG
+   Sys.setenv(BUILD_DIR="$BUILD_DIR")
+   print("Sys.setenv complete")
+   setwd("$BUILD_DIR")
+   print(Sys.getenv())
+   print(getwd())
+   print("r.home is: ")
+   print(R.home())
+   print("r.home(bin) is:")
+   print(R.home("bin"))
+   print("file.path(r.home(bin), exec) is: ")
+   print(file.path(R.home("bin"), "exec"))
+   print("changing working directory")
+# setwd(file.path(R.home("bin"), "exec"))
+   print(getwd())
+   print("setwd complete")
+   r <- getOption("repos");
+   print(r)
+   print("setting r complete")
+   r["CRAN"] <- "$CRAN_MIRROR";
+   print("setting r[CRAN] complete")
+   options(repos=r);
+   print("options(repos=r) complete")
+   print("initiating cat init.r")
+   `cat $BUILD_DIR/install/init.r`
+   print("cat init.r complete")
+RPROG
+}
+
 # initialization
-topic "set up R buildpack with pre-built image."
+topic "set up R buildpack with apt-get fix."
 ## comment out following lines when using with real cloud foundry
 # define foundation names for use in local install
-# BUILD_DIR=$1
+BUILD_DIR=$1
 # topic "listing $BUILD_DIR"
 # ls -alHR $BUILD_DIR
-# CACHE_DIR=$2
+CACHE_DIR=$2
 # topic "listing $CACHE_DIR"
 # ls -alHR $CACHE_DIR
 ## end of comment-out section
@@ -180,5 +243,24 @@ set_aptOptions
 # display variables in play for this build
 displayVars
 # update apt and get identified packages
-do_unpack
+do_aptGet
+# install packages
+do_DebInstall
+topic "create symbolic link for gcc"
+if [ ! -f "$BUILD_DIR/usr/bin/gcc" ]; then
+  rm -f $BUILD_DIR/usr/bin/gcc
+  ln -s  $BUILD_DIR/usr/bin/gcc-4.8 $BUILD_DIR/usr/bin/gcc
+fi
+topic "create symbolic link for g++"
+  if [ ! -f "$BUILD_DIR/usr/bin/g++" ]; then
+    rm -f $BUILD_DIR/usr/bin/g++
+    ln -s  $BUILD_DIR/usr/bin/g++-4.8 $BUILD_DIR/usr/bin/g++
+  fi
+topic "create symbolic link for gfortran"
+  if [ ! -f "$BUILD_DIR/usr/bin/gfortran" ]; then
+    rm -f $BUILD_DIR/usr/bin/gfortran
+    ln -s  $BUILD_DIR/usr/bin/gfortran-4.8 $BUILD_DIR/usr/bin/gfortran
+  fi
+# install R
+do_install_R
 topic "end of R Buildpack install."
