@@ -30,18 +30,18 @@ function indent() {
 
 function setBaseFolders()
 {
-APT_SOURCES_DIR="$CACHE_DIR/apt"
-mkdir -p  "$APT_SOURCES_DIR"
-rm -fR $APT_SOURCES_DIR
-APT_CACHE_DIR="$CACHE_DIR/apt/cache"
-APT_STATE_DIR="$CACHE_DIR/apt/state"
-mkdir -p  "$BUILD_DIR"
-mkdir -p  "$APT_CACHE_DIR"
-mkdir -p  "$APT_STATE_DIR"
-mkdir -p  "$APT_CACHE_DIR/archives"
-mkdir -p  "$APT_STATE_DIR/lists"
-mkdir -p  "$APT_CACHE_DIR/archives/partial"
-mkdir -p  "$APT_STATE_DIR/lists/partial"
+# APT_SOURCES_DIR="$CACHE_DIR/apt"
+# mkdir -p  "$APT_SOURCES_DIR"
+# rm -fR $APT_SOURCES_DIR
+# APT_CACHE_DIR="$CACHE_DIR/apt/cache"
+# APT_STATE_DIR="$CACHE_DIR/apt/state"
+# mkdir -p  "$BUILD_DIR"
+# mkdir -p  "$APT_CACHE_DIR"
+# mkdir -p  "$APT_STATE_DIR"
+# mkdir -p  "$APT_CACHE_DIR/archives"
+# mkdir -p  "$APT_STATE_DIR/lists"
+# mkdir -p  "$APT_CACHE_DIR/archives/partial"
+# mkdir -p  "$APT_STATE_DIR/lists/partial"
 topic "Writing profile script"
 mkdir -p  $BUILD_DIR/.profile.d
 
@@ -69,27 +69,27 @@ export BUILD_DIR
 
 function set_aptOptions()
 {
-topic "in set_aptOptions: PWD is $PWD"
-APT_OPTIONS="-o debug::nolocking=true -o Dir::Cache=$APT_CACHE_DIR -o Dir::Cache::Archives=$APT_CACHE_DIR/archives -o Dir::State::Lists=$APT_STATE_DIR/lists -o Dir::State=$APT_STATE_DIR -o Dir::Etc::SourceList=$APT_SOURCES_DIR/sources.list -o Dir::Etc::SourceParts=$APT_CACHE_DIR/sources.list.d/ -o Dir::Etc::Parts=$APT_CACHE_DIR/apt.conf.d/ --allow-unauthenticated"
-cp -v app/install/sources.list --no-preserve=mode,ownership $APT_SOURCES_DIR
-echo "deb http://cran.rstudio.com/bin/linux/ubuntu trusty/" >> $APT_SOURCES_DIR/sources.list
+# topic "in set_aptOptions: PWD is $PWD"
+# APT_OPTIONS="-o debug::nolocking=true -o Dir::Cache=$APT_CACHE_DIR -o Dir::Cache::Archives=$APT_CACHE_DIR/archives -o Dir::State::Lists=$APT_STATE_DIR/lists -o Dir::State=$APT_STATE_DIR -o Dir::Etc::SourceList=$APT_SOURCES_DIR/sources.list -o Dir::Etc::SourceParts=$APT_CACHE_DIR/sources.list.d/ -o Dir::Etc::Parts=$APT_CACHE_DIR/apt.conf.d/ --allow-unauthenticated"
+# cp -v app/install/sources.list --no-preserve=mode,ownership $APT_SOURCES_DIR
+# echo "deb http://cran.rstudio.com/bin/linux/ubuntu trusty/" >> $APT_SOURCES_DIR/sources.list
 }
 
 function displayVars()
 {
-ls -alHR $APT_CACHE_DIR/
+# ls -alHR $APT_CACHE_DIR/
 topic "working directory = $(pwd)"
 topic "BUILD_DIR = $BUILD_DIR"
 topic "CACHE_DIR = $CACHE_DIR"
-topic "APT_CACHE_DIR = $APT_CACHE_DIR"
-topic "APT_STATE_DIR = $APT_STATE_DIR"
-topic "APT_SOURCES_DIR = $APT_SOURCES_DIR"
-topic "APT_OPTIONS = $APT_OPTIONS"
+# topic "APT_CACHE_DIR = $APT_CACHE_DIR"
+# topic "APT_STATE_DIR = $APT_STATE_DIR"
+# topic "APT_SOURCES_DIR = $APT_SOURCES_DIR"
+# topic "APT_OPTIONS = $APT_OPTIONS"
 topic "PATH = $PATH"
 topic "BUILDPACK_DIR = $BUILDPACK_DIR"
 topic "LP_DIR = $LP_DIR"
 topic "PWD = $PWD"
-topic "list apt options: $APT_OPTIONS"
+# topic "list apt options: $APT_OPTIONS"
 topic "PATH = $PATH"
 topic "LIBRARY_PATH = $LIBRARY_PATH"
 topic "LD_LIBRARY_PATH = $LD_LIBRARY_PATH"
