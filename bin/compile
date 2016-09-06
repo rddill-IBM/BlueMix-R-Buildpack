@@ -173,12 +173,11 @@ LP_DIR=`cd $(dirname $0); cd ..; pwd`
 BUILDPACK_DIR="$(dirname $(dirname $0))"
 PWD=$(pwd)
 topic "PWD set at initialization is $PWD"
-# set up folder structure for buildpack build
+# update apt and get identified packages
+do_unpack
 setBaseFolders
 # set apt-get options for buildpack build
 set_aptOptions
 # display variables in play for this build
 displayVars
-# update apt and get identified packages
-do_unpack
 topic "end of R Buildpack install."
