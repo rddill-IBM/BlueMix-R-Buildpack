@@ -102,7 +102,7 @@ topic "INCLUDE_PATH = $INCLUDE_PATH"
 function do_unpack
 {
   topic "get tar file"
-  R_BINARIES="https://media.githubusercontent.com/media/rddill-IBM/CF_R_Buildpack/master/r_build.tar.gz"
+  R_BINARIES="https://media.githubusercontent.com/media/rddill-IBM/CF_R_Buildpack/master/r_binaries.tar.gz"
   # curl $R_BINARIES -s -o r_binaries.tar.gz
   ls -alH
   topic "unzip tar file"
