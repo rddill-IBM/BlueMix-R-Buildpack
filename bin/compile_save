@@ -44,9 +44,7 @@ mkdir -p  "$APT_CACHE_DIR/archives/partial"
 mkdir -p  "$APT_STATE_DIR/lists/partial"
 topic "Writing profile script"
 mkdir -p  $BUILD_DIR/.profile.d
-}
-function setPaths()
-{
+
 export PATH="$BUILD_DIR/usr/bin:$BUILD_DIR/usr/lib/R:$BUILD_DIR/usr/lib/R/bin:$BUILD_DIR/usr/lib/R/etc:$BUILD_DIR/.profile.d:$BUILD_DIR/usr/lib/gcc/x86_64-linux-gnu/4.8:$PATH"
 export LD_LIBRARY_PATH="$BUILD_DIR/usr/lib/x86_64-linux-gnu:$BUILD_DIR/usr/lib:$BUILD_DIR/usr/lib/R/library:$BUILD_DIR/usr/lib/lapack:$BUILD_DIR/usr/lib/libblas:$LD_LIBRARY_PATH"
 export LIBRARY_PATH="$BUILD_DIR/usr/lib/x86_64-linux-gnu:$BUILD_DIR/usr/lib/i386-linux-gnu:$BUILD_DIR/usr/lib:$BUILD_DIR/usr/lib/R/library:$BUILD_DIR/usr/lib/lapack:$BUILD_DIR/usr/lib/libblas:$LIBRARY_PATH"
@@ -103,12 +101,14 @@ function do_unpack
 {
   topic "get tar file"
   R_BINARIES="https://media.githubusercontent.com/media/rddill-IBM/CF_R_Buildpack/master/r_build.tar.gz"
-  # curl $R_BINARIES -s -o r_binaries.tar.gz
+  curl $R_BINARIES -s -o r_binaries.tar.gz
   ls -alH
   topic "unzip tar file"
-  tar xzf r_binaries.tar.gz -C $BUILD_DIR
+  tar xzf r_binaries.tar.gz -C $VENDOR_DIR
   rm r_binaries.tar.gz
 
+  topic "copy folders"
+  mv $VENDOR_DIR/cf_build/* $BUILD_DIR
   ls -alHR $BUILD_DIR
   topic "prevent warnings"
   touch $BUILD_DIR/usr/lib/doc/html/R.css
@@ -174,9 +174,8 @@ BUILDPACK_DIR="$(dirname $(dirname $0))"
 PWD=$(pwd)
 topic "PWD set at initialization is $PWD"
 # update apt and get identified packages
-setBaseFolders
 do_unpack
-setPaths
+setBaseFolders
 # set apt-get options for buildpack build
 set_aptOptions
 # display variables in play for this build

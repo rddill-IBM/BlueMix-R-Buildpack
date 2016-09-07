@@ -1,0 +1,126 @@
+2016-08-31
+
+added rscript engineGlobal_1.3.r to test results of build
+ -- found that rcpp was wrong version
+added apt-get rcpp
+cleaned up formatting on R script for install. added tabs to align code
+ -- rcpp get installed 0.11 need 0.12 or higher
+changed debian server from rstudio to revolutionanalytics
+ -- http failed, changing to https
+ -- https fails on authentication
+adding apt-key $APT_OPTIONS adv --keyserver keyserver.ubuntu.com --recv-keys E084DAB9
+ -- failed, removing $APT_OPTIONS
+ -- failed - gpg 'no writable keyring' probable permissions failure without sudo
+revert to http
+ -- revolutionanalytics fails without certification file, requires local user execution of gpg
+revert to https, add --default-recipient-self to gpg passed options
+ -- still get no writable keyring
+revert to http://cran.rstudio.com/bin/linux/ubuntu trusty/
+ -- rcpp is being loaded from ubuntu archive, not rstudio.com. does not appear to be in rstudio
+adding apt-get upgrade to see effect.
+ -- required manual response. looks like working against /usr/etc/apt instead of $BUILD_DIR
+removed apt-get upgrade. Added line to print value of $PWD in set_aptOptions()
+ -- has correct value
+updated apt-get options to following line. changed lower case dir etc to Dir etc. Added Archives, Lists, State
+ -- : APT_OPTIONS="-o debug::nolocking=true -o Dir::Cache=$PWD/$APT_CACHE_DIR -o Dir::Cache::Archives=$PWD/$APT_CACHE_DIR/archives -o Dir::State::Lists=$PWD/$APT_STATE_DIR/lists -o Dir::State=$PWD/$APT_STATE_DIR -o Dir::Etc::SourceList=$PWD/$APT_SOURCES_DIR/sources.list --allow-unauthenticated"
+ -- no longer seeing vmware updates. this is progress
+ -- still loading rcpp 0.11 from ubuntu archive
+added new repo: echo "deb http://http.us.debian.org/debian jessie main/" >> $APT_SOURCES_DIR/sources.list
+  -- lots of failed dependencies. need to upgrade g++ to 4.4.9 ...
+added --with-new-packages to apt-get install
+-- failed
+attempting with build-dep instead of install
+-- failed. still have unmet dependencies, still at 4.4 instead of 4.8
+removing build_essential from list
+ -- still failing.
+reduce list to just gcc-4.8
+ -- appear to have apt-get options problem
+updated APT_OPTIONS to:
+ -- APT_OPTIONS="-o debug::nolocking=true -o Dir::Cache=$PWD/$APT_CACHE_DIR -o Dir::Cache::Archives=$PWD/$APT_CACHE_DIR/archives -o Dir::State::Lists=$PWD/$APT_STATE_DIR/lists -o Dir::State=$PWD/$APT_STATE_DIR -o Dir::Etc::SourceList=$PWD/$APT_SOURCES_DIR/sources.list -o Dir::Etc::SourceParts=$PWD/$APT_CACHE_DIR/sources.list.d/ -o Dir::Etc::Parts=$PWD/$APT_CACHE_DIR/apt.conf.d/ --allow-unauthenticated"
+ -- still failing on 4.8. attempting with 4.9
+updated apt-get to install debian-archive-keyring first
+ -- failed debinstall had symbolic link creation in it
+moved gcc symbolic link creation to end sequence.
+added --fix-missing to apt-get install
+ -- had no impact
+removing cran from deb list
+ -- same issue. gcc-4.9.base is install 4.9.3 but system needs 4.9.2-10
+
+removed version numbers
+
+remove --fix-missing, add 3 dependent packages
+adding gfortran. requires libgfortran3. requires gfortran-4.9
+ -- requires gcc-4.9
+updating to gcc-4.9
+ -- problem is that gcc-4.9-base is loading from trusty/updates, which does not also contain peer versions of cpp.
+removing trusty updates from package list folder.
+adding following line to compile after processing apt-get update:
+ -- rm -f cf_cache/apt/state/lists/us.archive.ubuntu.com_ubuntu_dists_trusty-updates*
+ -- failed. removing attempt.
+creating custom sources.list without update sites.
+ -- failed on 4.9, reverting to 4.8
+success!! adding cpp-4.8.
+success!! adding gfortran-4.8
+ -- failed requires: libgfortran-4.8-dev
+ -- failed requires:  libgfortran3
+ -- failes, requires gcc-4.9-base
+removed debian.org from package list.
+-- install is working.
+add g++-4.8
+-- success!
+add cran repo to list
+-- success
+add R packages to list
+-- failed on r-base-dev
+remove r-base-dev from list
+-- success
+execute full script.
+-- fails on opensslconf.h
+add libssl-dev to package list.
+ -- install succeeded
+ -- g++ sym link missing.
+adding g++ symlink
+-- gfortran symlink missing
+adding gfortran symlink, removing debian keyring install
+-- success up to RPROG
+-- stddef.h missing
+adding libgcc-4.8-dev to apt-get
+-- success through R compile
+-- missing libcurl package.
+add libcurl4-openssl-dev to apt-get
+-- failed. requires libkrb5-dev & libldap2-dev
+add libkrb5-dev & libldap2-dev
+--failed. requires krb5-multidev & libldap-2.4-2
+add krb5-multidev & libldap-2.4-2
+-- exhausted memory during RBGL compile. Currently have 1Gb allocated
+rerun with 2Gb virtual
+restructure apt-get into two cycles, one to do base without debian.org and a second with debian for openssl & dependencies
+adding libblas-dev liblapack-dev to address R compile failures
+-- failed, requires: libblas3 & liblapack3
+-- failed, requires: libgfortran3
+-- failed. retry installing prior to debian.org
+-- apt-get install worked in the new sequence. checking R compile
+-- R compile fails, cannot find -llapack and -lblas
+add libblas-dev liblapack-dev
+-- apt-get install works
+-- all R compiles succeed.
+-- rscript load fails with following message:
+	-- Loading required package: gRbase
+	--Error in loadNamespace(j <- i[[1L]], c(lib.loc, .libPaths()), versionCheck = vI[[j]]) :
+	  namespace ‘Rcpp’ 0.11.0 is being loaded, but >= 0.11.1 is required
+	--Error: package ‘gRbase’ could not be loaded
+move installation of r-cran-stringr r-cran-rcpp r-cran-rcppeigen from apt-get to R install.packages
+--failed on rccpeigen compile.
+restart system with 2Gb
+-- RcppEigen install succeeded.
+-- rGraph wants rccp 0.11.1 and system is loading 0.11.0
+change init.r to have rGraph load dependencies
+run after ./cleanup
+-- success!!!
+-- (14:54 - 15:11 ... 17 mins on Mac/OSX VMWare 2Gb 1 CPU image)
+test on Bluemix
+-- fails long long error, missing lstdc++
+change init.r to install stringi via install.packages('stringi', configure.args='--disable-cxx11')
+change compile to include libstdc++-4.8-dev
+-- tested compile change on local ubuntu. apt-get works.
+test on Bluemix 
