@@ -35,5 +35,8 @@ topic "conda based R BuildPack"
 BUILD_DIR=$1
 export BUILD_DIR
 topic "listing $BUILD_DIR"
-ls -alHR $BUILD_DIR
+pushd $BUILD_DIR
+ls -alH
 source conda_install $BUILD_DIR
+popd
+topic "Install complete"
