@@ -39,4 +39,7 @@ pushd $BUILD_DIR
 ls -alH
 source conda_install $BUILD_DIR
 popd
+topic "PATH = $PATH"
+export PATH=$BUILD_DIR/miniconda/envs/r_env/bin:$BUILD_DIR/miniconda/bin:$PATH
+topic "new PATH = $PATH"
 topic "Install complete"
