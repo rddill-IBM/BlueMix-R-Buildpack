@@ -33,7 +33,7 @@ topic "conda based R BuildPack"
 ## comment out following lines when using with real cloud foundry
 # define foundation names for use in local install
 BUILD_DIR=$1
-export $BUILD_DIR
+export BUILD_DIR
 topic "listing $BUILD_DIR"
 ls -alHR $BUILD_DIR
 source conda_install $BUILD_DIR
