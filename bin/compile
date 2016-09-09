@@ -34,14 +34,14 @@ topic "conda based R BuildPack"
 # define foundation names for use in local install
 BUILD_DIR=$1
 export BUILD_DIR
+export CONDA_DOWNLOAD_LOCATION=$BUILD_DIR/miniconda.sh
+export CONDA_INSTALL_LOCATION=$BUILD_DIR/miniconda
 topic "listing $BUILD_DIR"
 pushd $BUILD_DIR
 ls -alH
-source conda_install $BUILD_DIR
+source conda_install $BUILD_DIR $CONDA_DOWNLOAD_LOCATION $CONDA_INSTALL_LOCATION
 popd
 
 topic "conda based R Build is complete"
 topic "PATH = $PATH"
-export PATH=$BUILD_DIR/miniconda/envs/r_env/bin:$BUILD_DIR/miniconda/bin:$PATH
-topic "new PATH = $PATH"
 topic "Install complete"
