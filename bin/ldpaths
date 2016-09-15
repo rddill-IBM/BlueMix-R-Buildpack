@@ -1,0 +1,17 @@
+: ${JAVA_HOME=/usr/lib/jvm/java-1.7.0-openjdk-1.7.0.85.x86_64/jre}
+: ${R_JAVA_LD_LIBRARY_PATH=/usr/lib/jvm/java-1.7.0-openjdk-1.7.0.45.x86_64/jre/lib/amd64/server}
+if test -n "/home/vcap/app/miniconda/envs/r_env/lib"; then
+: ${R_LD_LIBRARY_PATH=${R_HOME}/lib:/home/vcap/app/miniconda/envs/r_env/lib}
+else
+: ${R_LD_LIBRARY_PATH=${R_HOME}/lib}
+fi
+if test -n "${R_JAVA_LD_LIBRARY_PATH}"; then
+  R_LD_LIBRARY_PATH="${R_LD_LIBRARY_PATH}:${R_JAVA_LD_LIBRARY_PATH}"
+fi
+## This is DYLD_FALLBACK_LIBRARY_PATH on Darwin (OS X) and LD_LIBRARY_PATH elsewhere
+if test -z "${LD_LIBRARY_PATH}"; then
+  LD_LIBRARY_PATH="${R_LD_LIBRARY_PATH}"
+else
+  LD_LIBRARY_PATH="${R_LD_LIBRARY_PATH}:${LD_LIBRARY_PATH}"
+fi
+export LD_LIBRARY_PATH

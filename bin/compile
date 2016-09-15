@@ -30,17 +30,33 @@ function indent() {
 
 # initialization
 topic "conda based R BuildPack"
-## comment out following lines when using with real cloud foundry
-# define foundation names for use in local install
-BUILD_DIR=$1
-export BUILD_DIR
+export BUILD_DIR=$1
+export CACHE_DIR$2
 export CONDA_DOWNLOAD_LOCATION=$BUILD_DIR/miniconda.sh
 export CONDA_INSTALL_LOCATION=$BUILD_DIR/miniconda
 topic "listing $BUILD_DIR"
 pushd $BUILD_DIR
 ls -alH
-source conda_install $BUILD_DIR $CONDA_DOWNLOAD_LOCATION $CONDA_INSTALL_LOCATION
+
+#
+# insert code to retrieve conda_install from github
+#
+source $CACHE_DIR/conda_install $BUILD_DIR $CONDA_DOWNLOAD_LOCATION $CONDA_INSTALL_LOCATION
 popd
+
+#
+# insert code here to replace need for engine_build bash file
+
+# update the following code to use correct staging paths
+ topic "copy corrected version of R to appropriate folders"
+ cp -f $CACHE_DIR/R $BUILD_DIR/app/miniconda/envs/r_env/bin
+ cp -f $CACHE_DIR/R $BUILD_DIR/app/miniconda/envs/r_env/lib/R/bin
+
+ topic "copy corrected ldpaths to appropriate folder"
+ cp -f $CACHE_DIR/ldpaths $BUILD_DIR/app/miniconda/envs/r_env/lib/R/etc/
+#
+# set up .profile to build correct environment for app execution
+ cp -f $CACHE_DIR/target.profile $BUILD_DIR/app/.profile
 
 topic "conda based R Build is complete"
 topic "PATH = $PATH"

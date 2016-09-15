@@ -3,10 +3,12 @@
 This is a CloudFoundry buildpack for applications which use
 [R](http://www.r-project.org/) for statistical computing and [CRAN](http://cran.r-project.org/) for R packages.
 
-It's a fork from the R buildpack for Heroku.
+It started as a fork from the R buildpack for Heroku and since then has evolved into an entirely different approach using conda to install the necessary anaconda based packages and gcc to compile those parts of R which are not yet available as conda packages.
+
+My thanks to [Eric Dill](https://github.com/ericdill) for introducing me to conda and for creating the initial working script to automate this install.
 
 R is ‘GNU S’, a freely available language and environment for statistical computing and graphics which provides
-a wide variety of statistical and graphical techniques: linear and nonlinear modelling, statistical tests, time
+a wide variety of statistical and graphical techniques: linear and nonlinear modeling, statistical tests, time
 series analysis, classification, clustering, etc. Please consult
 the [R project homepage](http://www.r-project.org/) for further information.
 
@@ -14,14 +16,16 @@ the [R project homepage](http://www.r-project.org/) for further information.
 store identical, up-to-date, versions of code and documentation for R.
 
 ## Usage
+
+The conda install process loads packages from the anaconda site. Your base folder needs to have a file called "conda_objects" which lists all of the R and related (like gcc) packages you will need for your installation. This file is read during the staging process to determine what packages to load.
+
+At the end of the staging process, a file called init.r will be executed. This is used to install any packages required by your application which you could not find on the conda package site.
+
+Examples of both of these files are available in the exampleFiles folder in this repository.
+
 Example usage (replace ```<app_name>``` with the name of your app):
 
-```
-$ ls
-init.r prog1.r prog2.r ...
-
-$ cf push <app_name> -b http://github.com/alexkago/cf-buildpack-r.git
-
+$ cf push <app_name> -b https://github.com/rddill-IBM/BlueMix-R-Buildpack.git
 ...
 -----> R successfully installed
 ```
@@ -42,19 +46,14 @@ install.packages("nlme", dependencies = TRUE)
 
 ```
 
-R packages can also be included in your project source and installed when the `init.r` file is executed.
-
-```
-install.packages("optional-path-to-packages/local-r-package-file.tar.gz", repos=NULL, type="source")
-```
+Although R packages can also be included in your project source as part of the file named in your manifest.yml file, I recommend that you do not do this as it may cause your application to time out during the application initialization process.
 
 ## R Binaries
-The binaries used by the buildpack are for R 3.0.1, and are hosted
-on [https://s3.amazonaws.com/r-buildpack/R-3.1.0-binaries-20140629-2201.tar.gz](https://s3.amazonaws.com/r-buildpack/R-3.1.0-binaries-20140629-2201.tar.gz)
+The binaries used by the buildpack are for R 3.2.2, and are hosted
+on the Anaconda web site
 
 See the [guide](support/README.md) for building the R binaries yourself.
 
 ## Caveats
-Due to the size of the R runtime, the slug size on Cloud Foundry, without any additional packages or program code, is approximately 98Mb.
-If additional R packages are installed by the `init.r` script then the slug size will increase.
-
+Due to the size of the R runtime, the slug size on Cloud Foundry, without any additional packages or program code, is approximately 100Mb.
+If additional R packages are installed by the `init.r` script then the slug size will increase. In the case of my test application, which includes full support for the RGraphvz package from bioconductor, the slug size is approximately 290Mb

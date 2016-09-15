@@ -1,10 +1,8 @@
-#!/bin/bash
+#!/bin/sh
 # Shell wrapper for R executable.
-# echo "R_HOME is currently set to $R_HOME"
-# echo " current working directory is $(pwd)"
 
-R_HOME_DIR=/usr/lib/R
-if test "${R_HOME_DIR}" = "/usr/lib/R"; then
+R_HOME_DIR=/home/vcap/app/miniconda/envs/r_env/lib/R
+if test "${R_HOME_DIR}" = "/home/vcap/app/miniconda/envs/r_env/lib/R"; then
    case "linux-gnu" in
    linux*)
      run_arch=`uname -m`
@@ -18,19 +16,28 @@ if test "${R_HOME_DIR}" = "/usr/lib/R"; then
           libnn_fallback=lib64
         ;;
      esac
-     if [ -x "/usr/${libnn}/R/bin/exec/R" ]; then
-        R_HOME_DIR="/usr/${libnn}/R"
-     elif [ -x "/usr/${libnn_fallback}/R/bin/exec/R" ]; then
-        R_HOME_DIR="/usr/${libnn_fallback}/R"
+     if [ -x "/home/vcap/app/miniconda/envs/r_env/${libnn}/R/bin/exec/R" ]; then
+        R_HOME_DIR="/home/vcap/app/miniconda/envs/r_env/${libnn}/R"
+     elif [ -x "/home/vcap/app/miniconda/envs/r_env/${libnn_fallback}/R/bin/exec/R" ]; then
+        R_HOME_DIR="/home/vcap/app/miniconda/envs/r_env/${libnn_fallback}/R"
      ## else -- leave alone (might be a sub-arch)
      fi
      ;;
   esac
 fi
 
-if [ -z "${R_SHARE_DIR}" ]; then R_SHARE_DIR=/usr/share/R/share; export R_SHARE_DIR; fi
-if [ -z "${R_INCLUDE_DIR}" ]; then R_INCLUDE_DIR=/usr/share/R/include; export R_INCLUDE_DIR; fi
-if [ -z "${R_DOC_DIR}" ]; then R_DOC_DIR=/usr/share/R/doc; export R_DOC_DIR; fi
+if test -n "${R_HOME}" && \
+   test "${R_HOME}" != "${R_HOME_DIR}"; then
+  echo "WARNING: ignoring environment value of R_HOME"
+fi
+R_HOME="${R_HOME_DIR}"
+export R_HOME
+R_SHARE_DIR=/home/vcap/app/miniconda/envs/r_env/lib/R/share
+export R_SHARE_DIR
+R_INCLUDE_DIR=/home/vcap/app/miniconda/envs/r_env/lib/R/include
+export R_INCLUDE_DIR
+R_DOC_DIR=/home/vcap/app/miniconda/envs/r_env/lib/R/doc
+export R_DOC_DIR
 
 # Since this script can be called recursively, we allow R_ARCH to
 # be overridden from the environment.

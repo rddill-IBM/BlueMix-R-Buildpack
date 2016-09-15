@@ -1,0 +1,54 @@
+#!/bin/bash
+#
+# added. Bluemix will pass BUILD_DIR as $1
+BUILD_DIR=$1
+CONDA_DOWNLOAD_LOCATION=$2
+CONDA_INSTALL_LOCATION=$3
+CONDA_INSTALL_FILE="$BUILD_DIR/conda_objects"
+CONDA_OBJECTS=""
+CUR_OBJECT=""
+
+# added for local test. if folder does not exist, wget fails
+if [ ! -d "$BUILDDIR" ]; then
+  mkdir -p $BUILD_DIR
+fi
+
+if [ ! -f $CONDA_DOWNLOAD_LOCATION ]; then
+echo "bash file not found. downloading"
+  wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O $CONDA_DOWNLOAD_LOCATION
+echo "bash file download complete"
+fi
+
+for CUR_OBJECT in $(cat $CONDA_INSTALL_FILE); do
+  CONDA_OBJECTS="$CONDA_OBJECTS $CUR_OBJECT"
+done
+
+bash $CONDA_DOWNLOAD_LOCATION -b -p $CONDA_INSTALL_LOCATION
+
+export PATH=$CONDA_INSTALL_LOCATION/bin:$PATH
+
+# changed line 33 contarc to condarc
+echo "Using default condarc"
+echo "always_yes: True
+channels:
+- conda-forge
+- bioconda
+- r
+- defaults
+" > $BUILD_DIR/.condarc
+export CONDARC=$BUILD_DIR/.condarc
+
+conda-env remove -n r_env    # changed conda env to conda-env, added -n
+
+conda create -n r_env -c r r $CONDA_OBJECTS
+
+source activate r_env
+
+conda update --all
+
+Rscript init.r
+
+echo $PATH
+export PATH
+
+rm -R $CONDA_INSTALL_LOCATION/pkgs/*

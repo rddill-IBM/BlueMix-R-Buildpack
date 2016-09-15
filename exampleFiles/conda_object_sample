@@ -1,0 +1,10 @@
+r-jsonlite
+r-stringi
+r-brew
+r-digest
+r-crayon
+r-magrittr r-praise r-R6 r-testthat r-xtable
+r-microbenchmark r-iterators r-pkgmaker r-registry
+r-rngtools r-gridBase r-foreach r-doParallel r-NMF
+r-irlba r-igraph r-RcppArmadillo
+gcc
