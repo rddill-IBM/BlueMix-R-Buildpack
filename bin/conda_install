@@ -46,7 +46,7 @@ source activate r_env
 
 conda update --all
 
-Rscript $BUILD_DIR/app/init.r
+Rscript $BUILD_DIR/init.r
 
 echo $PATH
 export PATH
