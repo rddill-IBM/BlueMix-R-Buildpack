@@ -40,7 +40,6 @@ export CONDA_INSTALL_LOCATION=$BUILD_DIR/miniconda
 # insert code to retrieve conda_install from github
 #
 source $BUILDPACK_DIR/conda_install $BUILD_DIR $CONDA_DOWNLOAD_LOCATION $CONDA_INSTALL_LOCATION
-popd
 
 #
 # insert code here to replace need for engine_build bash file
