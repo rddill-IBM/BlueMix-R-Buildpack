@@ -37,7 +37,11 @@ export CONDA_INSTALL_LOCATION=$BUILD_DIR/miniconda
 topic "listing $BUILD_DIR"
 pushd $BUILD_DIR
 ls -alH
-
+topic "listing $CACHE_DIR"
+pushd
+ls -alHR
+popd
+sleep 30
 #
 # insert code to retrieve conda_install from github
 #
