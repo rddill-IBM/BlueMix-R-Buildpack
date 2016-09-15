@@ -38,7 +38,7 @@ topic "listing $BUILD_DIR"
 pushd $BUILD_DIR
 ls -alH
 topic "listing $CACHE_DIR"
-pushd
+pushd $CACHE_DIR
 ls -alHR
 popd
 sleep 30
