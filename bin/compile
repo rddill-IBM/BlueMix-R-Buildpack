@@ -32,20 +32,14 @@ function indent() {
 topic "conda based R BuildPack"
 export BUILD_DIR=$1
 export CACHE_DIR=$2
+export BUILDPACK_DIR="/tmp/buildpacks/BlueMix-R-Buildpack/bin"
 export CONDA_DOWNLOAD_LOCATION=$BUILD_DIR/miniconda.sh
 export CONDA_INSTALL_LOCATION=$BUILD_DIR/miniconda
-topic "listing $BUILD_DIR"
-pushd $BUILD_DIR
-ls -alH
-topic "listing /tmp/"
-pushd /tmp
-ls -alHR
-popd
-sleep 30
+
 #
 # insert code to retrieve conda_install from github
 #
-source $CACHE_DIR/conda_install $BUILD_DIR $CONDA_DOWNLOAD_LOCATION $CONDA_INSTALL_LOCATION
+source BUILDPACK_DIR/conda_install $BUILD_DIR $CONDA_DOWNLOAD_LOCATION $CONDA_INSTALL_LOCATION
 popd
 
 #
@@ -53,14 +47,14 @@ popd
 
 # update the following code to use correct staging paths
  topic "copy corrected version of R to appropriate folders"
- cp -f $CACHE_DIR/R $BUILD_DIR/app/miniconda/envs/r_env/bin
- cp -f $CACHE_DIR/R $BUILD_DIR/app/miniconda/envs/r_env/lib/R/bin
+ cp -f BUILDPACK_DIR/R $BUILD_DIR/app/miniconda/envs/r_env/bin
+ cp -f BUILDPACK_DIR/R $BUILD_DIR/app/miniconda/envs/r_env/lib/R/bin
 
  topic "copy corrected ldpaths to appropriate folder"
- cp -f $CACHE_DIR/ldpaths $BUILD_DIR/app/miniconda/envs/r_env/lib/R/etc/
+ cp -f BUILDPACK_DIR/ldpaths $BUILD_DIR/app/miniconda/envs/r_env/lib/R/etc/
 #
 # set up .profile to build correct environment for app execution
- cp -f $CACHE_DIR/target.profile $BUILD_DIR/app/.profile
+ cp -f BUILDPACK_DIR/target.profile $BUILD_DIR/app/.profile
 
 topic "conda based R Build is complete"
 topic "PATH = $PATH"
