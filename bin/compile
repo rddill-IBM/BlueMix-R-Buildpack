@@ -38,6 +38,8 @@ export CONDA_INSTALL_LOCATION=$BUILD_DIR/miniconda
 topic "BUILD_DIR is $BUILD_DIR"
 topic "CACHE_DIR is $CACHE_DIR"
 topic "BUILDPACK_DIR is $BUILDPACK_DIR"
+topic "PATH is $PATH"
+topic "HOME is $HOME"
 #
 # insert code to retrieve conda_install from github
 #
