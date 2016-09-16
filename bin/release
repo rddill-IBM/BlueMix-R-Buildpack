@@ -11,4 +11,4 @@ export R_LIBS="$HOME/miniconda/envs/r_env/lib/R/library"
 export R_LIBS_SITE=$R_LIBS
 export R_LIBS_USER=$R_LIBS
 export RHOME=$R_HOME
-export R_PROFILE_D_TEST = ".profile test successful"
+export R_PROFILE_D_TEST=".profile test successful"
