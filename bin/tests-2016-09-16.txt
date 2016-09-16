@@ -1,0 +1,72 @@
+2016 09 16 log
+
+added print $HOME to compile
+added path statements to manifest.yml
+  -- path is now being picked up.
+using bash engine_test to test and display
+  -- Rscript --version works
+  -- Rscript engineGlobal_1.3.r does not work
+  -- Rscript ./engineGlobal_1.3.r does not work.
+  -- documentation appears to indicate that $HOME can be used during build process.
+  -- Rscript -e "print(Sys.getenv())" failing. adding --verbose
+  -- add to compile:
+    ...  echo "new ldpaths is: $(cat $BUILD_DIR/miniconda/envs/r_env/lib/R/etc/ldpaths)"
+  -- ldpaths exists and is correct.
+  -- continue to get error Rscript execution error: No such file or directory
+    ... appears to now indicate that Rscript is not being found.
+     - http://stackoverflow.com/questions/17496810/usr-bin-env-rscript-no-such-file-or-directory-after-recent-r-3-0-1-install
+    ... add additional entry to path to include $HOME/miniconda/envs/r_env/lib/R/bin
+    ... no change
+    ... execute R --version ... works
+    ... execute R -e 'print(Sys.getenv())'  -- verbose ... works
+    ... add find -name Rscript, add find -name engineGlobal_1.3.r
+     --  all found
+     -- /miniconda/envs/r_env/lib/R/bin/Rscript
+     -- ./miniconda/envs/r_env/bin/Rscript
+     -- ./engineGlobal_1.3.r
+    ... or it may be that R is not being found. .... it's a little tough to determine.
+    ... add topic "which R $(which R)"  and same for Rscript
+    .. $RHOME value is empty even though it is set (last value) in manifest.yml file
+  deleted (cf delete inference-engine) existing app, build to clean system.
+  added line to engine_test: RHOME = $R_HOME
+  -- Rscript loads correctly from engine_test bash script.
+add dummy env variable to manifest.yml see if this is a 'last value' issue
+  -- it's not a last variable issue
+skip to .profile test add R_PROFILE_D_TEST variable, test for value
+  -- test fails. .profile not being executed before "command:" from manifest.yml
+add dummy env variable to compile, test for value in engine_test
+  -- test fails. env variables defined in staging process are not passed to execution process
+change .profile target from $BUILD_DIR to $HOME/ in compile exec
+  -- not executed
+removed variable passing test from compile
+change .profile target from $BUILD_DIR to $HOME/.profile.d/.profile in compile exec
+  -- failed
+remove cat ldpaths from compile
+change profile target to cp -f $BUILDPACK_DIR/target.profile $HOME/.profile.d/env.sh in compile exec
+  -- failed
+change bin/release to execute the env.sh file
+  -- attempted to execute env.sh file.
+  -- failed:
+    ... /tmp/buildpacks/BlueMix-R-Buildpack/bin/release: line 4: default_process_types:: command not found
+    ... /tmp/buildpacks/BlueMix-R-Buildpack/bin/release: line 5: web:: command not found
+    ... Staging failed: Release info failed:
+corrected path typo
+  -- failed:
+    ... /var/vcap/packages/dea_next/buildpacks/lib/buildpack.rb:104:in `effective_procfile': undefined method `fetch' for false:FalseClass (NoMethodError)
+	     from /var/vcap/packages/dea_next/buildpacks/lib/buildpack.rb:95:in `save_buildpack_info'
+	     from /var/vcap/packages/dea_next/buildpacks/lib/buildpack.rb:60:in `block in stage_application'
+	     from /var/vcap/packages/dea_next/buildpacks/lib/buildpack.rb:53:in `chdir'
+	     from /var/vcap/packages/dea_next/buildpacks/lib/buildpack.rb:53:in `stage_application'
+	     from /var/vcap/packages/dea_next/buildpacks/bin/run:10:in `<main>'
+ removed following from manifest.yml
+ PATH: $HOME/miniconda/envs/r_env/lib/R/bin:$HOME/miniconda/envs/r_env/bin:$HOME/miniconda/bin:$PATH
+ LD_LIBRARY_PATH: $HOME/miniconda/envs/r_env/lib/R/lib:$HOME/miniconda/envs/r_env/lib:/usr/lib/jvm/java-1.7.0-openjdk-1.7.0.45.x86_64/jre/lib/amd64/server
+ R_DOC_DIR: $HOME/miniconda/envs/r_env/lib/R/doc
+ R_HOME: $HOME/miniconda/envs/r_env/lib/R
+ R_INCLUDE_DIR: $HOME/miniconda/envs/r_env/lib/R/include
+ R_SHARE_DIR: $HOME/miniconda/envs/r_env/lib/R/share
+ R_LIBS: "$HOME/miniconda/envs/r_env/lib/R/library"
+ R_LIBS_SITE: $R_LIBS
+ R_LIBS_USER: $R_LIBS
+ RHOME: $R_HOME
+ RDUMMY: $R_HOME
