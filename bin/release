@@ -1,9 +1,5 @@
 #!/usr/bin/env bash
 # bin/release <build-dir>
-export PATH=$BUILD_DIR/miniconda/envs/r_env/bin:$BUILD_DIR/miniconda/bin:$PATH
-cat <<EOF
-config_vars:
-  CAN_SET_IN_RELEASE: doesnt_seem_to_work
+
 default_process_types:
-  web: R --no-save --gui-none < /app/engineGlobal_1.3.R
-EOF
+  web: $HOME/.profile.d/env.sh
