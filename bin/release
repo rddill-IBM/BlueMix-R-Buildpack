@@ -3,5 +3,5 @@
 
 cat <<EOF
 default_process_types:
-  web: $HOME/r_env.sh
+  web: bash $HOME/r_env.sh
 EOF
