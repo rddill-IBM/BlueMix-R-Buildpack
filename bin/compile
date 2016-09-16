@@ -59,7 +59,7 @@ topic "HOME is $HOME"
 
 # set up .profile to build correct environment for app execution
  mkdir $HOME/.profile.d
- cp -f $BUILDPACK_DIR/target.profile $HOME/.profile.d/.profile
+ cp -f $BUILDPACK_DIR/target.profile $HOME/.profile.d/env.sh
 topic "conda based R Build is complete"
 topic "PATH = $PATH"
 topic "Install complete"
