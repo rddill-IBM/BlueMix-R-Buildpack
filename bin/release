@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # bin/release <build-dir>
 
-cat <<EOF
+cat <<EOF 
+addons: []
 default_process_types:
-  web: bash $HOME/r_env.sh
+ web: bash $HOME/r_env.sh
 EOF
