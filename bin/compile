@@ -40,7 +40,7 @@ topic "CACHE_DIR is $CACHE_DIR"
 topic "BUILDPACK_DIR is $BUILDPACK_DIR"
 topic "PATH is $PATH"
 topic "HOME is $HOME"
-iPATH = $PATH
+iPATH=$PATH
 #
 # insert code to retrieve conda_install from github
 #
