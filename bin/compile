@@ -55,6 +55,7 @@ source $BUILDPACK_DIR/conda_install $BUILD_DIR $CONDA_DOWNLOAD_LOCATION $CONDA_I
 
  topic "copy corrected ldpaths to appropriate folder"
  cp -f $BUILDPACK_DIR/ldpaths $BUILD_DIR/miniconda/envs/r_env/lib/R/etc/
+ echo "new ldpaths is: $(cat $BUILD_DIR/miniconda/envs/r_env/lib/R/etc/ldpaths)"
 #
 # set up .profile to build correct environment for app execution
  cp -f $BUILDPACK_DIR/target.profile $BUILD_DIR/.profile
