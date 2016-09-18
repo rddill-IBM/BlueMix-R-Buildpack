@@ -44,18 +44,18 @@ topic "HOME is $HOME"
 #
 # insert code to retrieve conda_install from github
 #
-####### source $BUILDPACK_DIR/conda_install $BUILD_DIR $CONDA_DOWNLOAD_LOCATION $CONDA_INSTALL_LOCATION
+ source $BUILDPACK_DIR/conda_install $BUILD_DIR $CONDA_DOWNLOAD_LOCATION $CONDA_INSTALL_LOCATION
 
 #
 # insert code here to replace need for engine_build bash file
 
 # update the following code to use correct staging paths
  topic "copy corrected version of R to appropriate folders"
-#######  cp -f $BUILDPACK_DIR/R $BUILD_DIR/miniconda/envs/r_env/bin
-#######  cp -f $BUILDPACK_DIR/R $BUILD_DIR/miniconda/envs/r_env/lib/R/bin
+  cp -f $BUILDPACK_DIR/R $BUILD_DIR/miniconda/envs/r_env/bin
+  cp -f $BUILDPACK_DIR/R $BUILD_DIR/miniconda/envs/r_env/lib/R/bin
 
  topic "copy corrected ldpaths to appropriate folder"
-#######  cp -f $BUILDPACK_DIR/ldpaths $BUILD_DIR/miniconda/envs/r_env/lib/R/etc/
+  cp -f $BUILDPACK_DIR/ldpaths $BUILD_DIR/miniconda/envs/r_env/lib/R/etc/
 
 # set up .profile to build correct environment for app execution
  mkdir $HOME/.profile.d

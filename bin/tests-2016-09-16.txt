@@ -70,3 +70,18 @@ corrected path typo
  R_LIBS_USER: $R_LIBS
  RHOME: $R_HOME
  RDUMMY: $R_HOME
+  -- all paths now empty
+put path script into $HOME folder. updated release to point to new script.
+  -- failed
+copy .profile into $BUILD_DIR for movement to ~
+  -- failed
+ update .profile to only contain assignment statements
+    -- failed
+ executing .profile as source from engine_test
+  -- succeeds
+replaced echo with topic
+  -- works
+Remove test env variables
+  -- works
+Remove . ./.profile from engine_test script
+  -- fails. ~/.profile not running
