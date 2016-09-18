@@ -58,8 +58,8 @@ topic "HOME is $HOME"
   cp -f $BUILDPACK_DIR/ldpaths $BUILD_DIR/miniconda/envs/r_env/lib/R/etc/
 
 # set up .profile to build correct environment for app execution
- mkdir $HOME/.profile.d
- cp -f $BUILDPACK_DIR/target.profile $BUILD_DIR/.profile
+ mkdir $BUILD_DIR/.profile.d
+ cp -f $BUILDPACK_DIR/target.profile $BUILD_DIR/.profile.d/.profile
 topic "conda based R Build is complete"
 topic "PATH = $PATH"
 topic "Install complete"
