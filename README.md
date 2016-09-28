@@ -44,14 +44,15 @@ The R runtime is vendored into your slug, and includes the gcc compiler for fort
 
 
 ## Installing R packages
-During the slug compilation process, the `init.r` R file is executed. Put code in this file to install any packages you may require.
+During the slug compilation process, the `init.r` R file is executed. 
+```
+Put code in this file to install any packages you may require.
 See the [Installing-packages](http://cran.r-project.org/doc/manuals/R-admin.html#Installing-packages) for details. The
 list of available packages can be found at [http://cran.r-project.org](http://cran.r-project.org/web/packages/available_packages_by_date.html).
 
-```
 # Example `init.r` file
-
-install.packages("nlme", dependencies = TRUE)
+```
+install.packages("name", clean=TRUE, dependencies = TRUE)
 
 ```
 
@@ -60,8 +61,6 @@ Although R packages can also be included in your project source as part of the f
 ## R Binaries
 The binaries used by the buildpack are for R 3.2.2, and are hosted
 on the Anaconda web site
-
-See the [guide](support/README.md) for building the R binaries yourself.
 
 ## Caveats
 Due to the size of the R runtime, the slug size on Cloud Foundry, without any additional packages or program code, is approximately 100Mb.
