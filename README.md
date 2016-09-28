@@ -17,7 +17,24 @@ store identical, up-to-date, versions of code and documentation for R.
 
 ## Usage
 
-The conda install process loads packages from the anaconda site. Your base folder needs to have a file called "conda_objects" which lists all of the R and related (like gcc) packages you will need for your installation. This file is read during the staging process to determine what packages to load.
+The conda install process loads packages from the anaconda site. Your base folder needs to have a file called "conda_objects" which lists all of the R and related (like gcc) packages you will need for your installation. This file is read during the staging process to determine what packages to load. The conda packages which you load can be all on a single line in the file, separated by spaces, not commas, or they can be spread across multiple lines as in the following example:
+```
+bioconductor-rgraphviz
+bioconductor-rbgl
+r-rcppeigen
+r-jsonlite
+r-stringi
+r-brew
+r-digest
+r-crayon
+r-magrittr r-praise r-R6 r-testthat r-xtable
+r-microbenchmark r-iterators r-pkgmaker r-registry
+r-rngtools r-gridBase r-foreach r-doParallel r-NMF
+r-irlba r-igraph r-RcppArmadillo r-curl
+gcc
+harfbuzz=0.9.39 pango=1.39.0 freetype=2.5.5
+
+```
 
 At the end of the staging process, a file called init.r will be executed. This is used to install any packages required by your application which you could not find on the conda package site.
 
