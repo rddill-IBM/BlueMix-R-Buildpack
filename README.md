@@ -21,6 +21,14 @@ The conda install process loads packages from the anaconda site. Your base folde
 
 At the end of the staging process, a file called init.r will be executed. This is used to install any packages required by your application which you could not find on the conda package site.
 
+At this time, I have not yet figured out how to correctly set the paths which will be used at application execution time. So your manifest.yml file will have to call my bash script with the name of your startup r script. For example, my personal application is started via a script called "engineGlobal.r". The "command" variable in the manifest.yml file looks like this: 
+
+command: bash load_R engineGlobal.r
+
+for this buildpack to work successfully on your system, the command: option must be present and must start with "bash load_R " followed by the name of your starting script, which will be loaded via the Rscript command. 
+
+Because we are compiling, I set memory at 1024Mb. For planning purposes, I have an app of moderate complexity, using Rook to provide web services and several packages from biocLite. My execution environment shows that I am using a bit under 500Mb memory when the app is active. 
+
 Examples of both of these files are available in the exampleFiles folder in this repository.
 
 Example usage (replace ```<app_name>``` with the name of your app):
